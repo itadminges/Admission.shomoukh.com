@@ -1,13 +1,11 @@
 "use client"
 
-import { useState } from "react"
-import { Plus, Trash2, GraduationCap, User, Globe, BookOpen } from "lucide-react"
+import { Plus, Trash2, GraduationCap, User, Globe, BookOpen, Info } from "lucide-react"
 import {
   FormField,
   StyledInput,
   StyledSelect,
   SectionHeader,
-  RadioGroupField,
   FormGrid,
 } from "@/components/enrollment/form-components"
 import { PhotoUpload } from "@/components/enrollment/photo-upload"
@@ -54,26 +52,15 @@ export function Step1StudentData({ data, onChange, errors }: Step1Props) {
 
   return (
     <div className="space-y-8">
-      {/* Notice Banner */}
-      <div className="bg-[#C9A84C]/8 border border-[#C9A84C]/20 rounded-xl p-5">
-        <h3 className="text-sm font-semibold text-foreground mb-2">Application for Enrolment</h3>
-        <p className="text-sm text-muted-foreground leading-relaxed">
-          A place will be offered whenever it is possible to best meet the perceived needs of the child. Parents will
-          be notified when a place is available. Acceptance of the child is dependent upon successful fulfillment of
-          our admission requirements. By accepting a registration form, the school does not guarantee a student
-          admission.
-        </p>
-      </div>
-
       {/* Student Photo */}
       <div>
         <SectionHeader
-          title="Student Data"
-          description="Please fill in all required information about the student."
+          title="Student Photo"
+          description="Drag & drop or click to browse — JPG or PNG, passport-size."
           icon={<User className="w-5 h-5" />}
         />
         <div className="space-y-6">
-          <FormField label="Student Photo" required hint="Please upload a recent passport-size photo.">
+          <FormField label="Upload" required hint="Drag & drop or click to browse — JPG or PNG, max 5 MB.">
             <PhotoUpload value={data.photoUrl} onChange={(url) => update("photoUrl", url)} />
           </FormField>
         </div>
@@ -81,11 +68,9 @@ export function Step1StudentData({ data, onChange, errors }: Step1Props) {
 
       {/* Personal Information */}
       <div>
-        <h3 className="text-sm font-semibold text-foreground/70 uppercase tracking-wider mb-4 flex items-center gap-2">
-          <div className="h-px flex-1 bg-border/60" />
+        <div className="section-divider">
           <span>Personal Information</span>
-          <div className="h-px flex-1 bg-border/60" />
-        </h3>
+        </div>
         <FormGrid cols={2}>
           <FormField label="Family Name" required error={errors.familyName}>
             <StyledInput
@@ -149,30 +134,43 @@ export function Step1StudentData({ data, onChange, errors }: Step1Props) {
           </FormField>
 
           <div className="col-span-full">
-            <RadioGroupField
-              label="Gender"
-              required
-              options={[
-                { value: "Male", label: "Male" },
-                { value: "Female", label: "Female" },
-              ]}
-              value={data.gender}
-              onChange={(v) => update("gender", v as "Male" | "Female")}
-              error={errors.gender}
-            />
+            <FormField label="Gender" required error={errors.gender}>
+              <div className="flex flex-wrap gap-10 pt-1">
+                {(["Male", "Female"] as const).map((opt) => (
+                  <label key={opt} className="flex cursor-pointer items-center gap-2.5">
+                    <input
+                      type="radio"
+                      className="sr-only"
+                      checked={data.gender === opt}
+                      onChange={() => update("gender", opt)}
+                    />
+                    <span
+                      className="flex h-5 w-5 items-center justify-center rounded-full border-2 transition-colors"
+                      style={{
+                        borderColor: data.gender === opt ? "var(--gold)" : "var(--border-mid)",
+                      }}
+                    >
+                      {data.gender === opt && (
+                        <span className="h-2.5 w-2.5 rounded-full" style={{ background: "var(--gold)" }} />
+                      )}
+                    </span>
+                    <span className="text-sm font-medium" style={{ color: "var(--text-secondary)" }}>
+                      {opt}
+                    </span>
+                  </label>
+                ))}
+              </div>
+            </FormField>
           </div>
         </FormGrid>
       </div>
 
       {/* Language Information */}
       <div>
-        <h3 className="text-sm font-semibold text-foreground/70 uppercase tracking-wider mb-4 flex items-center gap-2">
-          <div className="h-px flex-1 bg-border/60" />
-          <span className="flex items-center gap-1.5">
-            <Globe className="w-3.5 h-3.5" /> Language & Communication
-          </span>
-          <div className="h-px flex-1 bg-border/60" />
-        </h3>
+        <div className="section-divider">
+          <Globe className="w-3.5 h-3.5" style={{ color: "var(--gold)" }} />
+          <span>Language &amp; Communication</span>
+        </div>
         <FormGrid cols={2}>
           <FormField label="First Language Spoken" required error={errors.firstLanguageSpoken}>
             <StyledSelect
@@ -204,13 +202,10 @@ export function Step1StudentData({ data, onChange, errors }: Step1Props) {
 
       {/* Enrollment Information */}
       <div>
-        <h3 className="text-sm font-semibold text-foreground/70 uppercase tracking-wider mb-4 flex items-center gap-2">
-          <div className="h-px flex-1 bg-border/60" />
-          <span className="flex items-center gap-1.5">
-            <BookOpen className="w-3.5 h-3.5" /> Enrollment Details
-          </span>
-          <div className="h-px flex-1 bg-border/60" />
-        </h3>
+        <div className="section-divider">
+          <BookOpen className="w-3.5 h-3.5" style={{ color: "var(--gold)" }} />
+          <span>Enrollment Details</span>
+        </div>
         <FormGrid cols={2}>
           <FormField label="Enrollment Year" required error={errors.enrollmentYear}>
             <StyledSelect
@@ -239,10 +234,9 @@ export function Step1StudentData({ data, onChange, errors }: Step1Props) {
 
       {/* Siblings */}
       <div>
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-sm font-semibold text-foreground/70 uppercase tracking-wider flex items-center gap-2">
-            <GraduationCap className="w-3.5 h-3.5" /> Siblings (Currently Enrolled)
-          </h3>
+        <div className="section-divider">
+          <GraduationCap className="w-3.5 h-3.5" style={{ color: "var(--gold)" }} />
+          <span>Siblings (Currently Enrolled)</span>
         </div>
 
         {data.siblings.length > 0 && (
@@ -250,14 +244,16 @@ export function Step1StudentData({ data, onChange, errors }: Step1Props) {
             {data.siblings.map((sibling, index) => (
               <div
                 key={sibling.id}
-                className="p-5 rounded-xl border border-border/60 bg-muted/20 space-y-4"
+                className="space-y-4 rounded-xl p-4"
+                style={{ background: "rgba(200,162,77,.04)", border: "1px solid var(--border-soft)" }}
               >
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-foreground">Sibling {index + 1}</span>
+                  <span className="text-sm font-semibold" style={{ color: "var(--text-secondary)" }}>Sibling {index + 1}</span>
                   <button
                     type="button"
                     onClick={() => removeSibling(sibling.id)}
-                    className="flex items-center gap-1.5 text-xs text-destructive hover:text-destructive/80 transition-colors"
+                    className="flex items-center gap-1.5 text-xs font-medium transition-colors"
+                    style={{ color: "var(--destructive-color)" }}
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                     Remove
@@ -297,11 +293,22 @@ export function Step1StudentData({ data, onChange, errors }: Step1Props) {
         <button
           type="button"
           onClick={addSibling}
-          className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-[#A07830] border border-[#C9A84C]/40 rounded-lg hover:bg-[#C9A84C]/10 hover:border-[#C9A84C] transition-all duration-200"
+          className="btn-ghost text-sm"
+          style={{ color: "var(--gold-dark)" }}
         >
           <Plus className="w-4 h-4" />
           Add Sibling
         </button>
+      </div>
+
+      {/* Age requirements — mockup info strip */}
+      <div className="flex items-start gap-3 rounded-xl border border-[#e5e7eb] bg-[#f3f4f6] px-4 py-3.5">
+        <Info className="mt-0.5 h-5 w-5 shrink-0" style={{ color: "var(--gold)" }} strokeWidth={2} />
+        <p className="text-sm leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+          <span className="font-semibold" style={{ color: "var(--text-primary)" }}>Age requirements: </span>
+          Students must have reached the expected age by 1st September for admission to each grade as defined in the
+          Schedule of Fees.
+        </p>
       </div>
     </div>
   )

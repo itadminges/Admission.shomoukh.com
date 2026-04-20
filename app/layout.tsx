@@ -16,9 +16,9 @@ const playfair = Playfair_Display({
 })
 
 export const metadata: Metadata = {
-  title: 'Shomoukh — Student Enrolment',
-  description: 'Apply for enrolment at Shomoukh Early Childhood Education. Complete our secure online application in a few simple steps.',
-  generator: 'v0.app',
+  title: 'Shomoukh — Student Enrolment Portal',
+  description: 'Apply for enrolment at Shomoukh Early Childhood Education. Complete our secure online application in six simple steps.',
+  keywords: ['Shomoukh', 'enrollment', 'early childhood', 'Oman', 'school admission'],
 }
 
 export default function RootLayout({

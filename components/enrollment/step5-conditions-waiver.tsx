@@ -92,21 +92,29 @@ export function Step5ConditionsWaiver({ data, onChange, errors }: Step5Props) {
       />
 
       {/* Policy Cards */}
-      <div className="space-y-4">
+      <div className="space-y-3">
         {POLICY_BLOCKS.map((block, index) => (
           <details
             key={index}
-            className="group border border-border/60 rounded-xl overflow-hidden"
+            className="group rounded-none overflow-hidden"
+            style={{ border: "1px solid var(--border-soft)" }}
           >
-            <summary className="flex items-center justify-between px-5 py-4 cursor-pointer select-none bg-muted/20 hover:bg-muted/40 transition-colors list-none">
+            <summary
+              className="flex items-center justify-between px-5 py-4 cursor-pointer select-none list-none transition-colors"
+              style={{ background: "rgba(200,162,77,.04)" }}
+            >
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-lg bg-[#C9A84C]/10 flex items-center justify-center shrink-0 text-[#C9A84C]">
+                <div
+                  className="w-9 h-9 rounded-none flex items-center justify-center shrink-0"
+                  style={{ background: "rgba(200,162,77,.12)", color: "var(--gold)" }}
+                >
                   {block.icon}
                 </div>
-                <span className="text-sm font-semibold text-foreground">{block.title}</span>
+                <span className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>{block.title}</span>
               </div>
               <svg
-                className="w-4 h-4 text-muted-foreground transition-transform group-open:rotate-180"
+                className="w-4 h-4 transition-transform group-open:rotate-180"
+                style={{ color: "var(--text-muted)" }}
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -115,7 +123,10 @@ export function Step5ConditionsWaiver({ data, onChange, errors }: Step5Props) {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
               </svg>
             </summary>
-            <div className="px-5 py-4 text-sm text-muted-foreground leading-relaxed whitespace-pre-line border-t border-border/40">
+            <div
+              className="px-5 py-4 text-sm leading-relaxed whitespace-pre-line"
+              style={{ color: "var(--text-secondary)", borderTop: "1px solid var(--border-soft)" }}
+            >
               {block.body}
             </div>
           </details>
@@ -124,10 +135,10 @@ export function Step5ConditionsWaiver({ data, onChange, errors }: Step5Props) {
 
       {/* Acknowledgment Checkboxes */}
       <div>
-        <h3 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2">
-          <ShieldCheck className="w-4 h-4 text-[#C9A84C]" />
-          Acknowledgments & Agreements
-        </h3>
+        <div className="section-divider">
+          <ShieldCheck className="w-4 h-4" style={{ color: "var(--gold)" }} />
+          <span>Acknowledgments &amp; Agreements</span>
+        </div>
         <div className="space-y-3">
           {checkboxConfigs.map(({ key, label, description }) => (
             <CheckboxField
@@ -144,10 +155,10 @@ export function Step5ConditionsWaiver({ data, onChange, errors }: Step5Props) {
 
       {/* Parent Signature */}
       <div>
-        <h3 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2">
-          <Pen className="w-4 h-4 text-[#C9A84C]" />
-          Parent / Guardian Signature
-        </h3>
+        <div className="section-divider">
+          <Pen className="w-4 h-4" style={{ color: "var(--gold)" }} />
+          <span>Parent / Guardian Signature</span>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           <FormField label="Full Name (as signature)" required error={errors.parentSignatureName}>
             <StyledInput

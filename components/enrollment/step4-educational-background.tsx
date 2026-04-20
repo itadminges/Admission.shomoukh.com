@@ -36,25 +36,26 @@ function SchoolCard({ school, index, onChange, onRemove, errors }: SchoolCardPro
   const prefix = `schools.${index}`
 
   return (
-    <div className="border border-border/60 rounded-2xl overflow-hidden">
-      <div className="flex items-center justify-between px-5 py-4 bg-muted/30 border-b border-border/40">
+    <div className="rounded-none overflow-hidden" style={{ border: "1px solid var(--border-soft)" }}>
+      <div className="flex items-center justify-between px-5 py-4 border-b" style={{ background: "rgba(200,162,77,.04)", borderColor: "var(--border-soft)" }}>
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-[#C9A84C]/15 flex items-center justify-center">
-            <School className="w-4 h-4 text-[#A07830]" />
+          <div className="w-8 h-8 rounded-none flex items-center justify-center" style={{ background: "rgba(200,162,77,.12)" }}>
+            <School className="w-4 h-4" style={{ color: "var(--gold-dark)" }} />
           </div>
           <div>
-            <h4 className="text-sm font-semibold text-foreground">
+            <h4 className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
               Previous School {index + 1}
             </h4>
             {school.schoolName && (
-              <p className="text-xs text-muted-foreground">{school.schoolName}</p>
+              <p className="text-xs" style={{ color: "var(--text-muted)" }}>{school.schoolName}</p>
             )}
           </div>
         </div>
         <button
           type="button"
           onClick={onRemove}
-          className="flex items-center gap-1.5 text-xs text-destructive hover:text-destructive/80 transition-colors"
+          className="flex items-center gap-1.5 text-xs font-medium transition-colors"
+          style={{ color: "var(--destructive-color)" }}
         >
           <Trash2 className="w-3.5 h-3.5" />
           Remove
@@ -170,10 +171,18 @@ export function Step4EducationalBackground({ data, onChange, errors }: Step4Prop
         />
 
         {data.previousSchools.length === 0 && (
-          <div className="border border-dashed border-border/60 rounded-xl p-8 text-center mb-4">
-            <School className="w-8 h-8 text-muted-foreground/40 mx-auto mb-2" />
-            <p className="text-sm text-muted-foreground">No previous schools added yet.</p>
-            <p className="text-xs text-muted-foreground mt-0.5">Click the button below to add a school.</p>
+          <div
+            className="rounded-none p-8 text-center mb-4"
+            style={{ border: "1.5px dashed var(--border-mid)", background: "rgba(200,162,77,.03)" }}
+          >
+            <div
+              className="w-12 h-12 rounded-none flex items-center justify-center mx-auto mb-3"
+              style={{ background: "rgba(200,162,77,.08)" }}
+            >
+              <School className="w-6 h-6" style={{ color: "var(--gold)" }} />
+            </div>
+            <p className="text-sm font-medium" style={{ color: "var(--text-secondary)" }}>No previous schools added yet.</p>
+            <p className="text-xs mt-1" style={{ color: "var(--text-muted)" }}>Click the button below to add a school.</p>
           </div>
         )}
 
@@ -195,7 +204,8 @@ export function Step4EducationalBackground({ data, onChange, errors }: Step4Prop
         <button
           type="button"
           onClick={addSchool}
-          className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-[#A07830] border border-[#C9A84C]/40 rounded-lg hover:bg-[#C9A84C]/10 hover:border-[#C9A84C] transition-all duration-200"
+          className="btn-ghost text-sm"
+          style={{ color: "var(--gold-dark)" }}
         >
           <Plus className="w-4 h-4" />
           Add Previous School
@@ -211,7 +221,10 @@ export function Step4EducationalBackground({ data, onChange, errors }: Step4Prop
         />
 
         <div className="space-y-6">
-          <div className="p-5 rounded-xl bg-muted/20 border border-border/40 space-y-4">
+          <div
+            className="p-5 rounded-none space-y-4"
+            style={{ background: "rgba(200,162,77,.03)", border: "1px solid var(--border-soft)" }}
+          >
             <RadioGroupField
               label="Does the student have any identified learning difficulties or special educational needs?"
               required
@@ -239,7 +252,10 @@ export function Step4EducationalBackground({ data, onChange, errors }: Step4Prop
             )}
           </div>
 
-          <div className="p-5 rounded-xl bg-muted/20 border border-border/40 space-y-4">
+          <div
+            className="p-5 rounded-none space-y-4"
+            style={{ background: "rgba(200,162,77,.03)", border: "1px solid var(--border-soft)" }}
+          >
             <RadioGroupField
               label="Has the student received any specialist support or intervention services?"
               required

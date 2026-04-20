@@ -11,8 +11,8 @@ export function PremiumHeader() {
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-gold to-gold-dark flex items-center justify-center">
-              <BookOpen className="w-5 h-5 text-white" />
+            <div className="w-10 h-10 rounded-none bg-gold flex items-center justify-center border border-gold-dark">
+              <BookOpen className="w-5 h-5 text-navy" />
             </div>
             <div className="hidden sm:block">
               <h1 className="font-serif text-lg font-semibold text-charcoal">SHOMOUKH</h1>

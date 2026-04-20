@@ -1,7 +1,6 @@
 "use client"
 
-import { cn } from "@/lib/utils"
-import { AlertCircle, Info } from "lucide-react"
+import { AlertCircle, Info, ChevronLeft, ChevronRight, Loader2, Save } from "lucide-react"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -13,30 +12,38 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
+/* ────────────────────────────────── FormField ── */
 interface FormFieldProps {
-  label: string
+  label:     string
   required?: boolean
-  error?: string
-  hint?: string
-  children: React.ReactNode
+  error?:    string
+  hint?:     string
+  children:  React.ReactNode
   className?: string
 }
 
 export function FormField({ label, required, error, hint, children, className }: FormFieldProps) {
   return (
-    <div className={cn("flex flex-col gap-1.5", className)}>
-      <Label className={cn("text-sm font-medium text-foreground/90", required && "after:content-['*'] after:ml-0.5 after:text-[#C9A84C]")}>
+    <div className={`flex flex-col gap-1.5 ${className ?? ""}`}>
+      <Label
+        className="text-sm font-semibold"
+        style={{ color: "var(--text-secondary)" }}
+      >
         {label}
+        {required && <span style={{ color: "var(--gold)", marginLeft: 3 }}>*</span>}
       </Label>
       {children}
       {hint && !error && (
-        <div className="flex items-start gap-1.5 text-xs text-muted-foreground bg-muted/50 rounded-md px-3 py-2">
-          <Info className="w-3.5 h-3.5 mt-0.5 shrink-0 text-[#C9A84C]" />
+        <div
+          className="flex items-start gap-1.5 text-xs rounded-lg px-3 py-2"
+          style={{ background: "rgba(200,162,77,.07)", color: "var(--text-muted)", border: "1px solid rgba(200,162,77,.15)" }}
+        >
+          <Info className="w-3.5 h-3.5 mt-0.5 shrink-0" style={{ color: "var(--gold)" }} />
           <span>{hint}</span>
         </div>
       )}
       {error && (
-        <div className="flex items-start gap-1.5 text-xs text-destructive">
+        <div className="flex items-start gap-1.5 text-xs" style={{ color: "var(--destructive-color)" }}>
           <AlertCircle className="w-3.5 h-3.5 mt-0.5 shrink-0" />
           <span>{error}</span>
         </div>
@@ -45,145 +52,157 @@ export function FormField({ label, required, error, hint, children, className }:
   )
 }
 
+/* ────────────────────────────────── StyledInput ── */
 interface StyledInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   error?: boolean
 }
 
-export function StyledInput({ className, error, ...props }: StyledInputProps) {
+export function StyledInput({ className, error, style, ...props }: StyledInputProps) {
   return (
     <Input
       {...props}
-      className={cn(
-        "h-11 bg-background border-border/80 rounded-lg text-sm transition-all duration-200",
-        "focus-visible:ring-2 focus-visible:ring-[#C9A84C]/50 focus-visible:border-[#C9A84C]",
-        "placeholder:text-muted-foreground/50",
-        error && "border-destructive focus-visible:ring-destructive/30",
-        className
-      )}
+      className={className}
+      style={{
+        height: "2.75rem",
+        borderRadius: "0.625rem",
+        border: `1.5px solid ${error ? "var(--destructive-color)" : "var(--border-soft)"}`,
+        background: "#fff",
+        fontSize: ".875rem",
+        color: "var(--text-primary)",
+        transition: "border-color .2s, box-shadow .2s",
+        boxShadow: error ? "0 0 0 3px rgba(220,38,38,.1)" : "none",
+        ...style,
+      }}
     />
   )
 }
 
+/* ────────────────────────────────── StyledTextarea ── */
 interface StyledTextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
   error?: boolean
 }
 
-export function StyledTextarea({ className, error, ...props }: StyledTextareaProps) {
+export function StyledTextarea({ className, error, style, ...props }: StyledTextareaProps) {
   return (
     <Textarea
       {...props}
-      className={cn(
-        "bg-background border-border/80 rounded-lg text-sm transition-all duration-200 resize-none",
-        "focus-visible:ring-2 focus-visible:ring-[#C9A84C]/50 focus-visible:border-[#C9A84C]",
-        "placeholder:text-muted-foreground/50",
-        error && "border-destructive focus-visible:ring-destructive/30",
-        className
-      )}
+      className={`resize-none ${className ?? ""}`}
+      style={{
+        borderRadius: "0.625rem",
+        border: `1.5px solid ${error ? "var(--destructive-color)" : "var(--border-soft)"}`,
+        background: "#fff",
+        fontSize: ".875rem",
+        color: "var(--text-primary)",
+        transition: "border-color .2s, box-shadow .2s",
+        ...style,
+      }}
     />
   )
 }
 
+/* ────────────────────────────────── StyledSelect ── */
 interface StyledSelectProps {
-  value: string
-  onValueChange: (val: string) => void
-  options: string[]
-  placeholder?: string
-  error?: boolean
-  className?: string
-  disabled?: boolean
+  value:          string
+  onValueChange:  (val: string) => void
+  options:        string[]
+  placeholder?:   string
+  error?:         boolean
+  className?:     string
+  disabled?:      boolean
 }
 
 export function StyledSelect({
-  value,
-  onValueChange,
-  options,
-  placeholder = "Select an option",
-  error,
-  className,
-  disabled,
+  value, onValueChange, options, placeholder = "Select an option", error, className, disabled,
 }: StyledSelectProps) {
   return (
     <Select value={value} onValueChange={onValueChange} disabled={disabled}>
       <SelectTrigger
-        className={cn(
-          "h-11 bg-background border-border/80 rounded-lg text-sm transition-all duration-200",
-          "focus:ring-2 focus:ring-[#C9A84C]/50 focus:border-[#C9A84C]",
-          !value && "text-muted-foreground/50",
-          error && "border-destructive",
-          className
-        )}
+        className={className}
+        style={{
+          height: "2.75rem",
+          borderRadius: "0.625rem",
+          border: `1.5px solid ${error ? "var(--destructive-color)" : "var(--border-soft)"}`,
+          background: "#fff",
+          fontSize: ".875rem",
+          color: value ? "var(--text-primary)" : "var(--text-muted)",
+          transition: "border-color .2s, box-shadow .2s",
+        }}
       >
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
-      <SelectContent className="max-h-64">
+      <SelectContent className="max-h-60">
         {options.map((opt) => (
-          <SelectItem key={opt} value={opt} className="text-sm">
-            {opt}
-          </SelectItem>
+          <SelectItem key={opt} value={opt} className="text-sm">{opt}</SelectItem>
         ))}
       </SelectContent>
     </Select>
   )
 }
 
+/* ────────────────────────────────── SectionHeader ── */
 interface SectionHeaderProps {
-  title: string
+  title:        string
   description?: string
-  icon?: React.ReactNode
+  icon?:        React.ReactNode
 }
 
 export function SectionHeader({ title, description, icon }: SectionHeaderProps) {
   return (
-    <div className="flex items-start gap-3 pb-4 border-b border-border/60 mb-6">
+    <div
+      className="flex items-start gap-3 pb-4 mb-5"
+      style={{ borderBottom: "1px solid var(--border-soft)" }}
+    >
       {icon && (
-        <div className="w-10 h-10 rounded-xl bg-[#C9A84C]/10 flex items-center justify-center shrink-0 mt-0.5">
-          <div className="text-[#C9A84C]">{icon}</div>
+        <div
+          className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 mt-0.5"
+          style={{ background: "rgba(200,162,77,.12)" }}
+        >
+          <span style={{ color: "var(--gold)" }}>{icon}</span>
         </div>
       )}
       <div>
-        <h2 className="text-lg font-semibold text-foreground font-serif">{title}</h2>
+        <h2 className="text-base font-bold font-serif" style={{ color: "var(--text-primary)" }}>{title}</h2>
         {description && (
-          <p className="text-sm text-muted-foreground mt-0.5 leading-relaxed">{description}</p>
+          <p className="text-sm mt-0.5 leading-relaxed" style={{ color: "var(--text-muted)" }}>{description}</p>
         )}
       </div>
     </div>
   )
 }
 
+/* ────────────────────────────────── RadioGroupField ── */
 interface RadioGroupFieldProps {
-  label: string
+  label:    string
   required?: boolean
-  options: { value: string; label: string }[]
-  value: string
+  options:  { value: string; label: string }[]
+  value:    string
   onChange: (val: string) => void
-  error?: string
+  error?:   string
 }
 
 export function RadioGroupField({ label, required, options, value, onChange, error }: RadioGroupFieldProps) {
   return (
     <div className="flex flex-col gap-2">
-      <Label className={cn("text-sm font-medium text-foreground/90", required && "after:content-['*'] after:ml-0.5 after:text-[#C9A84C]")}>
+      <Label className="text-sm font-semibold" style={{ color: "var(--text-secondary)" }}>
         {label}
+        {required && <span style={{ color: "var(--gold)", marginLeft: 3 }}>*</span>}
       </Label>
-      <div className="flex flex-wrap gap-3">
+      <div className="flex flex-wrap gap-2.5">
         {options.map((opt) => (
           <label
             key={opt.value}
-            className={cn(
-              "flex items-center gap-2.5 px-4 py-2.5 rounded-lg border cursor-pointer transition-all duration-200 text-sm font-medium",
-              value === opt.value
-                ? "border-[#C9A84C] bg-[#C9A84C]/10 text-[#A07830]"
-                : "border-border/80 bg-background text-foreground hover:border-[#C9A84C]/50 hover:bg-[#C9A84C]/5"
-            )}
+            className={`radio-pill ${value === opt.value ? "active" : ""}`}
           >
+            {/* Custom radio dot */}
             <div
-              className={cn(
-                "w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 transition-all",
-                value === opt.value ? "border-[#C9A84C]" : "border-border"
-              )}
+              className="w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0"
+              style={{
+                borderColor: value === opt.value ? "var(--gold)" : "var(--border-mid)",
+                transition: "border-color .2s",
+              }}
             >
               {value === opt.value && (
-                <div className="w-2 h-2 rounded-full bg-[#C9A84C]" />
+                <div className="w-2 h-2 rounded-full" style={{ background: "var(--gold)" }} />
               )}
             </div>
             <input
@@ -198,7 +217,7 @@ export function RadioGroupField({ label, required, options, value, onChange, err
         ))}
       </div>
       {error && (
-        <div className="flex items-start gap-1.5 text-xs text-destructive">
+        <div className="flex items-start gap-1.5 text-xs" style={{ color: "var(--destructive-color)" }}>
           <AlertCircle className="w-3.5 h-3.5 mt-0.5 shrink-0" />
           <span>{error}</span>
         </div>
@@ -207,33 +226,22 @@ export function RadioGroupField({ label, required, options, value, onChange, err
   )
 }
 
+/* ────────────────────────────────── CheckboxField ── */
 interface CheckboxFieldProps {
-  label: string | React.ReactNode
-  checked: boolean
-  onChange: (checked: boolean) => void
-  error?: string
+  label:        string | React.ReactNode
+  checked:      boolean
+  onChange:     (checked: boolean) => void
+  error?:       string
   description?: string
 }
 
 export function CheckboxField({ label, checked, onChange, error, description }: CheckboxFieldProps) {
   return (
     <div className="flex flex-col gap-1">
-      <label
-        className={cn(
-          "flex items-start gap-3 p-4 rounded-xl border cursor-pointer transition-all duration-200",
-          checked
-            ? "border-[#C9A84C] bg-[#C9A84C]/5"
-            : "border-border/80 bg-background hover:border-[#C9A84C]/40 hover:bg-[#C9A84C]/5"
-        )}
-      >
-        <div
-          className={cn(
-            "w-5 h-5 rounded flex items-center justify-center border-2 shrink-0 mt-0.5 transition-all",
-            checked ? "border-[#C9A84C] bg-[#C9A84C]" : "border-border"
-          )}
-        >
+      <label className={`checkbox-tile ${checked ? "active" : ""}`}>
+        <div className={`checkbox-box ${checked ? "checked" : ""}`}>
           {checked && (
-            <svg className="w-3 h-3 text-[#1E1E2E]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="var(--navy)" strokeWidth={3}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
             </svg>
           )}
@@ -245,12 +253,14 @@ export function CheckboxField({ label, checked, onChange, error, description }: 
           onChange={(e) => onChange(e.target.checked)}
         />
         <div>
-          <div className="text-sm font-medium text-foreground">{label}</div>
-          {description && <div className="text-xs text-muted-foreground mt-0.5 leading-relaxed">{description}</div>}
+          <div className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>{label}</div>
+          {description && (
+            <div className="text-xs mt-0.5 leading-relaxed" style={{ color: "var(--text-muted)" }}>{description}</div>
+          )}
         </div>
       </label>
       {error && (
-        <div className="flex items-start gap-1.5 text-xs text-destructive ml-1">
+        <div className="flex items-start gap-1.5 text-xs ml-1" style={{ color: "var(--destructive-color)" }}>
           <AlertCircle className="w-3.5 h-3.5 mt-0.5 shrink-0" />
           <span>{error}</span>
         </div>
@@ -259,34 +269,37 @@ export function CheckboxField({ label, checked, onChange, error, description }: 
   )
 }
 
+/* ────────────────────────────────── FormGrid ── */
 interface FormGridProps {
   children: React.ReactNode
-  cols?: 1 | 2 | 3
+  cols?:    1 | 2 | 3
 }
 
 export function FormGrid({ children, cols = 2 }: FormGridProps) {
   return (
     <div
-      className={cn(
-        "grid gap-5",
-        cols === 1 && "grid-cols-1",
-        cols === 2 && "grid-cols-1 md:grid-cols-2",
-        cols === 3 && "grid-cols-1 md:grid-cols-2 lg:grid-cols-3",
-      )}
+      className="grid gap-5"
+      style={{
+        gridTemplateColumns:
+          cols === 1 ? "1fr" :
+          cols === 3 ? "repeat(auto-fit, minmax(200px, 1fr))" :
+          "repeat(auto-fit, minmax(240px, 1fr))",
+      }}
     >
       {children}
     </div>
   )
 }
 
+/* ────────────────────────────────── FormNavigation ── */
 interface FormNavigationProps {
-  currentStep: number
-  totalSteps: number
-  onPrevious: () => void
-  onNext: () => void
-  onSaveDraft?: () => void
+  currentStep:   number
+  totalSteps:    number
+  onPrevious:    () => void
+  onNext:        () => void
+  onSaveDraft?:  () => void
   isSubmitting?: boolean
-  nextLabel?: string
+  nextLabel?:    string
 }
 
 export function FormNavigation({
@@ -301,44 +314,59 @@ export function FormNavigation({
   const isLastStep = currentStep === totalSteps
 
   return (
-    <div className="flex items-center justify-between pt-6 mt-6 border-t border-border/60">
-      <div className="flex items-center gap-2">
-        <span className="text-xs text-muted-foreground">
-          <span className="text-[#C9A84C] font-semibold">*</span> denotes Required Fields
-        </span>
-      </div>
-      <div className="flex items-center gap-3">
-        {onSaveDraft && (
+    <div
+      className="mt-8 border-t border-[var(--border-soft)] pt-8"
+    >
+      <p className="mb-4 text-xs" style={{ color: "var(--text-muted)" }}>
+        <span style={{ color: "var(--gold)", fontWeight: 700 }}>*</span> Required fields
+      </p>
+
+      <div className="flex flex-col gap-4 sm:gap-6 lg:grid lg:grid-cols-[1fr_auto_1fr] lg:items-center">
+        <div className="order-2 flex flex-col justify-start gap-2 sm:flex-row sm:flex-wrap sm:items-center lg:order-1">
           <button
             type="button"
             onClick={onSaveDraft}
-            className="px-4 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground border border-border/80 rounded-lg hover:bg-muted/50 transition-all duration-200"
+            className="btn-ghost w-full justify-center text-sm sm:w-auto"
+            style={{ borderColor: "rgba(200,162,77,.45)", color: "var(--gold-dark)" }}
           >
+            <Save className="w-4 h-4" />
             Save Draft
           </button>
-        )}
-        {currentStep > 1 && (
+          {currentStep > 1 && (
+            <button type="button" onClick={onPrevious} className="btn-ghost w-full justify-center text-sm sm:w-auto">
+              <ChevronLeft className="w-4 h-4" />
+              Previous
+            </button>
+          )}
+        </div>
+
+        <p
+          className="text-center text-xs order-1 lg:order-2 lg:justify-self-center"
+          style={{ color: "var(--text-muted)" }}
+        >
+          Your progress will be saved automatically.
+        </p>
+
+        <div className="order-3 flex justify-end lg:justify-self-end">
           <button
             type="button"
-            onClick={onPrevious}
-            className="px-5 py-2.5 text-sm font-medium text-foreground border border-border/80 rounded-lg hover:bg-muted/50 transition-all duration-200"
+            onClick={onNext}
+            disabled={isSubmitting}
+            className="btn-gold w-full justify-center sm:w-auto"
           >
-            Previous
+            {isSubmitting ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin text-white" />
+                Submitting…
+              </>
+            ) : (
+              <>
+                {nextLabel || (isLastStep ? "Submit Application" : "Save & Next")}
+                {!isLastStep && <ChevronRight className="w-4 h-4" />}
+              </>
+            )}
           </button>
-        )}
-        <button
-          type="button"
-          onClick={onNext}
-          disabled={isSubmitting}
-          className={cn(
-            "px-6 py-2.5 text-sm font-semibold rounded-lg transition-all duration-200",
-            "bg-[#C9A84C] hover:bg-[#A07830] text-[#1E1E2E]",
-            "shadow-md shadow-[#C9A84C]/20 hover:shadow-lg hover:shadow-[#C9A84C]/30",
-            "disabled:opacity-60 disabled:cursor-not-allowed"
-          )}
-        >
-          {isSubmitting ? "Submitting..." : (nextLabel || (isLastStep ? "Submit Application" : "Save & Next"))}
-        </button>
+        </div>
       </div>
     </div>
   )

@@ -35,18 +35,18 @@ function EmergencyContactCard({ contact, index, onChange, onRemove, errors }: Em
   const prefix = `contacts.${index}`
 
   return (
-    <div className="border border-border/60 rounded-2xl overflow-hidden">
-      <div className="flex items-center justify-between px-5 py-4 bg-muted/30 border-b border-border/40">
+    <div className="rounded-none overflow-hidden" style={{ border: "1px solid var(--border-soft)" }}>
+      <div className="flex items-center justify-between px-5 py-4 border-b" style={{ background: "rgba(220,38,38,.04)", borderColor: "var(--border-soft)" }}>
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-red-50 border border-red-100 flex items-center justify-center">
-            <ShieldAlert className="w-4 h-4 text-red-400" />
+          <div className="w-8 h-8 rounded-none flex items-center justify-center" style={{ background: "rgba(220,38,38,.08)", border: "1px solid rgba(220,38,38,.15)" }}>
+            <ShieldAlert className="w-4 h-4" style={{ color: "#ef4444" }} />
           </div>
           <div>
-            <h4 className="text-sm font-semibold text-foreground">
+            <h4 className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
               Emergency Contact {index + 1}
             </h4>
             {contact.name && (
-              <p className="text-xs text-muted-foreground">{contact.name} — {contact.relationship}</p>
+              <p className="text-xs" style={{ color: "var(--text-muted)" }}>{contact.name} — {contact.relationship}</p>
             )}
           </div>
         </div>
@@ -54,7 +54,8 @@ function EmergencyContactCard({ contact, index, onChange, onRemove, errors }: Em
           <button
             type="button"
             onClick={onRemove}
-            className="flex items-center gap-1.5 text-xs text-destructive hover:text-destructive/80 transition-colors"
+            className="flex items-center gap-1.5 text-xs font-medium transition-colors"
+            style={{ color: "var(--destructive-color)" }}
           >
             <Trash2 className="w-3.5 h-3.5" />
             Remove
@@ -189,7 +190,8 @@ export function Step3EmergencyData({ data, onChange, errors }: Step3Props) {
         <button
           type="button"
           onClick={addContact}
-          className="mt-4 flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-[#A07830] border border-[#C9A84C]/40 rounded-lg hover:bg-[#C9A84C]/10 hover:border-[#C9A84C] transition-all duration-200"
+          className="mt-4 btn-ghost text-sm"
+          style={{ color: "var(--gold-dark)" }}
         >
           <Plus className="w-4 h-4" />
           Add Emergency Contact

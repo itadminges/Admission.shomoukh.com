@@ -163,7 +163,7 @@ function ApplicationDetail({ application, onClose, onStatusChange }: Application
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-end">
-      <div className="fixed inset-0 bg-black/30 backdrop-blur-sm" onClick={onClose} />
+      <div className="fixed inset-0 bg-black/40" onClick={onClose} />
       <div className="relative w-full max-w-2xl h-full bg-card border-l border-border shadow-2xl overflow-y-auto">
         {/* Header */}
         <div className="sticky top-0 z-10 bg-card border-b border-border px-6 py-4 flex items-center justify-between">
@@ -174,11 +174,11 @@ function ApplicationDetail({ application, onClose, onStatusChange }: Application
             <p className="text-xs text-muted-foreground">{referenceNumber}</p>
           </div>
           <div className="flex items-center gap-3">
-            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${cfg.color}`}>
-              <span className={`w-1.5 h-1.5 rounded-full ${cfg.dot}`} />
+            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-none text-xs font-medium border ${cfg.color}`}>
+              <span className={`w-1.5 h-1.5 rounded-none ${cfg.dot}`} />
               {cfg.label}
             </span>
-            <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-muted transition-colors">
+            <button onClick={onClose} className="p-1.5 rounded-none hover:bg-muted transition-colors">
               <X className="w-4 h-4" />
             </button>
           </div>
@@ -191,7 +191,7 @@ function ApplicationDetail({ application, onClose, onStatusChange }: Application
               <button
                 key={s}
                 onClick={() => onStatusChange(application.id, s)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${
+                className={`px-3 py-1.5 rounded-none text-xs font-semibold border transition-all ${
                   status === s
                     ? STATUS_CONFIG[s].color
                     : "bg-background border-border text-muted-foreground hover:border-foreground/30"
@@ -217,7 +217,7 @@ function ApplicationDetail({ application, onClose, onStatusChange }: Application
                 ["Grade", studentData.anticipatedGradeOfEntry],
                 ["Enrollment Year", studentData.enrollmentYear],
               ].map(([label, value]) => (
-                <div key={label} className="bg-muted/30 rounded-lg px-3 py-2">
+                <div key={label} className="bg-muted/30 rounded-none px-3 py-2">
                   <p className="text-xs text-muted-foreground">{label}</p>
                   <p className="text-sm font-medium text-foreground mt-0.5">{value || "—"}</p>
                 </div>
@@ -230,7 +230,7 @@ function ApplicationDetail({ application, onClose, onStatusChange }: Application
             <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Family</h4>
             <div className="space-y-3">
               {familyData.parents.map((parent) => (
-                <div key={parent.id} className="bg-muted/30 rounded-lg px-3 py-2">
+                <div key={parent.id} className="bg-muted/30 rounded-none px-3 py-2">
                   <p className="text-sm font-medium">{parent.givenNames} {parent.familyName}</p>
                   <p className="text-xs text-muted-foreground">{parent.relationship} · {parent.email} · {parent.mobilePhone}</p>
                 </div>
@@ -250,7 +250,7 @@ function ApplicationDetail({ application, onClose, onStatusChange }: Application
                 ["Allergies", emergencyData.allergies],
                 ["Medications", emergencyData.medications],
               ].map(([label, value]) => (
-                <div key={label} className="bg-muted/30 rounded-lg px-3 py-2">
+                <div key={label} className="bg-muted/30 rounded-none px-3 py-2">
                   <p className="text-xs text-muted-foreground">{label}</p>
                   <p className="text-sm font-medium text-foreground mt-0.5">{value || "—"}</p>
                 </div>
@@ -262,7 +262,7 @@ function ApplicationDetail({ application, onClose, onStatusChange }: Application
           <section>
             <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Education</h4>
             <div className="grid grid-cols-2 gap-3">
-              <div className="bg-muted/30 rounded-lg px-3 py-2">
+              <div className="bg-muted/30 rounded-none px-3 py-2">
                 <p className="text-xs text-muted-foreground">Previous Schools</p>
                 <p className="text-sm font-medium mt-0.5">
                   {educationalBackground.previousSchools.length > 0
@@ -270,7 +270,7 @@ function ApplicationDetail({ application, onClose, onStatusChange }: Application
                     : "None listed"}
                 </p>
               </div>
-              <div className="bg-muted/30 rounded-lg px-3 py-2">
+              <div className="bg-muted/30 rounded-none px-3 py-2">
                 <p className="text-xs text-muted-foreground">Learning Difficulties</p>
                 <p className="text-sm font-medium mt-0.5">
                   {educationalBackground.hasLearningDifficulties ? "Yes" : "No"}
@@ -323,7 +323,7 @@ export function AdminDashboard() {
       <header className="bg-[#1E1E2E] border-b border-[#2D2D3F]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-[#C9A84C]/20 flex items-center justify-center">
+            <div className="w-9 h-9 rounded-none bg-[#C9A84C]/20 flex items-center justify-center">
               <GraduationCap className="w-5 h-5 text-[#C9A84C]" />
             </div>
             <div>
@@ -332,11 +332,11 @@ export function AdminDashboard() {
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <button className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-[#C9A84C] border border-[#C9A84C]/30 rounded-lg hover:bg-[#C9A84C]/10 transition-colors">
+            <button className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-[#C9A84C] border border-[#C9A84C]/30 rounded-none hover:bg-[#C9A84C]/10 transition-colors">
               <Download className="w-3.5 h-3.5" />
               Export CSV
             </button>
-            <div className="w-8 h-8 rounded-full bg-[#C9A84C] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-none bg-[#C9A84C] flex items-center justify-center">
               <span className="text-xs font-bold text-[#1E1E2E]">AD</span>
             </div>
           </div>
@@ -347,10 +347,10 @@ export function AdminDashboard() {
         {/* Stats Grid */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {statCards.map((card) => (
-            <div key={card.label} className="bg-card border border-border/60 rounded-2xl p-5">
+            <div key={card.label} className="bg-card border border-border/60 rounded-none p-5">
               <div className="flex items-center justify-between mb-3">
                 <p className="text-xs font-medium text-muted-foreground">{card.label}</p>
-                <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${card.color}`}>
+                <div className={`w-9 h-9 rounded-none flex items-center justify-center ${card.color}`}>
                   {card.icon}
                 </div>
               </div>
@@ -368,7 +368,7 @@ export function AdminDashboard() {
               placeholder="Search by name or reference number..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full h-10 pl-9 pr-4 text-sm bg-background border border-border/80 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/50 focus:border-[#C9A84C] transition-all"
+              className="w-full h-10 pl-9 pr-4 text-sm bg-background border border-border/80 rounded-none focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/50 focus:border-[#C9A84C] transition-all"
             />
           </div>
           <div className="flex gap-2 flex-wrap">
@@ -376,7 +376,7 @@ export function AdminDashboard() {
               <button
                 key={s}
                 onClick={() => setStatusFilter(s)}
-                className={`px-3 py-2 rounded-lg text-xs font-semibold border transition-all capitalize ${
+                className={`px-3 py-2 rounded-none text-xs font-semibold border transition-all capitalize ${
                   statusFilter === s
                     ? "bg-[#C9A84C] border-[#C9A84C] text-[#1E1E2E]"
                     : "bg-background border-border/80 text-muted-foreground hover:border-[#C9A84C]/50"
@@ -389,7 +389,7 @@ export function AdminDashboard() {
         </div>
 
         {/* Applications Table */}
-        <div className="bg-card border border-border/60 rounded-2xl overflow-hidden">
+        <div className="bg-card border border-border/60 rounded-none overflow-hidden">
           <div className="px-5 py-4 border-b border-border/40 flex items-center justify-between">
             <h2 className="text-sm font-semibold text-foreground">Applications ({filtered.length})</h2>
           </div>
@@ -415,7 +415,7 @@ export function AdminDashboard() {
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2.5">
-                          <div className="w-7 h-7 rounded-full bg-[#C9A84C]/15 flex items-center justify-center shrink-0">
+                          <div className="w-7 h-7 rounded-none bg-[#C9A84C]/15 flex items-center justify-center shrink-0">
                             <span className="text-xs font-bold text-[#A07830]">
                               {studentData.givenNames[0]}{studentData.familyName[0]}
                             </span>
@@ -441,8 +441,8 @@ export function AdminDashboard() {
                         {new Date(app.submittedAt).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}
                       </td>
                       <td className="px-4 py-3">
-                        <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium border whitespace-nowrap ${cfg.color}`}>
-                          <span className={`w-1.5 h-1.5 rounded-full ${cfg.dot}`} />
+                        <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-none text-xs font-medium border whitespace-nowrap ${cfg.color}`}>
+                          <span className={`w-1.5 h-1.5 rounded-none ${cfg.dot}`} />
                           {cfg.label}
                         </span>
                       </td>

@@ -42,12 +42,12 @@ function ParentCard({ parent, index, onChange, onRemove, errors, prefix }: Paren
   }
 
   return (
-    <div className="border border-border/60 rounded-2xl overflow-hidden">
+    <div className="border rounded-none overflow-hidden" style={{ borderColor: "var(--border-soft)" }}>
       {/* Card header */}
-      <div className="flex items-center justify-between px-5 py-4 bg-muted/30 border-b border-border/40">
+      <div className="flex items-center justify-between px-5 py-4 border-b" style={{ background: "rgba(200,162,77,.04)", borderColor: "var(--border-soft)" }}>
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-[#C9A84C]/15 flex items-center justify-center">
-            <span className="text-sm font-bold text-[#A07830]">{index + 1}</span>
+          <div className="w-8 h-8 rounded-none flex items-center justify-center" style={{ background: "rgba(200,162,77,.15)" }}>
+            <span className="text-sm font-bold" style={{ color: "var(--gold-dark)" }}>{index + 1}</span>
           </div>
           <div>
             <h4 className="text-sm font-semibold text-foreground">
@@ -62,7 +62,8 @@ function ParentCard({ parent, index, onChange, onRemove, errors, prefix }: Paren
           <button
             type="button"
             onClick={onRemove}
-            className="flex items-center gap-1.5 text-xs text-destructive hover:text-destructive/80 transition-colors"
+            className="flex items-center gap-1.5 text-xs font-medium transition-colors"
+            style={{ color: "var(--destructive-color)" }}
           >
             <Trash2 className="w-3.5 h-3.5" />
             Remove
@@ -267,7 +268,8 @@ export function Step2FamilyData({ data, onChange, errors }: Step2Props) {
         <button
           type="button"
           onClick={addParent}
-          className="mt-4 flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-[#A07830] border border-[#C9A84C]/40 rounded-lg hover:bg-[#C9A84C]/10 hover:border-[#C9A84C] transition-all duration-200"
+          className="mt-4 btn-ghost text-sm"
+          style={{ color: "var(--gold-dark)" }}
         >
           <Plus className="w-4 h-4" />
           Add Another Parent / Guardian
@@ -276,11 +278,9 @@ export function Step2FamilyData({ data, onChange, errors }: Step2Props) {
 
       {/* Family Circumstances */}
       <div>
-        <h3 className="text-sm font-semibold text-foreground/70 uppercase tracking-wider mb-4 flex items-center gap-2">
-          <div className="h-px flex-1 bg-border/60" />
+        <div className="section-divider">
           <span>Family Circumstances</span>
-          <div className="h-px flex-1 bg-border/60" />
-        </h3>
+        </div>
         <FormGrid cols={2}>
           <FormField label="Marital Status" required error={errors.maritalStatus}>
             <StyledSelect
