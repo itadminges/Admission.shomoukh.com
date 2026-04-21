@@ -16,7 +16,7 @@ export function PremiumHeader() {
             </div>
             <div className="hidden sm:block">
               <h1 className="font-serif text-lg font-semibold text-charcoal">SHOMOUKH</h1>
-              <p className="text-xs text-text-muted">NURSERY</p>
+              <p className="text-xs text-text-muted">EARLY CHILDHOOD EDUCATION</p>
             </div>
           </Link>
 

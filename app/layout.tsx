@@ -22,11 +22,11 @@ export const viewport: Viewport = {
 }
 
 export const metadata: Metadata = {
-  title: 'Apply to Shomoukh Nursery | Online enrolment (Oman)',
+  title: 'Apply to Shomoukh Early Childhood Education | Online enrolment (Oman)',
   description:
     'Apply for a place at Shomoukh Early Childhood Education in Muscat. One secure form walks you through child details, family contacts, health information, and consent — save progress and submit when you are ready.',
   keywords: [
-    'Shomoukh Nursery',
+    'Shomoukh Early Childhood Education',
     'Muscat nursery admission',
     'early childhood Oman',
     'school enrolment Oman',

@@ -17,7 +17,7 @@ export function EnrolmentHeader() {
         <Link href="/" className="flex min-w-0 items-center">
           <Image
             src="/Shomoukh-01.png"
-            alt="Shomoukh Nursery"
+            alt="Shomoukh Early Childhood Education"
             width={420}
             height={108}
             className="h-12 w-auto max-w-[min(82vw,420px)] object-contain sm:h-14 lg:h-16"

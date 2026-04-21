@@ -20,7 +20,7 @@ export function EnrolmentFooter() {
             <Link href="/" className="inline-flex shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--gold)] focus-visible:ring-offset-2">
               <Image
                 src="/Shomoukh-01.png"
-                alt="Shomoukh Nursery"
+                alt="Shomoukh Early Childhood Education"
                 width={440}
                 height={113}
                 className="h-14 w-auto object-contain sm:h-16 md:h-[4.5rem]"
@@ -78,7 +78,7 @@ export function EnrolmentFooter() {
 
         <div className="mt-10 flex flex-col items-center gap-2 border-t border-[var(--border-soft)] pt-8 text-center">
           <p className="text-xs text-[var(--text-muted)]">
-            © {year} Shomoukh Nursery. All rights reserved.
+            © {year} Shomoukh Early Childhood Education. All rights reserved.
           </p>
           <p className="text-[11px] text-[var(--text-muted)]/90">
             This form is for enrolment only. What you send here is used for admission and safeguarding, in line with our

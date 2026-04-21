@@ -24,7 +24,7 @@ export function EnrollmentSidebar() {
 
         {/* Description */}
         <p className="text-sm sm:text-base text-charcoal-light leading-relaxed mb-6">
-          Begin your child&apos;s inspiring journey with Shomoukh Nursery, where learning blossoms through curiosity, creativity and care.
+          Begin your child&apos;s inspiring journey with Shomoukh Early Childhood Education, where learning blossoms through curiosity, creativity and care.
         </p>
 
         {/* Image */}

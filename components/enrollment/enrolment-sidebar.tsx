@@ -21,7 +21,7 @@ export function EnrolmentSidebar() {
         <div className="relative mt-6 aspect-[4/3] overflow-hidden rounded-md border border-[#dfd6c8] bg-white shadow-inner">
           <Image
             src="/images/enrolment-mockup-hero.png"
-            alt="Children learning at Shomoukh Nursery"
+            alt="Children learning at Shomoukh Early Childhood Education"
             fill
             className="object-cover"
             sizes="(max-width: 1024px) 100vw, 340px"
