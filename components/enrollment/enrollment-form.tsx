@@ -1,6 +1,8 @@
 "use client"
 
 import { useState, useCallback } from "react"
+import { useMutation } from "convex/react"
+import { api } from "@/convex/_generated/api"
 import { ProgressStepper, STEPS } from "@/components/enrollment/progress-stepper"
 import { FormNavigation } from "@/components/enrollment/form-components"
 import { Step1StudentData } from "@/components/enrollment/step1-student-data"
@@ -10,83 +12,82 @@ import { Step4EducationalBackground } from "@/components/enrollment/step4-educat
 import { Step5ConditionsWaiver } from "@/components/enrollment/step5-conditions-waiver"
 import { Step6Submit } from "@/components/enrollment/step6-submit"
 import { EnrolmentHeader } from "@/components/enrollment/enrolment-header"
+import { EnrolmentFooter } from "@/components/enrollment/enrolment-footer"
 import { EnrolmentSidebar } from "@/components/enrollment/enrolment-sidebar"
 import type { EnrollmentFormData, StudentData, FamilyData, EmergencyData, EducationalBackground, ConditionsWaiver } from "@/lib/enrollment-types"
 import { defaultFormData } from "@/lib/enrollment-types"
 
-const STEP_ESTIMATED = ["5 minutes", "8 minutes", "5 minutes", "6 minutes", "10 minutes", "4 minutes"]
+const STEP_ESTIMATED = ["~5 min", "~8 min", "~6 min", "~6 min", "~8 min", "~4 min"]
 
 const STEP_INTRO: Record<number, string> = {
-  1: "Tell us about your child — photo, identity, languages, and enrolment preferences.",
-  2: "Parent and guardian details, contact information, and home environment.",
-  3: "Medical contacts and people we can reach in an emergency.",
-  4: "Previous schooling and any learning or support needs.",
-  5: "Policies, declarations, and signatures required before submission.",
-  6: "Review everything once more, then submit your application.",
+  1: "Photo, legal name, languages, and which year and class you are applying for.",
+  2: "Parents or legal guardians: how we reach you, where you live, and who else is in the household picture.",
+  3: "Doctor details, allergies and medications, plus backup contacts if we cannot reach parents.",
+  4: "Previous schools (if any) and anything we should plan for around learning or extra support.",
+  5: "School policies in plain language — read, tick, and sign where indicated.",
+  6: "Quick sanity check on what you entered, then submit to admissions.",
 }
 
 /* ── validators ── */
 function validateStudentData(data: StudentData): Partial<Record<keyof StudentData, string>> {
   const e: Partial<Record<keyof StudentData, string>> = {}
-  if (!data.familyName.trim())         e.familyName           = "Family name is required."
-  if (!data.givenNames.trim())         e.givenNames           = "Given names are required."
-  if (!data.toBeKnownAs.trim())        e.toBeKnownAs          = "Preferred name is required."
-  if (!data.dateOfBirth)               e.dateOfBirth          = "Date of birth is required."
-  if (!data.nationality)               e.nationality          = "Nationality is required."
-  if (!data.gender)                    e.gender               = "Gender is required."
-  if (!data.firstLanguageSpoken)       e.firstLanguageSpoken  = "First language is required."
-  if (!data.levelOfEnglishSpoken)      e.levelOfEnglishSpoken = "English level is required."
-  if (!data.enrollmentYear)            e.enrollmentYear       = "Enrollment year is required."
-  if (!data.anticipatedGradeOfEntry)   e.anticipatedGradeOfEntry = "Grade of entry is required."
+  if (!data.familyName.trim())         e.familyName           = "Please add the family name."
+  if (!data.givenNames.trim())         e.givenNames           = "Please add the given names."
+  if (!data.toBeKnownAs.trim())        e.toBeKnownAs          = "Tell us what we should call them day to day."
+  if (!data.dateOfBirth)               e.dateOfBirth          = "Choose a date of birth."
+  if (!data.nationality)               e.nationality          = "Select a nationality."
+  if (!data.gender)                    e.gender               = "Select an option."
+  if (!data.firstLanguageSpoken)       e.firstLanguageSpoken  = "Select the first language."
+  if (!data.levelOfEnglishSpoken)      e.levelOfEnglishSpoken = "Select an English level."
+  if (!data.enrollmentYear)            e.enrollmentYear       = "Choose the enrolment year."
+  if (!data.anticipatedGradeOfEntry)   e.anticipatedGradeOfEntry = "Choose the grade or class."
   return e
 }
 function validateFamilyData(data: FamilyData): Record<string, string> {
   const e: Record<string, string> = {}
-  if (!data.maritalStatus)          e.maritalStatus = "Marital status is required."
-  if (!data.languageSpokenAtHome)   e.languageSpokenAtHome = "Language spoken at home is required."
+  if (!data.maritalStatus)          e.maritalStatus = "Select marital status."
+  if (!data.languageSpokenAtHome)   e.languageSpokenAtHome = "Which language is mainly spoken at home?"
   data.parents.forEach((p, i) => {
     const pre = `parents.${i}`
-    if (!p.familyName.trim()) e[`${pre}.familyName`] = "Family name is required."
-    if (!p.givenNames.trim()) e[`${pre}.givenNames`] = "Given names are required."
-    if (!p.nationality)       e[`${pre}.nationality`] = "Nationality is required."
-    if (!p.mobilePhone.trim())e[`${pre}.mobilePhone`] = "Mobile phone is required."
-    if (!p.email.trim())      e[`${pre}.email`]       = "Email is required."
-    if (!p.relationship)      e[`${pre}.relationship`]= "Relationship is required."
+    if (!p.familyName.trim()) e[`${pre}.familyName`] = "Family name is missing."
+    if (!p.givenNames.trim()) e[`${pre}.givenNames`] = "Given names are missing."
+    if (!p.nationality)       e[`${pre}.nationality`] = "Select a nationality."
+    if (!p.mobilePhone.trim())e[`${pre}.mobilePhone`] = "Mobile number is missing."
+    if (!p.email.trim())      e[`${pre}.email`]       = "Email is missing."
+    if (!p.relationship)      e[`${pre}.relationship`]= "How is this person related to the child?"
   })
   return e
 }
 function validateEmergencyData(data: EmergencyData): Record<string, string> {
   const e: Record<string, string> = {}
-  if (!data.doctorName.trim())  e.doctorName  = "Doctor name is required."
-  if (!data.doctorPhone.trim()) e.doctorPhone = "Doctor phone is required."
+  if (!data.doctorName.trim())  e.doctorName  = "Add the doctor or clinic name."
+  if (!data.doctorPhone.trim()) e.doctorPhone = "Add a phone number for the doctor."
   data.emergencyContacts.forEach((c, i) => {
     const pre = `contacts.${i}`
-    if (!c.name.trim())         e[`${pre}.name`]        = "Contact name is required."
-    if (!c.relationship)        e[`${pre}.relationship`]= "Relationship is required."
-    if (!c.mobilePhone.trim())  e[`${pre}.mobilePhone`] = "Mobile phone is required."
+    if (!c.name.trim())         e[`${pre}.name`]        = "Full name is missing."
+    if (!c.relationship)        e[`${pre}.relationship`]= "Relationship to the child?"
+    if (!c.mobilePhone.trim())  e[`${pre}.mobilePhone`] = "Mobile number is missing."
   })
   return e
 }
 function validateEducationalBackground(data: EducationalBackground): Record<string, string> {
   const e: Record<string, string> = {}
-  if (data.hasLearningDifficulties === null)  e.hasLearningDifficulties  = "Please select an option."
-  if (data.hasReceivedSpecialSupport === null) e.hasReceivedSpecialSupport = "Please select an option."
   data.previousSchools.forEach((s, i) => {
     const pre = `schools.${i}`
-    if (!s.schoolName.trim()) e[`${pre}.schoolName`] = "School name is required."
-    if (!s.country)           e[`${pre}.country`]    = "Country is required."
+    if (!s.schoolName.trim()) e[`${pre}.schoolName`] = "School name is missing."
+    if (!s.country)           e[`${pre}.country`]    = "Country is missing."
   })
   return e
 }
 function validateConditionsWaiver(data: ConditionsWaiver): Partial<Record<keyof ConditionsWaiver, string>> {
   const e: Partial<Record<keyof ConditionsWaiver, string>> = {}
-  if (!data.agreeToTerms)         e.agreeToTerms         = "You must agree to the terms."
-  if (!data.agreeToPhotoPolicy)   e.agreeToPhotoPolicy   = "You must acknowledge the photo policy."
-  if (!data.agreeToMedicalPolicy) e.agreeToMedicalPolicy = "You must authorize medical treatment."
-  if (!data.agreeToCodeOfConduct) e.agreeToCodeOfConduct = "You must agree to the code of conduct."
-  if (!data.declarationAccepted)  e.declarationAccepted  = "You must accept the declaration."
-  if (!data.parentSignatureName.trim()) e.parentSignatureName = "Signature name is required."
-  if (!data.signatureDate)        e.signatureDate        = "Date is required."
+  if (!data.agreeToTerms)         e.agreeToTerms         = "Please confirm you accept the enrolment terms."
+  if (!data.agreeToPhotoPolicy)   e.agreeToPhotoPolicy   = "Please confirm the photo and media policy."
+  if (!data.agreeToMedicalPolicy) e.agreeToMedicalPolicy = "Emergency medical care needs your consent."
+  if (!data.agreeToCodeOfConduct) e.agreeToCodeOfConduct = "Please confirm the code of conduct."
+  if (!data.declarationAccepted)  e.declarationAccepted  = "Please confirm the information is accurate."
+  if (!data.parentSignatureName.trim()) e.parentSignatureName = "Type the signing parent or guardian’s full name."
+  if (!data.signatureDate)        e.signatureDate        = "Today’s date, or the date you are signing."
   return e
 }
 
@@ -99,6 +100,9 @@ export function EnrollmentForm() {
   const [submitted, setSubmitted] = useState(false)
   const [referenceNumber, setReferenceNumber] = useState("")
   const [stepKey, setStepKey] = useState(0)
+  const [submitError, setSubmitError] = useState<string | null>(null)
+
+  const submitApplication = useMutation(api.applications.submit)
 
   const updateFormSection = useCallback(<K extends keyof EnrollmentFormData>(
     key: K,
@@ -134,12 +138,25 @@ export function EnrollmentForm() {
 
   const handleNext = async () => {
     if (currentStep === 6) {
+      setSubmitError(null)
       setIsSubmitting(true)
-      await new Promise((res) => setTimeout(res, 1800))
-      const ref = `SHM-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`
-      setReferenceNumber(ref)
-      setSubmitted(true)
-      setIsSubmitting(false)
+      try {
+        const result = await submitApplication({ formData })
+        setReferenceNumber(result.referenceNumber)
+        setSubmitted(true)
+        try {
+          localStorage.removeItem("shomoukh-enrolment-draft")
+        } catch {
+          /* ignore */
+        }
+      } catch {
+        setSubmitError(
+          "We could not submit your application. Check your connection and try again. If it keeps happening, email admissions with a screenshot.",
+        )
+        window.scrollTo({ top: 0, behavior: "smooth" })
+      } finally {
+        setIsSubmitting(false)
+      }
       return
     }
     const stepErrors = validateCurrentStep()
@@ -179,8 +196,8 @@ export function EnrollmentForm() {
     return (
       <div className="min-h-screen bg-[#f7f4ed]">
         <EnrolmentHeader />
-        <div className="enrolment-page-bg">
-          <div className="enrolment-inner mx-auto max-w-3xl px-4 py-10 sm:py-14">
+        <div className="enrolment-page-bg pb-8">
+          <div className="enrolment-inner mx-auto max-w-3xl px-4 py-8 sm:py-14 sm:px-6 lg:px-8">
             <div className="premium-card overflow-hidden p-6 sm:p-10">
               <Step6Submit
                 formData={formData}
@@ -189,6 +206,7 @@ export function EnrollmentForm() {
               />
             </div>
           </div>
+          <EnrolmentFooter />
         </div>
       </div>
     )
@@ -214,41 +232,54 @@ export function EnrollmentForm() {
               </div>
 
               {StepTitleIcon && (
-                <div className="flex flex-col gap-4 border-b border-[var(--border-soft)] px-4 py-5 sm:flex-row sm:items-start sm:justify-between sm:px-8">
-                  <div className="flex gap-4">
+                <div className="flex flex-col gap-4 border-b border-[var(--border-soft)] px-4 py-5 sm:flex-row sm:items-start sm:justify-between sm:gap-6 sm:px-8">
+                  <div className="flex min-w-0 gap-3 sm:gap-4">
                     <div
-                      className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-amber-50 sm:h-14 sm:w-14"
+                      className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md bg-amber-50 sm:h-14 sm:w-14"
                       style={{ border: "1px solid rgba(200,162,77,.35)" }}
                     >
                       <StepTitleIcon className="h-6 w-6 sm:h-7 sm:w-7" style={{ color: "var(--gold-dark)" }} strokeWidth={2} />
                     </div>
                     <div>
-                      <h1 className="font-serif text-xl font-bold text-[var(--navy)] sm:text-2xl">
+                      <h1 className="font-serif text-xl font-bold leading-tight tracking-tight text-[var(--navy)] sm:text-2xl lg:text-[1.65rem]">
                         {stepMeta.label}
                       </h1>
-                      <p className="mt-1 text-sm leading-relaxed text-[var(--text-secondary)]">
+                      <p className="mt-1 max-w-[52ch] text-sm leading-relaxed text-[var(--text-secondary)] md:text-[0.9375rem]">
                         {STEP_INTRO[currentStep] ??
-                          "Complete this section with accurate information."}
+                          "Fill this block as completely as you can — you can edit later before you send."}
                       </p>
                     </div>
                   </div>
                   <div
-                    className="w-fit shrink-0 self-start rounded-full px-4 py-2 text-xs font-semibold sm:mt-1"
+                    className="w-full shrink-0 rounded-md px-4 py-2 text-center text-xs font-semibold sm:mt-1 sm:w-fit sm:self-start sm:text-left"
                     style={{
-                      background: "#f3f4f6",
-                      border: "1px solid #e5e7eb",
+                      background: "#f8f6f2",
+                      border: "1px solid var(--border-soft)",
                       color: "var(--text-muted)",
                     }}
                   >
-                    Estimated time: {STEP_ESTIMATED[currentStep - 1]}
+                    Rough timing: {STEP_ESTIMATED[currentStep - 1]}
                   </div>
                 </div>
               )}
 
               <div key={stepKey} className="animate-fade-slide-up px-4 py-6 sm:px-8 sm:py-8">
+                {submitError && (
+                  <div
+                    className="mb-6 flex items-start gap-3 rounded-md border border-red-200 bg-red-50/80 px-4 py-3"
+                    style={{ borderLeftWidth: 3, borderLeftColor: "#dc2626" }}
+                  >
+                    <svg className="mt-0.5 h-4 w-4 shrink-0 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <circle cx="12" cy="12" r="10" strokeWidth="1.5" />
+                      <path d="M12 8v4m0 4h.01" strokeWidth="2" strokeLinecap="round" />
+                    </svg>
+                    <p className="text-sm text-red-700">{submitError}</p>
+                  </div>
+                )}
+
                 {errorCount > 0 && (
                   <div
-                    className="mb-6 flex items-start gap-3 rounded-xl border border-red-200 bg-red-50/80 px-4 py-3"
+                    className="mb-6 flex items-start gap-3 rounded-md border border-red-200 bg-red-50/80 px-4 py-3"
                     style={{ borderLeftWidth: 3, borderLeftColor: "#dc2626" }}
                   >
                     <svg className="mt-0.5 h-4 w-4 shrink-0 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -257,7 +288,9 @@ export function EnrollmentForm() {
                     </svg>
                     <div>
                       <p className="text-sm font-semibold text-red-700">
-                        Please fix {errorCount} issue{errorCount > 1 ? "s" : ""} before continuing
+                        {errorCount === 1
+                          ? "One field still needs attention before we move on"
+                          : `${errorCount} fields still need attention before we move on`}
                       </p>
                       <ul className="mt-1 space-y-0.5">
                         {Object.values(errors as Record<string, string>).slice(0, 4).map((msg, i) => (
@@ -319,18 +352,13 @@ export function EnrollmentForm() {
                   onNext={handleNext}
                   onSaveDraft={handleSaveDraft}
                   isSubmitting={isSubmitting}
-                  nextLabel={currentStep === 6 ? "Submit Application" : undefined}
+                  nextLabel={currentStep === 6 ? "Submit application" : undefined}
                 />
               </div>
             </div>
           </div>
 
-          <p className="mt-10 text-center text-xs text-[var(--text-muted)]">
-            © {new Date().getFullYear()} Shomoukh Nursery ·{" "}
-            <a href="https://shomoukh.com" target="_blank" rel="noopener noreferrer" className="text-[var(--gold)] hover:underline">
-              shomoukh.com
-            </a>
-          </p>
+          <EnrolmentFooter />
         </div>
       </div>
     </div>

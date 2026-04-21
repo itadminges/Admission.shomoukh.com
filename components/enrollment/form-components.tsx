@@ -1,6 +1,7 @@
 "use client"
 
 import { AlertCircle, Info, ChevronLeft, ChevronRight, Loader2, Save } from "lucide-react"
+import { cn } from "@/lib/utils"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -35,7 +36,7 @@ export function FormField({ label, required, error, hint, children, className }:
       {children}
       {hint && !error && (
         <div
-          className="flex items-start gap-1.5 text-xs rounded-lg px-3 py-2"
+          className="flex items-start gap-1.5 text-xs rounded-md px-3 py-2"
           style={{ background: "rgba(200,162,77,.07)", color: "var(--text-muted)", border: "1px solid rgba(200,162,77,.15)" }}
         >
           <Info className="w-3.5 h-3.5 mt-0.5 shrink-0" style={{ color: "var(--gold)" }} />
@@ -61,13 +62,11 @@ export function StyledInput({ className, error, style, ...props }: StyledInputPr
   return (
     <Input
       {...props}
-      className={className}
+      className={cn("h-11 md:h-9", className)}
       style={{
-        height: "2.75rem",
-        borderRadius: "0.625rem",
+        borderRadius: "var(--radius)",
         border: `1.5px solid ${error ? "var(--destructive-color)" : "var(--border-soft)"}`,
         background: "#fff",
-        fontSize: ".875rem",
         color: "var(--text-primary)",
         transition: "border-color .2s, box-shadow .2s",
         boxShadow: error ? "0 0 0 3px rgba(220,38,38,.1)" : "none",
@@ -86,12 +85,11 @@ export function StyledTextarea({ className, error, style, ...props }: StyledText
   return (
     <Textarea
       {...props}
-      className={`resize-none ${className ?? ""}`}
+      className={cn("resize-none", className)}
       style={{
-        borderRadius: "0.625rem",
+        borderRadius: "var(--radius)",
         border: `1.5px solid ${error ? "var(--destructive-color)" : "var(--border-soft)"}`,
         background: "#fff",
-        fontSize: ".875rem",
         color: "var(--text-primary)",
         transition: "border-color .2s, box-shadow .2s",
         ...style,
@@ -112,18 +110,16 @@ interface StyledSelectProps {
 }
 
 export function StyledSelect({
-  value, onValueChange, options, placeholder = "Select an option", error, className, disabled,
+  value, onValueChange, options, placeholder = "Choose…", error, className, disabled,
 }: StyledSelectProps) {
   return (
     <Select value={value} onValueChange={onValueChange} disabled={disabled}>
       <SelectTrigger
-        className={className}
+        className={cn("h-11 min-h-11 w-full min-w-0 md:h-9 md:min-h-9 text-base md:text-sm", className)}
         style={{
-          height: "2.75rem",
-          borderRadius: "0.625rem",
+          borderRadius: "var(--radius)",
           border: `1.5px solid ${error ? "var(--destructive-color)" : "var(--border-soft)"}`,
           background: "#fff",
-          fontSize: ".875rem",
           color: value ? "var(--text-primary)" : "var(--text-muted)",
           transition: "border-color .2s, box-shadow .2s",
         }}
@@ -154,7 +150,7 @@ export function SectionHeader({ title, description, icon }: SectionHeaderProps) 
     >
       {icon && (
         <div
-          className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 mt-0.5"
+          className="w-10 h-10 rounded-md flex items-center justify-center shrink-0 mt-0.5"
           style={{ background: "rgba(200,162,77,.12)" }}
         >
           <span style={{ color: "var(--gold)" }}>{icon}</span>
@@ -195,14 +191,14 @@ export function RadioGroupField({ label, required, options, value, onChange, err
           >
             {/* Custom radio dot */}
             <div
-              className="w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0"
+              className="w-4 h-4 rounded-md border-2 flex items-center justify-center shrink-0"
               style={{
                 borderColor: value === opt.value ? "var(--gold)" : "var(--border-mid)",
                 transition: "border-color .2s",
               }}
             >
               {value === opt.value && (
-                <div className="w-2 h-2 rounded-full" style={{ background: "var(--gold)" }} />
+                <div className="h-2 w-2 rounded-full" style={{ background: "var(--gold)" }} />
               )}
             </div>
             <input
@@ -282,8 +278,8 @@ export function FormGrid({ children, cols = 2 }: FormGridProps) {
       style={{
         gridTemplateColumns:
           cols === 1 ? "1fr" :
-          cols === 3 ? "repeat(auto-fit, minmax(200px, 1fr))" :
-          "repeat(auto-fit, minmax(240px, 1fr))",
+          cols === 3 ? "repeat(auto-fit, minmax(min(100%, 180px), 1fr))" :
+          "repeat(auto-fit, minmax(min(100%, 220px), 1fr))",
       }}
     >
       {children}
@@ -318,7 +314,7 @@ export function FormNavigation({
       className="mt-8 border-t border-[var(--border-soft)] pt-8"
     >
       <p className="mb-4 text-xs" style={{ color: "var(--text-muted)" }}>
-        <span style={{ color: "var(--gold)", fontWeight: 700 }}>*</span> Required fields
+        <span style={{ color: "var(--gold)", fontWeight: 700 }}>*</span> Marks a required answer
       </p>
 
       <div className="flex flex-col gap-4 sm:gap-6 lg:grid lg:grid-cols-[1fr_auto_1fr] lg:items-center">
@@ -330,21 +326,21 @@ export function FormNavigation({
             style={{ borderColor: "rgba(200,162,77,.45)", color: "var(--gold-dark)" }}
           >
             <Save className="w-4 h-4" />
-            Save Draft
+            Save draft
           </button>
           {currentStep > 1 && (
             <button type="button" onClick={onPrevious} className="btn-ghost w-full justify-center text-sm sm:w-auto">
               <ChevronLeft className="w-4 h-4" />
-              Previous
+              Back
             </button>
           )}
         </div>
 
         <p
-          className="text-center text-xs order-1 lg:order-2 lg:justify-self-center"
+          className="text-center text-xs order-1 max-w-xs justify-self-center leading-snug lg:order-2 lg:justify-self-center lg:max-w-[14rem]"
           style={{ color: "var(--text-muted)" }}
         >
-          Your progress will be saved automatically.
+          Leaving soon? Tap save draft — we store a copy in this browser only.
         </p>
 
         <div className="order-3 flex justify-end lg:justify-self-end">
@@ -352,16 +348,16 @@ export function FormNavigation({
             type="button"
             onClick={onNext}
             disabled={isSubmitting}
-            className="btn-gold w-full justify-center sm:w-auto"
+            className="btn-gold w-full justify-center sm:w-auto min-h-[2.75rem]"
           >
             {isSubmitting ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin text-white" />
-                Submitting…
+                Sending…
               </>
             ) : (
               <>
-                {nextLabel || (isLastStep ? "Submit Application" : "Save & Next")}
+                {nextLabel || (isLastStep ? "Submit application" : "Continue")}
                 {!isLastStep && <ChevronRight className="w-4 h-4" />}
               </>
             )}

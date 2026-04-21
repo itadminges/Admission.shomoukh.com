@@ -42,7 +42,8 @@
   --border:              var(--border-soft);
   --input:               var(--border-soft);
   --ring:                var(--gold);
-  --radius:              0.75rem;
+  /* Subtle corners sitewide (~4px); keep UI calm, not bubbly */
+  --radius:              0.25rem;
 }
 
 @theme inline {
@@ -93,17 +94,22 @@
   }
   html {
     scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    overflow-x: clip;
   }
   body {
     @apply bg-surface text-foreground font-sans antialiased;
     background-color: var(--surface);
+    overflow-x: clip;
+    min-height: 100dvh;
   }
 }
 
 /* ── Custom Scrollbar ── */
 ::-webkit-scrollbar        { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track  { background: var(--surface); }
-::-webkit-scrollbar-thumb  { background: var(--gold); border-radius: 6px; }
+::-webkit-scrollbar-thumb  { background: var(--gold); border-radius: 2px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--gold-dark); }
 
 
@@ -141,13 +147,19 @@ textarea:focus-visible {
 .field-input {
   height: 2.75rem;
   width: 100%;
-  border-radius: 0.625rem;
+  min-height: 2.75rem;
+  border-radius: var(--radius);
   border: 1.5px solid var(--border-soft);
   background: #ffffff;
   padding: 0 0.875rem;
-  font-size: 0.875rem;
+  font-size: 1rem;
   color: var(--text-primary);
   transition: border-color .2s, box-shadow .2s;
+}
+@media (min-width: 768px) {
+  .field-input {
+    font-size: 0.875rem;
+  }
 }
 .field-input::placeholder { color: var(--text-muted); }
 .field-input:hover  { border-color: var(--border-mid); }
@@ -162,7 +174,7 @@ textarea:focus-visible {
 /* ── Card ── */
 .premium-card {
   background: #ffffff;
-  border-radius: 1.25rem;
+  border-radius: var(--radius);
   border: 1px solid var(--border-soft);
   box-shadow: 0 8px 40px -12px rgba(15,18,38,.1), 0 2px 8px rgba(15,18,38,.04);
 }
@@ -176,11 +188,13 @@ textarea:focus-visible {
 
 /* ── Primary Button ── */
 .btn-gold {
+  touch-action: manipulation;
   display: inline-flex;
   align-items: center;
   gap: .5rem;
   padding: .65rem 1.5rem;
-  border-radius: 0.625rem;
+  min-height: 2.75rem;
+  border-radius: var(--radius);
   font-weight: 600;
   font-size: .875rem;
   color: #ffffff;
@@ -199,11 +213,13 @@ textarea:focus-visible {
 
 /* ── Ghost Button ── */
 .btn-ghost {
+  touch-action: manipulation;
   display: inline-flex;
   align-items: center;
   gap: .5rem;
   padding: .65rem 1.25rem;
-  border-radius: 0.625rem;
+  min-height: 2.75rem;
+  border-radius: var(--radius);
   font-weight: 500;
   font-size: .875rem;
   color: var(--text-secondary);
@@ -222,7 +238,7 @@ textarea:focus-visible {
 .step-badge {
   width: 2.25rem;
   height: 2.25rem;
-  border-radius: 50%;
+  border-radius: var(--radius);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -256,7 +272,7 @@ textarea:focus-visible {
 .step-connector {
   flex: 1;
   height: 2px;
-  border-radius: 2px;
+  border-radius: 1px;
   background: var(--border-soft);
   margin: 0 .5rem;
   overflow: hidden;
@@ -266,7 +282,7 @@ textarea:focus-visible {
   position: absolute;
   inset: 0;
   background: linear-gradient(90deg, var(--gold-dark), var(--gold));
-  border-radius: 2px;
+  border-radius: 1px;
   transform-origin: left;
   transition: transform .5s cubic-bezier(.22,1,.36,1);
 }
@@ -297,7 +313,7 @@ textarea:focus-visible {
 .photo-zone {
   width: 7rem;
   height: 8.5rem;
-  border-radius: 1rem;
+  border-radius: var(--radius);
   border: 2px dashed var(--border-mid);
   background: var(--surface);
   display: flex;
@@ -323,7 +339,7 @@ textarea:focus-visible {
   align-items: center;
   gap: .625rem;
   padding: .5rem 1rem;
-  border-radius: 0.625rem;
+  border-radius: var(--radius);
   border: 1.5px solid var(--border-soft);
   background: #fff;
   cursor: pointer;
@@ -342,7 +358,7 @@ textarea:focus-visible {
   align-items: flex-start;
   gap: .875rem;
   padding: 1rem 1.125rem;
-  border-radius: 0.875rem;
+  border-radius: var(--radius);
   border: 1.5px solid var(--border-soft);
   background: #fff;
   cursor: pointer;
@@ -353,7 +369,7 @@ textarea:focus-visible {
 .checkbox-box {
   width: 1.25rem;
   height: 1.25rem;
-  border-radius: 0.3125rem;
+  border-radius: calc(var(--radius) * 0.65);
   border: 2px solid var(--border-mid);
   flex-shrink: 0;
   margin-top: .125rem;
@@ -370,7 +386,7 @@ textarea:focus-visible {
   background: rgba(200,162,77,.06);
   border: 1px solid rgba(200,162,77,.22);
   border-left: 3px solid var(--gold);
-  border-radius: 0.875rem;
+  border-radius: var(--radius);
   padding: 1.125rem 1.25rem;
 }
 
@@ -380,55 +396,17 @@ textarea:focus-visible {
   width: 100%;
   max-width: 900px;
   margin: 0 auto;
-  padding: 0 1rem;
+  padding: 0 max(1rem, env(safe-area-inset-right, 0px)) 0 max(1rem, env(safe-area-inset-left, 0px));
 }
 
-/* Decorative corners for enrolment page (subtle gold floral tone) */
 .enrolment-page-bg {
   position: relative;
   background-color: #f7f4ed;
   min-height: 100%;
 }
-.enrolment-page-bg::before,
-.enrolment-page-bg::after {
-  content: "";
-  position: absolute;
-  width: min(420px, 42vw);
-  height: min(420px, 42vw);
-  pointer-events: none;
-  opacity: 0.07;
-  background: radial-gradient(circle at 30% 40%, var(--gold) 0%, transparent 55%),
-    radial-gradient(circle at 70% 60%, var(--gold-dark) 0%, transparent 45%);
-  z-index: 0;
-}
-.enrolment-page-bg::before {
-  top: -80px;
-  left: -80px;
-}
-.enrolment-page-bg::after {
-  bottom: -80px;
-  right: -80px;
-  transform: rotate(180deg);
-}
 .enrolment-inner {
   position: relative;
   z-index: 1;
-}
-@media (max-width: 639px) {
-  .enrolment-page-bg::before,
-  .enrolment-page-bg::after {
-    width: min(260px, 62vw);
-    height: min(260px, 62vw);
-    opacity: 0.05;
-  }
-  .enrolment-page-bg::before {
-    top: -50px;
-    left: -55px;
-  }
-  .enrolment-page-bg::after {
-    bottom: -55px;
-    right: -55px;
-  }
 }
 @media (min-width: 640px)  { .portal-container { padding: 0 1.5rem; } }
 @media (min-width: 1024px) { .portal-container { padding: 0 2rem; } }

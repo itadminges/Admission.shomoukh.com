@@ -18,31 +18,31 @@ interface Step5Props {
 const POLICY_BLOCKS = [
   {
     icon: <ShieldCheck className="w-5 h-5" />,
-    title: "Terms & Conditions of Enrolment",
-    body: `By submitting this application, I/we acknowledge that a place will be offered whenever it is possible to best meet the perceived needs of the child. I/we understand that the school does not guarantee a student admission based on the submission of this form. Acceptance is dependent upon successful fulfillment of Shomoukh's admission requirements, including but not limited to: age eligibility, available space, assessment results where applicable, and the provision of all required documentation.
+    title: "Enrolment terms",
+    body: `Sending this form does not reserve a place by itself. We offer seats when age, capacity, assessments (if needed), and paperwork line up — same rules for every family.
 
-I/we agree to abide by the school's policies, procedures, and code of conduct as outlined in the Student–Parent Handbook, and to support the school in maintaining a safe, respectful, and positive learning environment for all students.`,
+You agree to follow the policies in the parent handbook and to work with staff so every child can learn safely.`,
   },
   {
     icon: <Camera className="w-5 h-5" />,
-    title: "Photography & Media Release",
-    body: `I/we give permission for Shomoukh to photograph and/or video-record my/our child for educational, promotional, and communication purposes. This may include use on the school website, official social media accounts, printed publications, and internal newsletters.
+    title: "Photos & video",
+    body: `Shomoukh may photograph or film children for teaching, newsletters, and fair promotion — website, social channels, print, and screens inside school.
 
-I/we understand that my child will not be identified by full name in any publicly accessible media without prior consent. If you do not wish for your child to appear in school media, please notify the admissions office in writing.`,
+We do not publish full names beside photos without asking. If you prefer no public images, tell admissions in writing.`,
   },
   {
     icon: <Heart className="w-5 h-5" />,
-    title: "Medical Treatment Authorization",
-    body: `In the event of an emergency and in circumstances where a parent or guardian cannot be reached in a timely manner, I/we authorize Shomoukh staff and designated medical personnel to seek and administer medical treatment deemed necessary for the health and safety of my/our child.
+    title: "Emergency medical care",
+    body: `If there is an emergency and we cannot reach you quickly, you authorise staff or medics we call to treat your child as needed.
 
-I/we confirm that all medical information provided in this application is accurate and complete to the best of my/our knowledge. I/we agree to promptly inform the school of any changes to the student's medical condition, allergies, or medications.`,
+Medical answers on this form must stay accurate — tell us straight away when something changes.`,
   },
   {
     icon: <FileText className="w-5 h-5" />,
-    title: "Code of Conduct Agreement",
-    body: `I/we have read and understood the Shomoukh Code of Conduct for students and families. I/we agree to support the school's behavioral expectations, respect all members of the school community, and actively participate in my/our child's educational journey.
+    title: "Behaviour & community",
+    body: `Parents and children follow the same code of conduct: kindness, punctuality, honest communication.
 
-I/we acknowledge that failure to comply with the code of conduct may result in consequences as outlined in the school's disciplinary policy, up to and including withdrawal from the school.`,
+Serious or repeated breaches are handled through the discipline policy and can include withdrawal in extreme cases.`,
   },
 ]
 
@@ -58,36 +58,36 @@ export function Step5ConditionsWaiver({ data, onChange, errors }: Step5Props) {
   }> = [
     {
       key: "agreeToTerms",
-      label: "I agree to the Terms & Conditions of Enrolment",
-      description: "I confirm that I have read and understood the enrolment terms above.",
+      label: "We accept the enrolment conditions above",
+      description: "Including age, space, and paperwork rules.",
     },
     {
       key: "agreeToPhotoPolicy",
-      label: "I agree to the Photography & Media Release Policy",
-      description: "I give permission for my child to appear in school media and publications.",
+      label: "Photos & filming for school use",
+      description: "As described — tell admissions if this should not include our child.",
     },
     {
       key: "agreeToMedicalPolicy",
-      label: "I authorize Medical Treatment in Emergency Situations",
-      description: "I authorize the school to seek emergency medical treatment for my child.",
+      label: "Emergency medical treatment if parents cannot be reached",
+      description: "Staff may act in the child’s immediate interest.",
     },
     {
       key: "agreeToCodeOfConduct",
-      label: "I agree to the Code of Conduct",
-      description: "I commit to supporting the school's behavioral expectations and policies.",
+      label: "Parent & pupil code of conduct",
+      description: "We will uphold expectations at home as well as at school.",
     },
     {
       key: "declarationAccepted",
-      label: "I declare that all information provided is true and accurate",
-      description: "I understand that providing false information may result in the withdrawal of the application.",
+      label: "This application is truthful",
+      description: "Deliberately false answers can void the offer.",
     },
   ]
 
   return (
     <div className="space-y-8">
       <SectionHeader
-        title="Conditions & Waiver"
-        description="Please read all policies carefully before signing and submitting your application."
+        title="Policies & signatures"
+        description="Expand each panel to read the wording, then tick every box — same weight as ink on paper."
         icon={<FileText className="w-5 h-5" />}
       />
 
@@ -96,7 +96,7 @@ export function Step5ConditionsWaiver({ data, onChange, errors }: Step5Props) {
         {POLICY_BLOCKS.map((block, index) => (
           <details
             key={index}
-            className="group rounded-none overflow-hidden"
+            className="group rounded-md overflow-hidden"
             style={{ border: "1px solid var(--border-soft)" }}
           >
             <summary
@@ -105,7 +105,7 @@ export function Step5ConditionsWaiver({ data, onChange, errors }: Step5Props) {
             >
               <div className="flex items-center gap-3">
                 <div
-                  className="w-9 h-9 rounded-none flex items-center justify-center shrink-0"
+                  className="w-9 h-9 rounded-md flex items-center justify-center shrink-0"
                   style={{ background: "rgba(200,162,77,.12)", color: "var(--gold)" }}
                 >
                   {block.icon}
@@ -137,7 +137,7 @@ export function Step5ConditionsWaiver({ data, onChange, errors }: Step5Props) {
       <div>
         <div className="section-divider">
           <ShieldCheck className="w-4 h-4" style={{ color: "var(--gold)" }} />
-          <span>Acknowledgments &amp; Agreements</span>
+          <span>Confirm each point</span>
         </div>
         <div className="space-y-3">
           {checkboxConfigs.map(({ key, label, description }) => (
@@ -157,12 +157,12 @@ export function Step5ConditionsWaiver({ data, onChange, errors }: Step5Props) {
       <div>
         <div className="section-divider">
           <Pen className="w-4 h-4" style={{ color: "var(--gold)" }} />
-          <span>Parent / Guardian Signature</span>
+          <span>Electronic signature</span>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <FormField label="Full Name (as signature)" required error={errors.parentSignatureName}>
+          <FormField label="Signing parent — full legal name" required error={errors.parentSignatureName}>
             <StyledInput
-              placeholder="Type your full legal name"
+              placeholder="As on ID or passport"
               value={data.parentSignatureName}
               onChange={(e) => update("parentSignatureName", e.target.value)}
               error={!!errors.parentSignatureName}

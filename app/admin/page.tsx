@@ -1,7 +1,8 @@
 import { AdminDashboard } from "@/components/enrollment/admin-dashboard"
 
 export const metadata = {
-  title: "Shomoukh — Admissions Dashboard",
+  title: "Admissions inbox | Shomoukh",
+  description: "Review incoming enrolment applications (internal).",
 }
 
 export default function AdminPage() {

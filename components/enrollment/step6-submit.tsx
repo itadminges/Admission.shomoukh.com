@@ -16,76 +16,76 @@ export function Step6Submit({ formData, submitted, referenceNumber }: Step6Submi
   /* ── SUCCESS STATE ── */
   if (submitted) {
     return (
-      <div className="flex flex-col items-center text-center py-12 space-y-8 animate-fade-slide-up">
+      <div className="flex flex-col items-center space-y-6 px-1 py-8 text-center sm:space-y-8 sm:py-12 animate-fade-slide-up">
 
-        <div className="relative">
+        <div className="relative shrink-0">
           <div
-            className="flex h-28 w-28 items-center justify-center rounded-full"
+            className="flex h-24 w-24 items-center justify-center rounded-md sm:h-28 sm:w-28"
             style={{ background: "rgba(200,162,77,.1)", border: "2px solid rgba(200,162,77,.35)" }}
           >
-            <CheckCircle2 className="w-16 h-16" style={{ color: "var(--gold)" }} strokeWidth={1.5} />
+            <CheckCircle2 className="h-14 w-14 sm:h-16 sm:w-16" style={{ color: "var(--gold)" }} strokeWidth={1.5} />
           </div>
-          <div className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full border border-green-700 bg-green-600">
+          <div className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-md border border-green-700 bg-green-600">
             <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
             </svg>
           </div>
         </div>
 
-        <div className="space-y-2 max-w-md">
-          <h2 className="text-3xl font-bold font-serif" style={{ color: "var(--text-primary)" }}>
-            Application Submitted!
+        <div className="max-w-md space-y-2 px-2">
+          <h2 className="font-serif text-2xl font-bold tracking-tight sm:text-3xl" style={{ color: "var(--text-primary)" }}>
+            We have your application
           </h2>
-          <p className="text-base leading-relaxed" style={{ color: "var(--text-secondary)" }}>
-            Thank you for applying to Shomoukh. We have received the enrolment application for{" "}
+          <p className="text-sm leading-relaxed sm:text-base" style={{ color: "var(--text-secondary)" }}>
+            The enrolment form for{" "}
             <span className="font-bold" style={{ color: "var(--text-primary)" }}>{studentName}</span>{" "}
-            and will review it promptly.
+            is on the admissions desk. You will hear from us once it has been read — usually within a few working days.
           </p>
         </div>
 
         {/* Reference number card */}
         {referenceNumber && (
           <div
-            className="px-8 py-5 rounded-2xl text-center"
+            className="w-full max-w-md rounded-md px-5 py-5 text-center sm:px-8"
             style={{
               background: "rgba(200,162,77,.08)",
               border: "1.5px solid rgba(200,162,77,.3)",
             }}
           >
             <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: "var(--text-muted)" }}>
-              Application Reference Number
+              Your reference
             </p>
             <p
-              className="text-2xl font-bold font-mono tracking-widest"
+              className="break-all font-mono text-xl font-bold tracking-widest sm:break-normal sm:text-2xl"
               style={{ color: "var(--gold-dark)" }}
             >
               {referenceNumber}
             </p>
             <p className="text-xs mt-2" style={{ color: "var(--text-muted)" }}>
-              Please save this reference for your records
+              Quote this in emails or calls so we open the right file first time.
             </p>
           </div>
         )}
 
         {/* Next steps */}
         <div
-          className="flex items-start gap-4 p-5 rounded-2xl text-left w-full max-w-sm"
+          className="flex w-full max-w-sm items-start gap-3 rounded-md p-4 text-left sm:gap-4 sm:p-5"
           style={{ background: "var(--surface)", border: "1px solid var(--border-soft)" }}
         >
           <div
-            className="w-9 h-9 rounded-2xl flex items-center justify-center shrink-0 mt-0.5"
+            className="w-9 h-9 rounded-md flex items-center justify-center shrink-0 mt-0.5"
             style={{ background: "rgba(200,162,77,.12)" }}
           >
-            <Clock className="w-4.5 h-4.5" style={{ color: "var(--gold)" }} />
+            <Clock className="h-[1.125rem] w-[1.125rem]" style={{ color: "var(--gold)" }} />
           </div>
           <div>
-            <p className="text-sm font-bold mb-2" style={{ color: "var(--text-primary)" }}>What happens next?</p>
+            <p className="text-sm font-bold mb-2" style={{ color: "var(--text-primary)" }}>Typical next steps</p>
             <ul className="space-y-1.5">
               {[
-                "Our admissions team will review your application",
-                "You will receive a confirmation email within 2–3 business days",
-                "We may contact you for additional documents or an interview",
-                "A final admission decision will be communicated in writing",
+                "Admissions checks the file for gaps",
+                "Confirmation email within roughly three working days",
+                "Sometimes we ask for documents or a short visit",
+                "Offer or wait-list letter follows in writing",
               ].map((item, i) => (
                 <li key={i} className="flex items-start gap-2 text-xs" style={{ color: "var(--text-secondary)" }}>
                   <ArrowRight className="w-3 h-3 mt-0.5 shrink-0" style={{ color: "var(--gold)" }} />
@@ -97,14 +97,14 @@ export function Step6Submit({ formData, submitted, referenceNumber }: Step6Submi
         </div>
 
         {/* Actions */}
-        <div className="flex flex-wrap gap-3 justify-center">
-          <button type="button" className="btn-ghost text-sm">
+        <div className="flex w-full max-w-md flex-col gap-2 sm:flex-row sm:flex-wrap sm:justify-center sm:gap-3">
+          <button type="button" className="btn-ghost w-full justify-center text-sm sm:w-auto">
             <Download className="w-4 h-4" />
-            Download PDF
+            Save PDF
           </button>
-          <button type="button" className="btn-ghost text-sm" style={{ color: "var(--gold-dark)" }}>
+          <button type="button" className="btn-ghost w-full justify-center text-sm sm:w-auto" style={{ color: "var(--gold-dark)" }}>
             <Mail className="w-4 h-4" />
-            Email Copy
+            Email summary
           </button>
         </div>
 
@@ -115,7 +115,7 @@ export function Step6Submit({ formData, submitted, referenceNumber }: Step6Submi
           className="text-sm hover:underline"
           style={{ color: "var(--gold)" }}
         >
-          Return to Shomoukh Website →
+          Back to shomoukh.com →
         </a>
       </div>
     )
@@ -123,7 +123,8 @@ export function Step6Submit({ formData, submitted, referenceNumber }: Step6Submi
 
   /* ── REVIEW STATE ── */
   const summaryItems = [
-    { label: "Student Name",       value: studentName },
+    { label: "Child",       value: studentName },
+    { label: "Known as", value: studentData.toBeKnownAs || "—" },
     {
       label: "Date of Birth",
       value: studentData.dateOfBirth
@@ -132,8 +133,8 @@ export function Step6Submit({ formData, submitted, referenceNumber }: Step6Submi
     },
     { label: "Nationality",        value: studentData.nationality || "—" },
     { label: "Gender",             value: studentData.gender || "—" },
-    { label: "Grade of Entry",     value: studentData.anticipatedGradeOfEntry || "—" },
-    { label: "Enrollment Year",    value: studentData.enrollmentYear || "—" },
+    { label: "Class applied for",     value: studentData.anticipatedGradeOfEntry || "—" },
+    { label: "School year",    value: studentData.enrollmentYear || "—" },
     {
       label: "Parents / Guardians",
       value: formData.familyData.parents
@@ -149,10 +150,10 @@ export function Step6Submit({ formData, submitted, referenceNumber }: Step6Submi
         .join(", ") || "—",
     },
     {
-      label: "Previous Schools",
+      label: "Previous schools",
       value: formData.educationalBackground.previousSchools.length > 0
         ? formData.educationalBackground.previousSchools.map((s) => s.schoolName).join(", ")
-        : "None listed",
+        : "Not applicable / none yet",
     },
   ]
 
@@ -164,24 +165,24 @@ export function Step6Submit({ formData, submitted, referenceNumber }: Step6Submi
         style={{ borderBottom: "1px solid var(--border-soft)" }}
       >
         <div
-          className="w-16 h-16 rounded-2xl flex items-center justify-center"
+          className="w-16 h-16 rounded-md flex items-center justify-center"
           style={{ background: "rgba(200,162,77,.12)", border: "1px solid rgba(200,162,77,.2)" }}
         >
           <CheckCircle2 className="w-9 h-9" style={{ color: "var(--gold)" }} strokeWidth={1.5} />
         </div>
         <div>
           <h2 className="text-2xl font-bold font-serif" style={{ color: "var(--text-primary)" }}>
-            Review &amp; Submit
+            Final check
           </h2>
           <p className="text-sm mt-1" style={{ color: "var(--text-muted)" }}>
-            Please review the summary below before submitting your application.
+            Skim the snapshot — go back a step if anything looks wrong.
           </p>
         </div>
       </div>
 
       {/* Summary Table */}
       <div
-        className="rounded-2xl overflow-hidden"
+        className="rounded-md overflow-hidden"
         style={{ border: "1px solid var(--border-soft)" }}
       >
         <div
@@ -191,25 +192,28 @@ export function Step6Submit({ formData, submitted, referenceNumber }: Step6Submi
             borderBottom: "1px solid var(--border-soft)",
           }}
         >
-          <h3 className="text-sm font-bold" style={{ color: "var(--text-primary)" }}>Application Summary</h3>
+          <h3 className="text-sm font-bold" style={{ color: "var(--text-primary)" }}>Snapshot</h3>
         </div>
         <div>
           {summaryItems.map((item, i) => (
             <div
               key={item.label}
-              className="flex items-start gap-4 px-5 py-3.5"
+              className="flex flex-col gap-1 px-4 py-3.5 sm:flex-row sm:items-start sm:gap-4 sm:px-5"
               style={{
                 borderBottom: i < summaryItems.length - 1 ? "1px solid var(--border-soft)" : "none",
                 background: i % 2 === 0 ? "transparent" : "rgba(200,162,77,.02)",
               }}
             >
               <span
-                className="text-xs font-semibold uppercase tracking-wider shrink-0 pt-0.5"
-                style={{ width: 160, color: "var(--text-muted)" }}
+                className="shrink-0 pt-0.5 text-[10px] font-semibold uppercase tracking-wider sm:w-36 sm:text-xs md:w-44"
+                style={{ color: "var(--text-muted)" }}
               >
                 {item.label}
               </span>
-              <span className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>
+              <span
+                className="min-w-0 break-words text-sm font-medium"
+                style={{ color: "var(--text-primary)" }}
+              >
                 {item.value}
               </span>
             </div>
@@ -220,9 +224,8 @@ export function Step6Submit({ formData, submitted, referenceNumber }: Step6Submi
       {/* Confirmation Note */}
       <div className="notice-banner">
         <p className="text-sm leading-relaxed" style={{ color: "var(--text-secondary)" }}>
-          By clicking <span className="font-bold" style={{ color: "var(--text-primary)" }}>"Submit Application"</span>, you confirm that
-          all information provided is accurate and complete, and that you have read and agreed to all conditions and
-          policies in the previous step.
+          Submitting means the details above match what you know to be true, and the policies you ticked in the last step
+          still stand.
         </p>
       </div>
     </div>

@@ -59,13 +59,13 @@ export function PhotoUpload({ value, onChange }: PhotoUploadProps) {
         ) : (
           <div className="flex flex-col items-center gap-2 px-3 text-center select-none pointer-events-none">
             <div
-              className="flex h-12 w-12 items-center justify-center rounded-full"
+              className="flex h-12 w-12 items-center justify-center rounded-md"
               style={{ background: "rgba(200,162,77,.1)", border: "1.5px dashed var(--gold)" }}
             >
               <User className="w-5 h-5" style={{ color: "var(--gold)" }} />
             </div>
             <span className="text-[11px] font-medium leading-tight" style={{ color: "var(--text-muted)" }}>
-              Passport<br />Photo
+              Face<br />photo
             </span>
           </div>
         )}
@@ -75,10 +75,10 @@ export function PhotoUpload({ value, onChange }: PhotoUploadProps) {
       <div className="flex w-full flex-col gap-2.5 sm:w-auto">
         <div className="flex flex-col gap-1">
           <p className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
-            {value ? "Photo uploaded" : "Upload passport photo"}
+            {value ? "Photo saved" : "Add a recent photo"}
           </p>
           <p className="text-xs leading-relaxed" style={{ color: "var(--text-muted)" }}>
-            Recent, clear passport-size photo.<br />
+            Face forward, plain background — same idea as a passport shot.<br />
             JPG or PNG · max 5 MB
           </p>
         </div>
@@ -87,15 +87,15 @@ export function PhotoUpload({ value, onChange }: PhotoUploadProps) {
           <button
             type="button"
             onClick={() => inputRef.current?.click()}
-            className="btn-gold w-full justify-center px-3.5 py-2 text-xs sm:w-auto"
+            className="btn-gold w-full touch-manipulation justify-center px-3.5 py-2 text-xs sm:w-auto"
           >
             <Upload className="w-3.5 h-3.5" />
-            {value ? "Change Photo" : "Upload Photo"}
+            {value ? "Replace" : "Browse files"}
           </button>
 
           <button
             type="button"
-            className="btn-ghost w-full justify-center px-3.5 py-2 text-xs sm:w-auto"
+            className="btn-ghost w-full touch-manipulation justify-center px-3.5 py-2 text-xs sm:w-auto"
           >
             <Camera className="w-3.5 h-3.5" />
             Use Camera
@@ -105,7 +105,7 @@ export function PhotoUpload({ value, onChange }: PhotoUploadProps) {
             <button
               type="button"
               onClick={() => onChange(null)}
-              className="btn-ghost w-full justify-center px-3.5 py-2 text-xs sm:w-auto"
+              className="btn-ghost w-full touch-manipulation justify-center px-3.5 py-2 text-xs sm:w-auto"
               style={{ color: "var(--destructive-color)", borderColor: "rgba(220,38,38,.25)" }}
             >
               <X className="w-3.5 h-3.5" />
@@ -117,7 +117,7 @@ export function PhotoUpload({ value, onChange }: PhotoUploadProps) {
         {/* Drag hint */}
         {!value && (
           <p className="text-[11px]" style={{ color: "rgba(138,138,154,.7)" }}>
-            Or drag & drop onto the box
+            Or drop a file onto the frame
           </p>
         )}
       </div>

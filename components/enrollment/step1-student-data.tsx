@@ -55,12 +55,12 @@ export function Step1StudentData({ data, onChange, errors }: Step1Props) {
       {/* Student Photo */}
       <div>
         <SectionHeader
-          title="Student Photo"
-          description="Drag & drop or click to browse — JPG or PNG, passport-size."
+          title="Photo"
+          description="Plain background, face visible — same idea as a passport photo."
           icon={<User className="w-5 h-5" />}
         />
         <div className="space-y-6">
-          <FormField label="Upload" required hint="Drag & drop or click to browse — JPG or PNG, max 5 MB.">
+          <FormField label="Upload" required hint="JPG or PNG, up to 5 MB. Drag in or click to browse.">
             <PhotoUpload value={data.photoUrl} onChange={(url) => update("photoUrl", url)} />
           </FormField>
         </div>
@@ -69,12 +69,12 @@ export function Step1StudentData({ data, onChange, errors }: Step1Props) {
       {/* Personal Information */}
       <div>
         <div className="section-divider">
-          <span>Personal Information</span>
+          <span>Child&apos;s details</span>
         </div>
         <FormGrid cols={2}>
           <FormField label="Family Name" required error={errors.familyName}>
             <StyledInput
-              placeholder="Enter family / surname"
+              placeholder="Family name"
               value={data.familyName}
               onChange={(e) => update("familyName", e.target.value)}
               error={!!errors.familyName}
@@ -83,7 +83,7 @@ export function Step1StudentData({ data, onChange, errors }: Step1Props) {
 
           <FormField label="Given Names" required error={errors.givenNames}>
             <StyledInput
-              placeholder="Enter given / first names"
+              placeholder="First names as on birth certificate"
               value={data.givenNames}
               onChange={(e) => update("givenNames", e.target.value)}
               error={!!errors.givenNames}
@@ -92,15 +92,15 @@ export function Step1StudentData({ data, onChange, errors }: Step1Props) {
 
           <FormField label="Middle Name">
             <StyledInput
-              placeholder="Enter middle name (optional)"
+              placeholder="Middle name if applicable"
               value={data.middleName}
               onChange={(e) => update("middleName", e.target.value)}
             />
           </FormField>
 
-          <FormField label="To Be Known As" required error={errors.toBeKnownAs} hint="Preferred name used by staff and peers.">
+          <FormField label="Known as" required error={errors.toBeKnownAs} hint="What teachers and classmates should call them.">
             <StyledInput
-              placeholder="Preferred name"
+              placeholder="e.g. Ali, Mimi"
               value={data.toBeKnownAs}
               onChange={(e) => update("toBeKnownAs", e.target.value)}
               error={!!errors.toBeKnownAs}
@@ -145,7 +145,7 @@ export function Step1StudentData({ data, onChange, errors }: Step1Props) {
                       onChange={() => update("gender", opt)}
                     />
                     <span
-                      className="flex h-5 w-5 items-center justify-center rounded-full border-2 transition-colors"
+                      className="flex h-5 w-5 items-center justify-center rounded-md border-2 transition-colors"
                       style={{
                         borderColor: data.gender === opt ? "var(--gold)" : "var(--border-mid)",
                       }}
@@ -169,7 +169,7 @@ export function Step1StudentData({ data, onChange, errors }: Step1Props) {
       <div>
         <div className="section-divider">
           <Globe className="w-3.5 h-3.5" style={{ color: "var(--gold)" }} />
-          <span>Language &amp; Communication</span>
+          <span>Languages</span>
         </div>
         <FormGrid cols={2}>
           <FormField label="First Language Spoken" required error={errors.firstLanguageSpoken}>
@@ -204,10 +204,10 @@ export function Step1StudentData({ data, onChange, errors }: Step1Props) {
       <div>
         <div className="section-divider">
           <BookOpen className="w-3.5 h-3.5" style={{ color: "var(--gold)" }} />
-          <span>Enrollment Details</span>
+          <span>Year &amp; class</span>
         </div>
         <FormGrid cols={2}>
-          <FormField label="Enrollment Year" required error={errors.enrollmentYear}>
+          <FormField label="School year starting" required error={errors.enrollmentYear}>
             <StyledSelect
               value={data.enrollmentYear}
               onValueChange={(v) => update("enrollmentYear", v)}
@@ -217,10 +217,10 @@ export function Step1StudentData({ data, onChange, errors }: Step1Props) {
           </FormField>
 
           <FormField
-            label="Anticipated Grade of Entry"
+            label="Grade or class applying for"
             required
             error={errors.anticipatedGradeOfEntry}
-            hint="Students must have reached the expected age by 1st September for admission to each grade as defined in the Schedule of Fees."
+            hint="Age cut-offs follow our fee schedule — 1 September each year."
           >
             <StyledSelect
               value={data.anticipatedGradeOfEntry}
@@ -236,7 +236,7 @@ export function Step1StudentData({ data, onChange, errors }: Step1Props) {
       <div>
         <div className="section-divider">
           <GraduationCap className="w-3.5 h-3.5" style={{ color: "var(--gold)" }} />
-          <span>Siblings (Currently Enrolled)</span>
+          <span>Siblings already at Shomoukh</span>
         </div>
 
         {data.siblings.length > 0 && (
@@ -244,7 +244,7 @@ export function Step1StudentData({ data, onChange, errors }: Step1Props) {
             {data.siblings.map((sibling, index) => (
               <div
                 key={sibling.id}
-                className="space-y-4 rounded-xl p-4"
+                className="space-y-4 rounded-md p-4"
                 style={{ background: "rgba(200,162,77,.04)", border: "1px solid var(--border-soft)" }}
               >
                 <div className="flex items-center justify-between">
@@ -302,12 +302,12 @@ export function Step1StudentData({ data, onChange, errors }: Step1Props) {
       </div>
 
       {/* Age requirements — mockup info strip */}
-      <div className="flex items-start gap-3 rounded-xl border border-[#e5e7eb] bg-[#f3f4f6] px-4 py-3.5">
+      <div className="flex items-start gap-3 rounded-md border border-[#e5e7eb] bg-[#f3f4f6] px-4 py-3.5">
         <Info className="mt-0.5 h-5 w-5 shrink-0" style={{ color: "var(--gold)" }} strokeWidth={2} />
         <p className="text-sm leading-relaxed" style={{ color: "var(--text-secondary)" }}>
-          <span className="font-semibold" style={{ color: "var(--text-primary)" }}>Age requirements: </span>
-          Students must have reached the expected age by 1st September for admission to each grade as defined in the
-          Schedule of Fees.
+          <span className="font-semibold" style={{ color: "var(--text-primary)" }}>Age cut-off: </span>
+          For each class we use the child&apos;s age on 1 September — details sit with the fee schedule your admissions
+          contact can share.
         </p>
       </div>
     </div>

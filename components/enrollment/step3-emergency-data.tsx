@@ -35,10 +35,10 @@ function EmergencyContactCard({ contact, index, onChange, onRemove, errors }: Em
   const prefix = `contacts.${index}`
 
   return (
-    <div className="rounded-none overflow-hidden" style={{ border: "1px solid var(--border-soft)" }}>
+    <div className="rounded-md overflow-hidden" style={{ border: "1px solid var(--border-soft)" }}>
       <div className="flex items-center justify-between px-5 py-4 border-b" style={{ background: "rgba(220,38,38,.04)", borderColor: "var(--border-soft)" }}>
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-none flex items-center justify-center" style={{ background: "rgba(220,38,38,.08)", border: "1px solid rgba(220,38,38,.15)" }}>
+          <div className="w-8 h-8 rounded-md flex items-center justify-center" style={{ background: "rgba(220,38,38,.08)", border: "1px solid rgba(220,38,38,.15)" }}>
             <ShieldAlert className="w-4 h-4" style={{ color: "#ef4444" }} />
           </div>
           <div>
@@ -122,8 +122,8 @@ function EmergencyContactCard({ contact, index, onChange, onRemove, errors }: Em
         </FormGrid>
 
         <CheckboxField
-          label="Authorized to pick up student"
-          description="This person is authorized to collect the student from school."
+          label="May collect from school"
+          description="Same idea as parents — only tick if pickup is allowed."
           checked={contact.authorizedToPickup}
           onChange={(v) => update("authorizedToPickup", v)}
         />
@@ -169,8 +169,8 @@ export function Step3EmergencyData({ data, onChange, errors }: Step3Props) {
       {/* Emergency Contacts Section */}
       <div>
         <SectionHeader
-          title="Emergency Contacts"
-          description="Provide at least one emergency contact who can be reached if parents are unavailable. These contacts may also be authorized to collect the student."
+          title="If we cannot reach you"
+          description="At least one backup adult — neighbour, aunt, driver — who answers their phone."
           icon={<ShieldAlert className="w-5 h-5" />}
         />
 
@@ -194,30 +194,30 @@ export function Step3EmergencyData({ data, onChange, errors }: Step3Props) {
           style={{ color: "var(--gold-dark)" }}
         >
           <Plus className="w-4 h-4" />
-          Add Emergency Contact
+          Add another contact
         </button>
       </div>
 
       {/* Medical Information */}
       <div>
         <SectionHeader
-          title="Medical Information"
-          description="Please provide the student's medical details so we can ensure their safety and wellbeing."
+          title="Doctor & medical notes"
+          description="Nothing here replaces the school nurse — it tells staff who to call and what to avoid on day one."
           icon={<Stethoscope className="w-5 h-5" />}
         />
 
         <div className="space-y-5">
           <FormGrid cols={2}>
-            <FormField label="Doctor / Physician Name" required error={errors.doctorName}>
+            <FormField label="GP or paediatrician" required error={errors.doctorName}>
               <StyledInput
-                placeholder="Full name of the doctor"
+                placeholder="Practice or doctor name"
                 value={data.doctorName}
                 onChange={(e) => update("doctorName", e.target.value)}
                 error={!!errors.doctorName}
               />
             </FormField>
 
-            <FormField label="Doctor Phone Number" required error={errors.doctorPhone}>
+            <FormField label="Clinic phone" required error={errors.doctorPhone}>
               <StyledInput
                 type="tel"
                 placeholder="+968 XXXX XXXX"
@@ -227,7 +227,7 @@ export function Step3EmergencyData({ data, onChange, errors }: Step3Props) {
               />
             </FormField>
 
-            <FormField label="Preferred Hospital / Medical Centre">
+            <FormField label="Hospital preference">
               <StyledInput
                 placeholder="e.g. Royal Hospital, Muscat"
                 value={data.hospitalPreference}
@@ -236,10 +236,7 @@ export function Step3EmergencyData({ data, onChange, errors }: Step3Props) {
             </FormField>
           </FormGrid>
 
-          <FormField
-            label="Medical Conditions"
-            hint="List any chronic conditions, disabilities, or health concerns the school should be aware of."
-          >
+          <FormField label="Medical conditions" hint="Ongoing diagnoses we should plan around — or write “None”.">
             <StyledTextarea
               placeholder="e.g. Asthma, Diabetes, Epilepsy — or write 'None' if not applicable"
               value={data.medicalConditions}
@@ -248,10 +245,7 @@ export function Step3EmergencyData({ data, onChange, errors }: Step3Props) {
             />
           </FormField>
 
-          <FormField
-            label="Allergies"
-            hint="Include food, medication, and environmental allergies."
-          >
+          <FormField label="Allergies" hint="Food, drugs, insect bites — or “None”.">
             <StyledTextarea
               placeholder="e.g. Peanuts, Penicillin, Bee stings — or write 'None' if not applicable"
               value={data.allergies}
@@ -260,10 +254,7 @@ export function Step3EmergencyData({ data, onChange, errors }: Step3Props) {
             />
           </FormField>
 
-          <FormField
-            label="Current Medications"
-            hint="List any regular medications the student takes, including dosage if applicable."
-          >
+          <FormField label="Medicines at school" hint="Regular meds and dose — or “None”.">
             <StyledTextarea
               placeholder="e.g. Ventolin inhaler 100mcg — or write 'None' if not applicable"
               value={data.medications}
@@ -272,9 +263,9 @@ export function Step3EmergencyData({ data, onChange, errors }: Step3Props) {
             />
           </FormField>
 
-          <FormField label="Additional Medical Information">
+          <FormField label="Anything else clinical">
             <StyledTextarea
-              placeholder="Any other relevant medical information the school should know about..."
+              placeholder="EpiPen location, sensory needs, anything urgent we missed…"
               value={data.additionalMedicalInfo}
               onChange={(e) => update("additionalMedicalInfo", e.target.value)}
               rows={3}

@@ -42,11 +42,11 @@ function ParentCard({ parent, index, onChange, onRemove, errors, prefix }: Paren
   }
 
   return (
-    <div className="border rounded-none overflow-hidden" style={{ borderColor: "var(--border-soft)" }}>
+    <div className="border rounded-md overflow-hidden" style={{ borderColor: "var(--border-soft)" }}>
       {/* Card header */}
-      <div className="flex items-center justify-between px-5 py-4 border-b" style={{ background: "rgba(200,162,77,.04)", borderColor: "var(--border-soft)" }}>
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-none flex items-center justify-center" style={{ background: "rgba(200,162,77,.15)" }}>
+      <div className="flex flex-wrap items-start justify-between gap-3 border-b px-4 py-4 sm:px-5" style={{ background: "rgba(200,162,77,.04)", borderColor: "var(--border-soft)" }}>
+        <div className="flex min-w-0 items-center gap-3">
+          <div className="w-8 h-8 rounded-md flex items-center justify-center" style={{ background: "rgba(200,162,77,.15)" }}>
             <span className="text-sm font-bold" style={{ color: "var(--gold-dark)" }}>{index + 1}</span>
           </div>
           <div>
@@ -62,7 +62,7 @@ function ParentCard({ parent, index, onChange, onRemove, errors, prefix }: Paren
           <button
             type="button"
             onClick={onRemove}
-            className="flex items-center gap-1.5 text-xs font-medium transition-colors"
+            className="touch-manipulation flex shrink-0 items-center gap-1.5 text-xs font-medium transition-colors"
             style={{ color: "var(--destructive-color)" }}
           >
             <Trash2 className="w-3.5 h-3.5" />
@@ -72,7 +72,7 @@ function ParentCard({ parent, index, onChange, onRemove, errors, prefix }: Paren
       </div>
 
       {/* Card body */}
-      <div className="p-5 space-y-5">
+      <div className="space-y-5 p-4 sm:p-5">
         <FormGrid cols={2}>
           <FormField label="Relationship to Student" required error={errors[`${prefix}.relationship`]}>
             <StyledSelect
@@ -137,7 +137,7 @@ function ParentCard({ parent, index, onChange, onRemove, errors, prefix }: Paren
 
         {/* Contact details divider */}
         <div className="h-px bg-border/40 my-1" />
-        <h5 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Contact Details</h5>
+        <h5 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">How to reach them</h5>
 
         <FormGrid cols={2}>
           <FormField label="Mobile Phone" required error={errors[`${prefix}.mobilePhone`]}>
@@ -200,14 +200,14 @@ function ParentCard({ parent, index, onChange, onRemove, errors, prefix }: Paren
         {/* Permissions */}
         <div className="flex flex-col gap-2">
           <CheckboxField
-            label="Authorize to pick up student"
-            description="This person is authorized to collect the student from school."
+            label="Allowed to collect from school"
+            description="Tick if this adult may pick up the child at the gate."
             checked={parent.authorizedToPickup}
             onChange={(v) => update("authorizedToPickup", v)}
           />
           <CheckboxField
-            label="Add as emergency contact"
-            description="This person will be contacted in case of an emergency at school."
+            label="Also use as emergency contact"
+            description="We’ll call them if parents are unreachable."
             checked={parent.isEmergencyContact}
             onChange={(v) => update("isEmergencyContact", v)}
           />
@@ -246,8 +246,8 @@ export function Step2FamilyData({ data, onChange, errors }: Step2Props) {
       {/* Parents / Guardians */}
       <div>
         <SectionHeader
-          title="Family Data"
-          description="Please provide information about the student's parents or legal guardians."
+          title="Parents & guardians"
+          description="Legal guardians first — add a second card if someone else shares responsibility."
           icon={<Users className="w-5 h-5" />}
         />
 
@@ -272,14 +272,14 @@ export function Step2FamilyData({ data, onChange, errors }: Step2Props) {
           style={{ color: "var(--gold-dark)" }}
         >
           <Plus className="w-4 h-4" />
-          Add Another Parent / Guardian
+          Add another parent or guardian
         </button>
       </div>
 
       {/* Family Circumstances */}
       <div>
         <div className="section-divider">
-          <span>Family Circumstances</span>
+          <span>Home & household</span>
         </div>
         <FormGrid cols={2}>
           <FormField label="Marital Status" required error={errors.maritalStatus}>
@@ -301,9 +301,9 @@ export function Step2FamilyData({ data, onChange, errors }: Step2Props) {
           </FormField>
 
           <div className="col-span-full">
-            <FormField label="Custody Arrangement" hint="Only required if custody is shared or legally defined.">
+            <FormField label="Custody arrangement" hint="Only if there is a formal or shared arrangement we should know about.">
               <StyledTextarea
-                placeholder="Describe any custody arrangement relevant to the school (e.g. joint custody, sole custody, court orders...)"
+                placeholder="e.g. Joint custody — pickup on alternate weeks…"
                 value={data.custodyArrangement}
                 onChange={(e) => update("custodyArrangement", e.target.value)}
                 rows={3}

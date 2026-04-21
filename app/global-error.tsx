@@ -13,12 +13,13 @@ export default function GlobalError({
   return (
     <html>
       <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
         <style>{`
           * { box-sizing: border-box; }
           body {
             margin: 0;
             font-family: ui-monospace, monospace;
-            padding: 2rem;
+            padding: max(1rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right)) max(1rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
             background: #fafafa;
             color: #171717;
             font-size: 14px;

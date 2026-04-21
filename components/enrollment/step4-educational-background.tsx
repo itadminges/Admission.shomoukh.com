@@ -36,10 +36,10 @@ function SchoolCard({ school, index, onChange, onRemove, errors }: SchoolCardPro
   const prefix = `schools.${index}`
 
   return (
-    <div className="rounded-none overflow-hidden" style={{ border: "1px solid var(--border-soft)" }}>
+    <div className="rounded-md overflow-hidden" style={{ border: "1px solid var(--border-soft)" }}>
       <div className="flex items-center justify-between px-5 py-4 border-b" style={{ background: "rgba(200,162,77,.04)", borderColor: "var(--border-soft)" }}>
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-none flex items-center justify-center" style={{ background: "rgba(200,162,77,.12)" }}>
+          <div className="w-8 h-8 rounded-md flex items-center justify-center" style={{ background: "rgba(200,162,77,.12)" }}>
             <School className="w-4 h-4" style={{ color: "var(--gold-dark)" }} />
           </div>
           <div>
@@ -165,24 +165,24 @@ export function Step4EducationalBackground({ data, onChange, errors }: Step4Prop
       {/* Previous Schools */}
       <div>
         <SectionHeader
-          title="Educational Background"
-          description="List all schools the student has previously attended, starting with the most recent."
+          title="School history"
+          description="Most recent first. Skip this block if they have not started school yet."
           icon={<School className="w-5 h-5" />}
         />
 
         {data.previousSchools.length === 0 && (
           <div
-            className="rounded-none p-8 text-center mb-4"
+            className="rounded-md p-8 text-center mb-4"
             style={{ border: "1.5px dashed var(--border-mid)", background: "rgba(200,162,77,.03)" }}
           >
             <div
-              className="w-12 h-12 rounded-none flex items-center justify-center mx-auto mb-3"
+              className="w-12 h-12 rounded-md flex items-center justify-center mx-auto mb-3"
               style={{ background: "rgba(200,162,77,.08)" }}
             >
               <School className="w-6 h-6" style={{ color: "var(--gold)" }} />
             </div>
-            <p className="text-sm font-medium" style={{ color: "var(--text-secondary)" }}>No previous schools added yet.</p>
-            <p className="text-xs mt-1" style={{ color: "var(--text-muted)" }}>Click the button below to add a school.</p>
+            <p className="text-sm font-medium" style={{ color: "var(--text-secondary)" }}>No schools listed yet.</p>
+            <p className="text-xs mt-1" style={{ color: "var(--text-muted)" }}>First time in a setting? Go straight to the next section.</p>
           </div>
         )}
 
@@ -208,26 +208,25 @@ export function Step4EducationalBackground({ data, onChange, errors }: Step4Prop
           style={{ color: "var(--gold-dark)" }}
         >
           <Plus className="w-4 h-4" />
-          Add Previous School
+          Add a school
         </button>
       </div>
 
       {/* Learning & Support Needs */}
       <div>
         <SectionHeader
-          title="Learning & Support Needs"
-          description="This information helps us provide the right support for your child from day one. All information is kept confidential."
+          title="Learning & extra support"
+          description="Helps us line up the right classroom support early. Read only by admissions and learning support."
           icon={<Brain className="w-5 h-5" />}
         />
 
         <div className="space-y-6">
           <div
-            className="p-5 rounded-none space-y-4"
+            className="p-5 rounded-md space-y-4"
             style={{ background: "rgba(200,162,77,.03)", border: "1px solid var(--border-soft)" }}
           >
             <RadioGroupField
-              label="Does the student have any identified learning difficulties or special educational needs?"
-              required
+              label="Any diagnosed learning difference or SEND we should plan for?"
               options={[
                 { value: "true", label: "Yes" },
                 { value: "false", label: "No" },
@@ -237,13 +236,12 @@ export function Step4EducationalBackground({ data, onChange, errors }: Step4Prop
                 update("hasLearningDifficulties", v === "true")
                 if (v === "false") update("learningDifficultiesDetails", "")
               }}
-              error={errors.hasLearningDifficulties}
             />
 
             {data.hasLearningDifficulties === true && (
-              <FormField label="Please provide details">
+              <FormField label="Briefly what we should know">
                 <StyledTextarea
-                  placeholder="Describe the learning difficulties or special educational needs..."
+                  placeholder="Diagnosis, reports, what helps in class…"
                   value={data.learningDifficultiesDetails}
                   onChange={(e) => update("learningDifficultiesDetails", e.target.value)}
                   rows={3}
@@ -253,12 +251,11 @@ export function Step4EducationalBackground({ data, onChange, errors }: Step4Prop
           </div>
 
           <div
-            className="p-5 rounded-none space-y-4"
+            className="p-5 rounded-md space-y-4"
             style={{ background: "rgba(200,162,77,.03)", border: "1px solid var(--border-soft)" }}
           >
             <RadioGroupField
-              label="Has the student received any specialist support or intervention services?"
-              required
+              label="Speech, OT, learning support outside school before?"
               options={[
                 { value: "true", label: "Yes" },
                 { value: "false", label: "No" },
@@ -268,13 +265,12 @@ export function Step4EducationalBackground({ data, onChange, errors }: Step4Prop
                 update("hasReceivedSpecialSupport", v === "true")
                 if (v === "false") update("specialSupportDetails", "")
               }}
-              error={errors.hasReceivedSpecialSupport}
             />
 
             {data.hasReceivedSpecialSupport === true && (
-              <FormField label="Please describe the support received">
+              <FormField label="What worked, for how long?">
                 <StyledTextarea
-                  placeholder="e.g. Speech therapy, occupational therapy, learning support teacher..."
+                  placeholder="e.g. Weekly speech — 6 months — Starshine Clinic"
                   value={data.specialSupportDetails}
                   onChange={(e) => update("specialSupportDetails", e.target.value)}
                   rows={3}
@@ -283,12 +279,9 @@ export function Step4EducationalBackground({ data, onChange, errors }: Step4Prop
             )}
           </div>
 
-          <FormField
-            label="Additional Information"
-            hint="Include any other relevant educational background information that may assist the admissions team."
-          >
+          <FormField label="Anything else" hint="Reports, repeating a year, big moves between systems — optional.">
             <StyledTextarea
-              placeholder="Any other information you would like to share about the student's educational history..."
+              placeholder="Short note is fine."
               value={data.additionalInfo}
               onChange={(e) => update("additionalInfo", e.target.value)}
               rows={4}
