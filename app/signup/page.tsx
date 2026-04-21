@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { SignupForm } from "@/components/auth/signup-form";
 
 export const metadata = {
   title: "Create account | Shomoukh Admissions",
@@ -15,15 +14,11 @@ export default function SignupPage() {
           </p>
           <h1 className="mt-2 font-serif text-2xl font-semibold text-white">Create account</h1>
           <p className="mt-2 text-sm text-white/60">
-            Staff accounts for the dashboard. Ask IT to add your email to admin allowlist or grant a role after signup.
+            Account registration was removed from this deployment.
           </p>
         </div>
-        <SignupForm />
-        <p className="mt-6 text-center text-sm text-white/50">
-          Already registered?{" "}
-          <Link href="/login" className="text-[#C9A84C] hover:underline">
-            Sign in
-          </Link>
+        <p className="rounded-md border border-white/15 bg-white/5 px-4 py-3 text-center text-sm text-white/75">
+          Staff signup is currently disabled.
         </p>
         <p className="mt-4 text-center text-xs text-white/40">
           <Link href="/" className="hover:text-white/60">

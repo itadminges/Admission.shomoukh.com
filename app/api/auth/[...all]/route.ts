@@ -1,3 +1,7 @@
-import { handler } from "@/lib/auth-server";
+export async function GET() {
+  return Response.json({ error: "Auth is disabled." }, { status: 410 });
+}
 
-export const { GET, POST } = handler;
+export async function POST() {
+  return Response.json({ error: "Auth is disabled." }, { status: 410 });
+}

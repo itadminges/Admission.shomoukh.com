@@ -1,16 +1,8 @@
 import Link from "next/link";
-import { Suspense } from "react";
-import { LoginForm } from "@/components/auth/login-form";
 
 export const metadata = {
   title: "Staff sign in | Shomoukh Admissions",
 };
-
-function LoginFormFallback() {
-  return (
-    <div className="h-40 animate-pulse rounded-md bg-white/5" aria-hidden />
-  );
-}
 
 export default function LoginPage() {
   return (
@@ -22,17 +14,11 @@ export default function LoginPage() {
           </p>
           <h1 className="mt-2 font-serif text-2xl font-semibold text-white">Sign in</h1>
           <p className="mt-2 text-sm text-white/60">
-            Access the internal applications dashboard. Parents use the public enrolment form on the home page.
+            Authentication was removed from this deployment.
           </p>
         </div>
-        <Suspense fallback={<LoginFormFallback />}>
-          <LoginForm />
-        </Suspense>
-        <p className="mt-6 text-center text-sm text-white/50">
-          No account yet?{" "}
-          <Link href="/signup" className="text-[#C9A84C] hover:underline">
-            Create one
-          </Link>
+        <p className="rounded-md border border-white/15 bg-white/5 px-4 py-3 text-center text-sm text-white/75">
+          Staff sign in is currently disabled.
         </p>
         <p className="mt-4 text-center text-xs text-white/40">
           <Link href="/" className="hover:text-white/60">

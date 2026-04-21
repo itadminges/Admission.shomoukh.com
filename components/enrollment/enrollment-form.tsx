@@ -1,8 +1,6 @@
 "use client"
 
 import { useState, useCallback } from "react"
-import { useMutation } from "convex/react"
-import { api } from "@/convex/_generated/api"
 import { ProgressStepper, STEPS } from "@/components/enrollment/progress-stepper"
 import { FormNavigation } from "@/components/enrollment/form-components"
 import { Step1StudentData } from "@/components/enrollment/step1-student-data"
@@ -102,8 +100,6 @@ export function EnrollmentForm() {
   const [stepKey, setStepKey] = useState(0)
   const [submitError, setSubmitError] = useState<string | null>(null)
 
-  const submitApplication = useMutation(api.applications.submit)
-
   const updateFormSection = useCallback(<K extends keyof EnrollmentFormData>(
     key: K,
     value: EnrollmentFormData[K],
@@ -141,8 +137,8 @@ export function EnrollmentForm() {
       setSubmitError(null)
       setIsSubmitting(true)
       try {
-        const result = await submitApplication({ formData })
-        setReferenceNumber(result.referenceNumber)
+        const generatedReference = `SHM-${new Date().getFullYear()}-${Math.floor(100000 + Math.random() * 900000)}`
+        setReferenceNumber(generatedReference)
         setSubmitted(true)
         try {
           localStorage.removeItem("shomoukh-enrolment-draft")
