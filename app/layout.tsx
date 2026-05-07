@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from 'next'
-import { Plus_Jakarta_Sans, Playfair_Display } from 'next/font/google'
+import { Plus_Jakarta_Sans, Playfair_Display, Noto_Sans_Arabic } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
+import { Toaster } from 'sonner'
+import { AuthProvider } from '@/hooks/use-auth'
 import './globals.css'
 
 const plusJakarta = Plus_Jakarta_Sans({
@@ -12,6 +14,12 @@ const plusJakarta = Plus_Jakarta_Sans({
 const playfair = Playfair_Display({
   subsets: ['latin'],
   variable: '--font-serif',
+  display: 'swap',
+})
+
+const notoArabic = Noto_Sans_Arabic({
+  subsets: ['arabic'],
+  variable: '--font-arabic',
   display: 'swap',
 })
 
@@ -32,6 +40,13 @@ export const metadata: Metadata = {
     'school enrolment Oman',
     'Shomoukh application',
   ],
+  icons: {
+    icon: [
+      { url: '/icon.svg', type: 'image/svg+xml' },
+      { url: '/logo-icon.png', type: 'image/png' },
+    ],
+    apple: '/logo-icon.png',
+  },
 }
 
 export default async function RootLayout({
@@ -40,11 +55,24 @@ export default async function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`${plusJakarta.variable} ${playfair.variable}`}>
+    <html lang="en" className={`${plusJakarta.variable} ${playfair.variable} ${notoArabic.variable}`}>
       <body className="font-sans antialiased">
-        {children}
+        <AuthProvider>
+          {children}
+          <Toaster 
+            position="top-right"
+            toastOptions={{
+              style: {
+                background: 'white',
+                color: '#111827',
+                border: '1px solid #e5e7eb',
+              },
+            }}
+          />
+        </AuthProvider>
         <Analytics />
       </body>
     </html>
   )
 }
+

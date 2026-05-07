@@ -1,7 +1,9 @@
 "use client"
 
-import { CheckCircle2, Clock, Download, Mail, ArrowRight } from "lucide-react"
+import { useRef } from "react"
+import { CheckCircle2, Clock, Download, Mail, ArrowRight, Printer } from "lucide-react"
 import type { EnrollmentFormData } from "@/lib/enrollment-types"
+import { LongFormReview } from "./long-form-review"
 
 interface Step6SubmitProps {
   formData:         EnrollmentFormData
@@ -12,221 +14,133 @@ interface Step6SubmitProps {
 export function Step6Submit({ formData, submitted, referenceNumber }: Step6SubmitProps) {
   const { studentData } = formData
   const studentName = [studentData.givenNames, studentData.familyName].filter(Boolean).join(" ") || "the student"
+  const longFormRef = useRef<HTMLDivElement>(null)
+
+  const handleDownloadPDF = async () => {
+    if (!longFormRef.current) return
+
+    // Dynamically import html2pdf for client-side execution
+    const html2pdf = (await import("html2pdf.js")).default
+    
+    const element = longFormRef.current
+    const opt = {
+      margin:       [10, 10],
+      filename:     `Enrollment_${studentName.replace(/\s+/g, '_')}_${referenceNumber || 'Draft'}.pdf`,
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2, useCORS: true, letterRendering: true },
+      jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    }
+
+    // New Promise-based usage:
+    html2pdf().set(opt).from(element).save()
+  }
 
   /* ── SUCCESS STATE ── */
   if (submitted) {
     return (
-      <div className="flex flex-col items-center space-y-6 px-1 py-8 text-center sm:space-y-8 sm:py-12 animate-fade-slide-up">
-
+      <div className="flex flex-col items-center space-y-8 px-1 py-12 text-center animate-fade-slide-up">
         <div className="relative shrink-0">
-          <div
-            className="flex h-24 w-24 items-center justify-center rounded-md sm:h-28 sm:w-28"
-            style={{ background: "rgba(200,162,77,.1)", border: "2px solid rgba(200,162,77,.35)" }}
-          >
-            <CheckCircle2 className="h-14 w-14 sm:h-16 sm:w-16" style={{ color: "var(--gold)" }} strokeWidth={1.5} />
+          <div className="flex h-28 w-28 items-center justify-center rounded-2xl bg-gold/10 border-2 border-gold/30 shadow-lg shadow-gold/10">
+            <CheckCircle2 className="h-16 w-16 text-gold" strokeWidth={1.5} />
           </div>
-          <div className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-md border border-green-700 bg-green-600">
-            <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-            </svg>
+          <div className="absolute -bottom-2 -right-2 flex h-8 w-8 items-center justify-center rounded-full bg-green-500 text-white shadow-md border-2 border-white">
+            <CheckCircle2 className="w-5 h-5" strokeWidth={3} />
           </div>
         </div>
 
-        <div className="max-w-md space-y-2 px-2">
-          <h2 className="font-serif text-2xl font-bold tracking-tight sm:text-3xl" style={{ color: "var(--text-primary)" }}>
-            We have your application
+        <div className="max-w-xl space-y-3">
+          <h2 className="font-serif text-3xl font-bold tracking-tight text-navy">
+            Application Submitted Successfully
           </h2>
-          <p className="text-sm leading-relaxed sm:text-base" style={{ color: "var(--text-secondary)" }}>
-            The enrolment form for{" "}
-            <span className="font-bold" style={{ color: "var(--text-primary)" }}>{studentName}</span>{" "}
-            is on the admissions desk. You will hear from us once it has been read — usually within a few working days.
+          <p className="text-base text-text-secondary leading-relaxed">
+            The enrollment form for <span className="font-bold text-navy">{studentName}</span> has been received. Our admissions team will review it and contact you within 3-5 working days.
           </p>
         </div>
 
-        {/* Reference number card */}
         {referenceNumber && (
-          <div
-            className="w-full max-w-md rounded-md px-5 py-5 text-center sm:px-8"
-            style={{
-              background: "rgba(200,162,77,.08)",
-              border: "1.5px solid rgba(200,162,77,.3)",
-            }}
-          >
-            <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: "var(--text-muted)" }}>
-              Your reference
-            </p>
-            <p
-              className="break-all font-mono text-xl font-bold tracking-widest sm:break-normal sm:text-2xl"
-              style={{ color: "var(--gold-dark)" }}
-            >
-              {referenceNumber}
-            </p>
-            <p className="text-xs mt-2" style={{ color: "var(--text-muted)" }}>
-              Quote this in emails or calls so we open the right file first time.
-            </p>
+          <div className="w-full max-w-md rounded-2xl p-8 bg-gold/5 border-2 border-gold/20 shadow-sm relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-gold/5 rounded-full -mr-16 -mt-16 transition-transform group-hover:scale-110 duration-700" />
+            <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-text-muted mb-3">Your Application Reference</p>
+            <p className="font-mono text-3xl font-bold tracking-widest text-gold-dark">{referenceNumber}</p>
+            <p className="text-xs mt-3 text-text-muted/80">Please keep this number for future correspondence.</p>
           </div>
         )}
 
-        {/* Next steps */}
-        <div
-          className="flex w-full max-w-sm items-start gap-3 rounded-md p-4 text-left sm:gap-4 sm:p-5"
-          style={{ background: "var(--surface)", border: "1px solid var(--border-soft)" }}
-        >
-          <div
-            className="w-9 h-9 rounded-md flex items-center justify-center shrink-0 mt-0.5"
-            style={{ background: "rgba(200,162,77,.12)" }}
-          >
-            <Clock className="h-[1.125rem] w-[1.125rem]" style={{ color: "var(--gold)" }} />
-          </div>
-          <div>
-            <p className="text-sm font-bold mb-2" style={{ color: "var(--text-primary)" }}>Typical next steps</p>
-            <ul className="space-y-1.5">
-              {[
-                "Admissions checks the file for gaps",
-                "Confirmation email within roughly three working days",
-                "Sometimes we ask for documents or a short visit",
-                "Offer or wait-list letter follows in writing",
-              ].map((item, i) => (
-                <li key={i} className="flex items-start gap-2 text-xs" style={{ color: "var(--text-secondary)" }}>
-                  <ArrowRight className="w-3 h-3 mt-0.5 shrink-0" style={{ color: "var(--gold)" }} />
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-
         {/* Actions */}
-        <div className="flex w-full max-w-md flex-col gap-2 sm:flex-row sm:flex-wrap sm:justify-center sm:gap-3">
-          <button type="button" className="btn-ghost w-full justify-center text-sm sm:w-auto">
-            <Download className="w-4 h-4" />
-            Save PDF
+        <div className="flex w-full max-w-md flex-col gap-3 sm:flex-row sm:justify-center pt-4">
+          <button 
+            type="button" 
+            onClick={handleDownloadPDF}
+            className="btn-gold h-12 px-8 flex items-center justify-center gap-2 group"
+          >
+            <Download className="w-4 h-4 transition-transform group-hover:-translate-y-0.5" />
+            Download Copy (PDF)
           </button>
-          <button type="button" className="btn-ghost w-full justify-center text-sm sm:w-auto" style={{ color: "var(--gold-dark)" }}>
+          <button 
+            type="button" 
+            className="btn-ghost h-12 px-8 flex items-center justify-center gap-2 text-navy border-navy/10 hover:bg-navy/5"
+          >
             <Mail className="w-4 h-4" />
-            Email summary
+            Email Summary
           </button>
         </div>
 
-        <a
-          href="https://shomoukh.com"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-sm hover:underline"
-          style={{ color: "var(--gold)" }}
-        >
-          Back to shomoukh.com →
-        </a>
+        {/* Hidden area for PDF generation */}
+        <div className="hidden">
+          <LongFormReview ref={longFormRef} formData={formData} referenceNumber={referenceNumber} />
+        </div>
+
+        <div className="pt-8 border-t border-border-soft w-full max-w-md">
+          <a
+            href="https://shomoukh.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm font-bold text-gold hover:text-gold-dark flex items-center justify-center gap-2 transition-colors"
+          >
+            Return to School Website
+            <ArrowRight className="w-4 h-4" />
+          </a>
+        </div>
       </div>
     )
   }
 
   /* ── REVIEW STATE ── */
-  const summaryItems = [
-    { label: "Child",       value: studentName },
-    { label: "Known as", value: studentData.toBeKnownAs || "—" },
-    {
-      label: "Date of Birth",
-      value: studentData.dateOfBirth
-        ? new Date(studentData.dateOfBirth).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })
-        : "—",
-    },
-    { label: "Nationality",        value: studentData.nationality || "—" },
-    { label: "Gender",             value: studentData.gender || "—" },
-    { label: "Class applied for",     value: studentData.anticipatedGradeOfEntry || "—" },
-    { label: "School year",    value: studentData.enrollmentYear || "—" },
-    {
-      label: "Parents / Guardians",
-      value: formData.familyData.parents
-        .filter((p) => p.givenNames)
-        .map((p) => `${p.givenNames} ${p.familyName} (${p.relationship})`)
-        .join(", ") || "—",
-    },
-    {
-      label: "Emergency Contacts",
-      value: formData.emergencyData.emergencyContacts
-        .filter((c) => c.name)
-        .map((c) => `${c.name} (${c.relationship})`)
-        .join(", ") || "—",
-    },
-    {
-      label: "Previous schools",
-      value: formData.educationalBackground.previousSchools.length > 0
-        ? formData.educationalBackground.previousSchools.map((s) => s.schoolName).join(", ")
-        : "Not applicable / none yet",
-    },
-  ]
-
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div
-        className="flex flex-col items-center text-center space-y-3 pb-6"
-        style={{ borderBottom: "1px solid var(--border-soft)" }}
-      >
-        <div
-          className="w-16 h-16 rounded-md flex items-center justify-center"
-          style={{ background: "rgba(200,162,77,.12)", border: "1px solid rgba(200,162,77,.2)" }}
-        >
-          <CheckCircle2 className="w-9 h-9" style={{ color: "var(--gold)" }} strokeWidth={1.5} />
-        </div>
-        <div>
-          <h2 className="text-2xl font-bold font-serif" style={{ color: "var(--text-primary)" }}>
-            Final check
+    <div className="space-y-10">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-border-soft pb-8">
+        <div className="space-y-2">
+          <h2 className="text-3xl font-serif font-bold text-navy">
+            Final Review
           </h2>
-          <p className="text-sm mt-1" style={{ color: "var(--text-muted)" }}>
-            Skim the snapshot — go back a step if anything looks wrong.
+          <p className="text-base text-text-secondary leading-relaxed">
+            Please review all information before submitting. You can go back to any section to make corrections.
           </p>
         </div>
+        <button 
+          type="button" 
+          onClick={handleDownloadPDF}
+          className="btn-ghost h-11 px-6 flex items-center gap-2 text-gold-dark border-gold/20 hover:bg-gold/5"
+        >
+          <Printer className="w-4 h-4" />
+          Save as Draft PDF
+        </button>
       </div>
 
-      {/* Summary Table */}
-      <div
-        className="rounded-md overflow-hidden"
-        style={{ border: "1px solid var(--border-soft)" }}
-      >
-        <div
-          className="px-5 py-3.5"
-          style={{
-            background: "rgba(200,162,77,.06)",
-            borderBottom: "1px solid var(--border-soft)",
-          }}
-        >
-          <h3 className="text-sm font-bold" style={{ color: "var(--text-primary)" }}>Snapshot</h3>
+      <div className="bg-cream/10 rounded-2xl shadow-inner-soft overflow-hidden border border-border-soft">
+        <LongFormReview ref={longFormRef} formData={formData} referenceNumber={referenceNumber} />
+      </div>
+
+      <div className="bg-navy p-6 rounded-2xl text-white flex items-start gap-4">
+        <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center shrink-0">
+          <CheckCircle2 className="w-5 h-5 text-gold" />
         </div>
         <div>
-          {summaryItems.map((item, i) => (
-            <div
-              key={item.label}
-              className="flex flex-col gap-1 px-4 py-3.5 sm:flex-row sm:items-start sm:gap-4 sm:px-5"
-              style={{
-                borderBottom: i < summaryItems.length - 1 ? "1px solid var(--border-soft)" : "none",
-                background: i % 2 === 0 ? "transparent" : "rgba(200,162,77,.02)",
-              }}
-            >
-              <span
-                className="shrink-0 pt-0.5 text-[10px] font-semibold uppercase tracking-wider sm:w-36 sm:text-xs md:w-44"
-                style={{ color: "var(--text-muted)" }}
-              >
-                {item.label}
-              </span>
-              <span
-                className="min-w-0 break-words text-sm font-medium"
-                style={{ color: "var(--text-primary)" }}
-              >
-                {item.value}
-              </span>
-            </div>
-          ))}
+          <h4 className="text-sm font-bold mb-1">Declaration of Accuracy</h4>
+          <p className="text-xs text-white/70 leading-relaxed">
+            By clicking "Submit", I confirm that all the information provided above is correct to the best of my knowledge. I understand that any false information may lead to the cancellation of this application.
+          </p>
         </div>
-      </div>
-
-      {/* Confirmation Note */}
-      <div className="notice-banner">
-        <p className="text-sm leading-relaxed" style={{ color: "var(--text-secondary)" }}>
-          Submitting means the details above match what you know to be true, and the policies you ticked in the last step
-          still stand.
-        </p>
       </div>
     </div>
   )

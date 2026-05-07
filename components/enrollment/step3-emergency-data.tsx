@@ -65,7 +65,7 @@ function EmergencyContactCard({ contact, index, onChange, onRemove, errors }: Em
 
       <div className="p-5 space-y-5">
         <FormGrid cols={2}>
-          <FormField label="Full Name" required error={errors[`${prefix}.name`]}>
+          <FormField label="Full Name" arabicLabel="الاسم الكامل" required error={errors[`${prefix}.name`]}>
             <StyledInput
               placeholder="Full name"
               value={contact.name}
@@ -74,7 +74,7 @@ function EmergencyContactCard({ contact, index, onChange, onRemove, errors }: Em
             />
           </FormField>
 
-          <FormField label="Relationship to Student" required error={errors[`${prefix}.relationship`]}>
+          <FormField label="Relationship to Student" arabicLabel="صلة القرابة للطالب" required error={errors[`${prefix}.relationship`]}>
             <StyledSelect
               value={contact.relationship}
               onValueChange={(v) => update("relationship", v)}
@@ -83,7 +83,7 @@ function EmergencyContactCard({ contact, index, onChange, onRemove, errors }: Em
             />
           </FormField>
 
-          <FormField label="Mobile Phone" required error={errors[`${prefix}.mobilePhone`]}>
+          <FormField label="Mobile Phone" arabicLabel="رقم الهاتف المحمول" required error={errors[`${prefix}.mobilePhone`]}>
             <StyledInput
               type="tel"
               placeholder="+968 XXXX XXXX"
@@ -93,7 +93,7 @@ function EmergencyContactCard({ contact, index, onChange, onRemove, errors }: Em
             />
           </FormField>
 
-          <FormField label="Home Phone">
+          <FormField label="Home Phone" arabicLabel="هاتف المنزل">
             <StyledInput
               type="tel"
               placeholder="+968 XXXX XXXX"
@@ -102,7 +102,7 @@ function EmergencyContactCard({ contact, index, onChange, onRemove, errors }: Em
             />
           </FormField>
 
-          <FormField label="Work Phone">
+          <FormField label="Work Phone" arabicLabel="هاتف العمل">
             <StyledInput
               type="tel"
               placeholder="+968 XXXX XXXX"
@@ -111,7 +111,7 @@ function EmergencyContactCard({ contact, index, onChange, onRemove, errors }: Em
             />
           </FormField>
 
-          <FormField label="Email Address">
+          <FormField label="Email Address" arabicLabel="البريد الإلكتروني">
             <StyledInput
               type="email"
               placeholder="email@example.com"
@@ -170,6 +170,7 @@ export function Step3EmergencyData({ data, onChange, errors }: Step3Props) {
       <div>
         <SectionHeader
           title="If we cannot reach you"
+          arabicTitle="بيانات الاتصال في حالات الطوارئ"
           description="At least one backup adult — neighbour, aunt, driver — who answers their phone."
           icon={<ShieldAlert className="w-5 h-5" />}
         />
@@ -202,13 +203,14 @@ export function Step3EmergencyData({ data, onChange, errors }: Step3Props) {
       <div>
         <SectionHeader
           title="Doctor & medical notes"
+          arabicTitle="بيانات الطبيب والملاحظات الطبية"
           description="Nothing here replaces the school nurse — it tells staff who to call and what to avoid on day one."
           icon={<Stethoscope className="w-5 h-5" />}
         />
 
         <div className="space-y-5">
           <FormGrid cols={2}>
-            <FormField label="GP or paediatrician" required error={errors.doctorName}>
+            <FormField label="GP or paediatrician" arabicLabel="الطبيب العام أو طبيب الأطفال" required error={errors.doctorName}>
               <StyledInput
                 placeholder="Practice or doctor name"
                 value={data.doctorName}
@@ -217,7 +219,7 @@ export function Step3EmergencyData({ data, onChange, errors }: Step3Props) {
               />
             </FormField>
 
-            <FormField label="Clinic phone" required error={errors.doctorPhone}>
+            <FormField label="Clinic phone" arabicLabel="هاتف العيادة" required error={errors.doctorPhone}>
               <StyledInput
                 type="tel"
                 placeholder="+968 XXXX XXXX"
@@ -227,7 +229,7 @@ export function Step3EmergencyData({ data, onChange, errors }: Step3Props) {
               />
             </FormField>
 
-            <FormField label="Hospital preference">
+            <FormField label="Hospital preference" arabicLabel="المستشفى المفضل">
               <StyledInput
                 placeholder="e.g. Royal Hospital, Muscat"
                 value={data.hospitalPreference}
@@ -236,7 +238,7 @@ export function Step3EmergencyData({ data, onChange, errors }: Step3Props) {
             </FormField>
           </FormGrid>
 
-          <FormField label="Medical conditions" hint="Ongoing diagnoses we should plan around — or write “None”.">
+          <FormField label="Medical conditions" arabicLabel="الحالات الطبية" hint="Ongoing diagnoses we should plan around — or write “None”.">
             <StyledTextarea
               placeholder="e.g. Asthma, Diabetes, Epilepsy — or write 'None' if not applicable"
               value={data.medicalConditions}
@@ -245,7 +247,7 @@ export function Step3EmergencyData({ data, onChange, errors }: Step3Props) {
             />
           </FormField>
 
-          <FormField label="Allergies" hint="Food, drugs, insect bites — or “None”.">
+          <FormField label="Allergies" arabicLabel="الحساسية" hint="Food, drugs, insect bites — or “None”.">
             <StyledTextarea
               placeholder="e.g. Peanuts, Penicillin, Bee stings — or write 'None' if not applicable"
               value={data.allergies}
@@ -254,7 +256,7 @@ export function Step3EmergencyData({ data, onChange, errors }: Step3Props) {
             />
           </FormField>
 
-          <FormField label="Medicines at school" hint="Regular meds and dose — or “None”.">
+          <FormField label="Medicines at school" arabicLabel="الأدوية في المدرسة" hint="Regular meds and dose — or “None”.">
             <StyledTextarea
               placeholder="e.g. Ventolin inhaler 100mcg — or write 'None' if not applicable"
               value={data.medications}
@@ -263,7 +265,7 @@ export function Step3EmergencyData({ data, onChange, errors }: Step3Props) {
             />
           </FormField>
 
-          <FormField label="Anything else clinical">
+          <FormField label="Anything else clinical" arabicLabel="ملاحظات طبية أخرى">
             <StyledTextarea
               placeholder="EpiPen location, sensory needs, anything urgent we missed…"
               value={data.additionalMedicalInfo}

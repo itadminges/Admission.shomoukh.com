@@ -3,6 +3,7 @@
 import { useRef, useState } from "react"
 import { Camera, Upload, X, User, CheckCircle2 } from "lucide-react"
 import Image from "next/image"
+import { cn } from "@/lib/utils"
 
 interface PhotoUploadProps {
   value:    string | null
@@ -10,11 +11,20 @@ interface PhotoUploadProps {
 }
 
 export function PhotoUpload({ value, onChange }: PhotoUploadProps) {
-  const inputRef  = useRef<HTMLInputElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
   const [isDragging, setIsDragging] = useState(false)
+  const [fileInfo, setFileInfo] = useState<{ name: string; size: string } | null>(null)
 
   const handleFile = (file: File) => {
     if (!file.type.startsWith("image/")) return
+    
+    // Format file size
+    const size = file.size > 1024 * 1024 
+      ? `${(file.size / (1024 * 1024)).toFixed(1)} MB` 
+      : `${(file.size / 1024).toFixed(0)} KB`
+    
+    setFileInfo({ name: file.name, size })
+
     const reader = new FileReader()
     reader.onload = (e) => {
       if (e.target?.result) onChange(e.target.result as string)
@@ -34,91 +44,88 @@ export function PhotoUpload({ value, onChange }: PhotoUploadProps) {
     if (file) handleFile(file)
   }
 
-  return (
-    <div className="flex flex-col items-start gap-5 sm:flex-row sm:items-center">
+  const removePhoto = () => {
+    onChange(null)
+    setFileInfo(null)
+  }
 
-      {/* ── Photo drop zone ── */}
-      <div
-        className={`photo-zone ${isDragging ? "drag" : ""} ${value ? "filled" : ""}`}
+  return (
+    <div className="w-full">
+      <div 
+        className={cn(
+          "relative group overflow-hidden rounded-2xl border-2 border-dashed transition-all duration-500 p-8 flex flex-col items-center justify-center gap-6",
+          isDragging ? "border-gold bg-gold/5 scale-[1.02]" : "border-border-mid bg-white hover:border-gold/30 hover:bg-cream/20",
+          value ? "border-solid border-gold/20" : ""
+        )}
         onDragOver={(e) => { e.preventDefault(); setIsDragging(true) }}
         onDragLeave={() => setIsDragging(false)}
         onDrop={handleDrop}
-        onClick={() => !value && inputRef.current?.click()}
-        style={{ position: "relative" }}
       >
         {value ? (
-          <>
-            <Image src={value} alt="Student photo" fill className="object-cover" />
-            {/* Overlay checkmark */}
-            <div
-              className="absolute inset-0 flex items-end justify-end bg-gradient-to-t from-black/45 to-transparent p-1.5"
-            >
-              <CheckCircle2 className="w-5 h-5" style={{ color: "var(--gold)" }} />
+          <div className="flex flex-col items-center gap-6 animate-in fade-in zoom-in duration-500">
+            {/* Preview Circle */}
+            <div className="relative w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-white shadow-premium group-hover:scale-105 transition-transform duration-500">
+              <Image src={value} alt="Student photo" fill className="object-cover" />
+              <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                <Upload className="text-white w-8 h-8" />
+              </div>
             </div>
-          </>
-        ) : (
-          <div className="flex flex-col items-center gap-2 px-3 text-center select-none pointer-events-none">
-            <div
-              className="flex h-12 w-12 items-center justify-center rounded-md"
-              style={{ background: "rgba(200,162,77,.1)", border: "1.5px dashed var(--gold)" }}
-            >
-              <User className="w-5 h-5" style={{ color: "var(--gold)" }} />
+
+            {/* File Details */}
+            <div className="text-center">
+              <p className="text-sm font-bold text-navy">Photo Selected</p>
+              {fileInfo && (
+                <p className="text-xs text-text-muted mt-1">{fileInfo.name} • {fileInfo.size}</p>
+              )}
             </div>
-            <span className="text-[11px] font-medium leading-tight" style={{ color: "var(--text-muted)" }}>
-              Face<br />photo
-            </span>
+
+            {/* Actions */}
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => inputRef.current?.click()}
+                className="btn-gold h-10 px-6 text-xs flex items-center gap-2"
+              >
+                <Upload className="w-3.5 h-3.5" />
+                Replace
+              </button>
+              <button
+                type="button"
+                onClick={removePhoto}
+                className="btn-ghost h-10 px-6 text-xs flex items-center gap-2 text-destructive border-destructive/20 hover:bg-destructive/5 hover:border-destructive/40"
+              >
+                <X className="w-3.5 h-3.5" />
+                Remove
+              </button>
+            </div>
           </div>
-        )}
-      </div>
+        ) : (
+          <div className="flex flex-col items-center text-center gap-5 max-w-sm">
+            <div className="w-16 h-16 rounded-2xl bg-gold/10 flex items-center justify-center text-gold group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
+              <Camera className="w-8 h-8" />
+            </div>
+            
+            <div className="space-y-1">
+              <h3 className="text-base font-bold text-navy">Upload Student Photo</h3>
+              <p className="text-xs text-text-muted leading-relaxed">
+                Drag and drop your image here, or click to browse.<br />
+                Recent passport-style photo, JPG or PNG (Max 5MB).
+              </p>
+            </div>
 
-      {/* ── Action area ── */}
-      <div className="flex w-full flex-col gap-2.5 sm:w-auto">
-        <div className="flex flex-col gap-1">
-          <p className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
-            {value ? "Photo saved" : "Add a recent photo"}
-          </p>
-          <p className="text-xs leading-relaxed" style={{ color: "var(--text-muted)" }}>
-            Face forward, plain background — same idea as a passport shot.<br />
-            JPG or PNG · max 5 MB
-          </p>
-        </div>
-
-        <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
-          <button
-            type="button"
-            onClick={() => inputRef.current?.click()}
-            className="btn-gold w-full touch-manipulation justify-center px-3.5 py-2 text-xs sm:w-auto"
-          >
-            <Upload className="w-3.5 h-3.5" />
-            {value ? "Replace" : "Browse files"}
-          </button>
-
-          <button
-            type="button"
-            className="btn-ghost w-full touch-manipulation justify-center px-3.5 py-2 text-xs sm:w-auto"
-          >
-            <Camera className="w-3.5 h-3.5" />
-            Use Camera
-          </button>
-
-          {value && (
             <button
               type="button"
-              onClick={() => onChange(null)}
-              className="btn-ghost w-full touch-manipulation justify-center px-3.5 py-2 text-xs sm:w-auto"
-              style={{ color: "var(--destructive-color)", borderColor: "rgba(220,38,38,.25)" }}
+              onClick={() => inputRef.current?.click()}
+              className="btn-gold h-11 px-8 text-sm"
             >
-              <X className="w-3.5 h-3.5" />
-              Remove
+              Browse Files
             </button>
-          )}
-        </div>
+          </div>
+        )}
 
-        {/* Drag hint */}
+        {/* Floating background icon */}
         {!value && (
-          <p className="text-[11px]" style={{ color: "rgba(138,138,154,.7)" }}>
-            Or drop a file onto the frame
-          </p>
+          <User className="absolute -bottom-6 -right-6 w-32 h-32 text-navy/[0.03] -rotate-12" />
         )}
       </div>
 

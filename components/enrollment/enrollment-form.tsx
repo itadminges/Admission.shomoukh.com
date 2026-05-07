@@ -1,6 +1,7 @@
 "use client"
 
-import { useState, useCallback } from "react"
+import { useState, useCallback, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { ProgressStepper, STEPS } from "@/components/enrollment/progress-stepper"
 import { FormNavigation } from "@/components/enrollment/form-components"
 import { Step1StudentData } from "@/components/enrollment/step1-student-data"
@@ -14,6 +15,10 @@ import { EnrolmentFooter } from "@/components/enrollment/enrolment-footer"
 import { EnrolmentSidebar } from "@/components/enrollment/enrolment-sidebar"
 import type { EnrollmentFormData, StudentData, FamilyData, EmergencyData, EducationalBackground, ConditionsWaiver } from "@/lib/enrollment-types"
 import { defaultFormData } from "@/lib/enrollment-types"
+import { Sparkles, CheckCircle2 } from "lucide-react"
+import { toast } from "sonner"
+import { useAuth } from "@/hooks/use-auth"
+
 
 const STEP_ESTIMATED = ["~5 min", "~8 min", "~6 min", "~6 min", "~8 min", "~4 min"]
 
@@ -99,6 +104,7 @@ export function EnrollmentForm() {
   const [referenceNumber, setReferenceNumber] = useState("")
   const [stepKey, setStepKey] = useState(0)
   const [submitError, setSubmitError] = useState<string | null>(null)
+  const [lastSaved, setLastSaved] = useState<Date | null>(null)
 
   const updateFormSection = useCallback(<K extends keyof EnrollmentFormData>(
     key: K,
@@ -106,6 +112,29 @@ export function EnrollmentForm() {
   ) => {
     setFormData((prev) => ({ ...prev, [key]: value }))
   }, [])
+
+  const handleSaveDraft = useCallback(() => {
+    try {
+      const payload = {
+        formData,
+        currentStep,
+        completedSteps,
+        savedAt: Date.now(),
+      }
+      localStorage.setItem("shomoukh-enrolment-draft", JSON.stringify(payload))
+      setLastSaved(new Date())
+    } catch {
+      /* ignore */
+    }
+  }, [formData, currentStep, completedSteps])
+
+  // Auto-save effect
+  useEffect(() => {
+    const timer = setInterval(() => {
+      handleSaveDraft()
+    }, 10000)
+    return () => clearInterval(timer)
+  }, [handleSaveDraft])
 
   const validateCurrentStep = (): Record<string, unknown> => {
     switch (currentStep) {
@@ -118,22 +147,21 @@ export function EnrollmentForm() {
     }
   }
 
-  const handleSaveDraft = useCallback(() => {
-    try {
-      const payload = {
-        formData,
-        currentStep,
-        completedSteps,
-        savedAt: Date.now(),
-      }
-      localStorage.setItem("shomoukh-enrolment-draft", JSON.stringify(payload))
-    } catch {
-      /* ignore */
-    }
-  }, [formData, currentStep, completedSteps])
+  const { user } = useAuth()
+  const router = useRouter()
 
   const handleNext = async () => {
     if (currentStep === 6) {
+      if (!user) {
+        toast.info("Authentication Required", {
+          description: "Please sign in or create an account to submit your application.",
+        });
+        // Save current progress to draft before redirecting
+        handleSaveDraft();
+        router.push("/login?redirect=/enrollment");
+        return;
+      }
+
       setSubmitError(null)
       setIsSubmitting(true)
       try {
@@ -147,7 +175,7 @@ export function EnrollmentForm() {
         }
       } catch {
         setSubmitError(
-          "We could not submit your application. Check your connection and try again. If it keeps happening, email admissions with a screenshot.",
+          "We could not submit your application. Check your connection and try again.",
         )
         window.scrollTo({ top: 0, behavior: "smooth" })
       } finally {
@@ -155,6 +183,7 @@ export function EnrollmentForm() {
       }
       return
     }
+
     const stepErrors = validateCurrentStep()
     if (Object.keys(stepErrors).length > 0) {
       setErrors(stepErrors)
@@ -190,36 +219,36 @@ export function EnrollmentForm() {
 
   if (submitted) {
     return (
-      <div className="min-h-screen bg-[#f7f4ed]">
+      <div className="min-h-screen">
         <EnrolmentHeader />
-        <div className="enrolment-page-bg pb-8">
-          <div className="enrolment-inner mx-auto max-w-3xl px-4 py-8 sm:py-14 sm:px-6 lg:px-8">
-            <div className="premium-card overflow-hidden p-6 sm:p-10">
-              <Step6Submit
-                formData={formData}
-                submitted={submitted}
-                referenceNumber={referenceNumber}
-              />
-            </div>
+        <div className="max-w-3xl mx-auto px-4 py-16">
+          <div className="premium-card p-10 text-center animate-fade-slide-up">
+            <Step6Submit
+              formData={formData}
+              submitted={submitted}
+              referenceNumber={referenceNumber}
+            />
           </div>
-          <EnrolmentFooter />
         </div>
+        <EnrolmentFooter />
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-[#f7f4ed]">
+    <div className="min-h-screen selection:bg-gold/20">
       <EnrolmentHeader />
 
-      <div className="enrolment-page-bg pb-16">
-        <div className="enrolment-inner mx-auto max-w-7xl px-3 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 items-start gap-6 pt-6 sm:gap-8 sm:pt-8 lg:grid-cols-[minmax(260px,360px)_1fr] lg:gap-10 lg:pt-10">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-[340px_1fr] gap-8 lg:gap-12 items-start">
+          
+          <EnrolmentSidebar />
 
-            <EnrolmentSidebar />
-
-            <div className="premium-card min-w-0 overflow-hidden">
-              <div className="border-b border-[var(--border-soft)] px-4 py-5 sm:px-8 sm:py-8">
+          <div className="space-y-8">
+            {/* Main Form Card */}
+            <div className="premium-card overflow-hidden">
+              {/* Stepper Header */}
+              <div className="px-6 py-8 sm:px-10 sm:py-10 border-b border-border-soft bg-white">
                 <ProgressStepper
                   currentStep={currentStep}
                   completedSteps={completedSteps}
@@ -227,74 +256,54 @@ export function EnrollmentForm() {
                 />
               </div>
 
-              {StepTitleIcon && (
-                <div className="flex flex-col gap-4 border-b border-[var(--border-soft)] px-4 py-5 sm:flex-row sm:items-start sm:justify-between sm:gap-6 sm:px-8">
-                  <div className="flex min-w-0 gap-3 sm:gap-4">
-                    <div
-                      className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md bg-amber-50 sm:h-14 sm:w-14"
-                      style={{ border: "1px solid rgba(200,162,77,.35)" }}
-                    >
-                      <StepTitleIcon className="h-6 w-6 sm:h-7 sm:w-7" style={{ color: "var(--gold-dark)" }} strokeWidth={2} />
+              {/* Step Info */}
+              <div className="px-6 py-8 sm:px-10 sm:py-10 bg-white border-b border-border-soft">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                  <div className="flex items-start gap-5">
+                    <div className="w-14 h-14 rounded-2xl bg-gold/10 flex items-center justify-center text-gold shrink-0 shadow-sm border border-gold/5">
+                      <StepTitleIcon className="w-7 h-7" strokeWidth={2.5} />
                     </div>
                     <div>
-                      <h1 className="font-serif text-xl font-bold leading-tight tracking-tight text-[var(--navy)] sm:text-2xl lg:text-[1.65rem]">
-                        {stepMeta.label}
-                      </h1>
-                      <p className="mt-1 max-w-[52ch] text-sm leading-relaxed text-[var(--text-secondary)] md:text-[0.9375rem]">
-                        {STEP_INTRO[currentStep] ??
-                          "Fill this block as completely as you can — you can edit later before you send."}
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-gold">Step {currentStep} of 6</span>
+                        {completedSteps.includes(currentStep) && <CheckCircle2 className="w-4 h-4 text-green-500" />}
+                      </div>
+                      <h1 className="text-2xl sm:text-3xl font-bold text-navy tracking-tight">{stepMeta.label}</h1>
+                      <p className="mt-2 text-sm text-text-secondary leading-relaxed max-w-2xl">
+                        {STEP_INTRO[currentStep]}
                       </p>
                     </div>
                   </div>
-                  <div
-                    className="w-full shrink-0 rounded-md px-4 py-2 text-center text-xs font-semibold sm:mt-1 sm:w-fit sm:self-start sm:text-left"
-                    style={{
-                      background: "#f8f6f2",
-                      border: "1px solid var(--border-soft)",
-                      color: "var(--text-muted)",
-                    }}
-                  >
-                    Rough timing: {STEP_ESTIMATED[currentStep - 1]}
+                  
+                  <div className="flex flex-col items-end gap-2 shrink-0">
+                    <div className="px-4 py-2 rounded-xl bg-cream border border-border-soft flex items-center gap-2 shadow-inner-soft">
+                      <Sparkles className="w-4 h-4 text-gold" />
+                      <span className="text-xs font-bold text-text-muted uppercase tracking-wider">
+                        Est: {STEP_ESTIMATED[currentStep - 1]}
+                      </span>
+                    </div>
+                    {lastSaved && (
+                      <span className="text-[10px] text-text-muted font-medium italic">
+                        Draft saved at {lastSaved.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                    )}
                   </div>
                 </div>
-              )}
+              </div>
 
-              <div key={stepKey} className="animate-fade-slide-up px-4 py-6 sm:px-8 sm:py-8">
-                {submitError && (
-                  <div
-                    className="mb-6 flex items-start gap-3 rounded-md border border-red-200 bg-red-50/80 px-4 py-3"
-                    style={{ borderLeftWidth: 3, borderLeftColor: "#dc2626" }}
-                  >
-                    <svg className="mt-0.5 h-4 w-4 shrink-0 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <circle cx="12" cy="12" r="10" strokeWidth="1.5" />
-                      <path d="M12 8v4m0 4h.01" strokeWidth="2" strokeLinecap="round" />
-                    </svg>
-                    <p className="text-sm text-red-700">{submitError}</p>
-                  </div>
-                )}
-
+              {/* Form Content */}
+              <div key={stepKey} className="px-6 py-8 sm:px-10 sm:py-12 animate-fade-slide-up bg-white">
                 {errorCount > 0 && (
-                  <div
-                    className="mb-6 flex items-start gap-3 rounded-md border border-red-200 bg-red-50/80 px-4 py-3"
-                    style={{ borderLeftWidth: 3, borderLeftColor: "#dc2626" }}
-                  >
-                    <svg className="mt-0.5 h-4 w-4 shrink-0 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <circle cx="12" cy="12" r="10" strokeWidth="1.5" />
-                      <path d="M12 8v4m0 4h.01" strokeWidth="2" strokeLinecap="round" />
-                    </svg>
-                    <div>
-                      <p className="text-sm font-semibold text-red-700">
-                        {errorCount === 1
-                          ? "One field still needs attention before we move on"
-                          : `${errorCount} fields still need attention before we move on`}
-                      </p>
-                      <ul className="mt-1 space-y-0.5">
-                        {Object.values(errors as Record<string, string>).slice(0, 4).map((msg, i) => (
-                          <li key={i} className="text-xs text-red-600">• {msg}</li>
-                        ))}
-                        {errorCount > 4 && <li className="text-xs text-red-600">• …and {errorCount - 4} more</li>}
-                      </ul>
+                  <div className="mb-8 p-5 rounded-2xl bg-destructive/5 border border-destructive/10 animate-in fade-in slide-in-from-top-2 duration-300">
+                    <div className="flex items-center gap-3 text-destructive mb-2">
+                      <AlertCircle className="w-5 h-5" />
+                      <h4 className="font-bold text-sm">Please check {errorCount} {errorCount === 1 ? 'field' : 'fields'}</h4>
                     </div>
+                    <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-1 ml-8">
+                      {Object.values(errors as Record<string, string>).map((msg, i) => (
+                        <li key={i} className="text-xs text-destructive/80 list-disc">{msg}</li>
+                      ))}
+                    </ul>
                   </div>
                 )}
 
@@ -348,15 +357,34 @@ export function EnrollmentForm() {
                   onNext={handleNext}
                   onSaveDraft={handleSaveDraft}
                   isSubmitting={isSubmitting}
-                  nextLabel={currentStep === 6 ? "Submit application" : undefined}
+                  nextLabel={currentStep === 6 ? "Finalize & Submit" : undefined}
                 />
               </div>
             </div>
           </div>
-
-          <EnrolmentFooter />
         </div>
-      </div>
+      </main>
+
+      <EnrolmentFooter />
     </div>
+  )
+}
+
+function AlertCircle(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <circle cx="12" cy="12" r="10" />
+      <line x1="12" y1="8" x2="12" y2="12" />
+      <line x1="12" y1="16" x2="12.01" y2="16" />
+    </svg>
   )
 }

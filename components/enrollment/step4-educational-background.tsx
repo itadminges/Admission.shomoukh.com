@@ -65,7 +65,7 @@ function SchoolCard({ school, index, onChange, onRemove, errors }: SchoolCardPro
       <div className="p-5 space-y-4">
         <FormGrid cols={2}>
           <div className="col-span-full">
-            <FormField label="School Name" required error={errors[`${prefix}.schoolName`]}>
+            <FormField label="School Name" arabicLabel="اسم المدرسة" required error={errors[`${prefix}.schoolName`]}>
               <StyledInput
                 placeholder="Full name of the school"
                 value={school.schoolName}
@@ -75,7 +75,7 @@ function SchoolCard({ school, index, onChange, onRemove, errors }: SchoolCardPro
             </FormField>
           </div>
 
-          <FormField label="Country" required error={errors[`${prefix}.country`]}>
+          <FormField label="Country" arabicLabel="البلد" required error={errors[`${prefix}.country`]}>
             <StyledSelect
               value={school.country}
               onValueChange={(v) => update("country", v)}
@@ -84,7 +84,7 @@ function SchoolCard({ school, index, onChange, onRemove, errors }: SchoolCardPro
             />
           </FormField>
 
-          <FormField label="City / Town">
+          <FormField label="City / Town" arabicLabel="المدينة / المنطقة">
             <StyledInput
               placeholder="City or town"
               value={school.city}
@@ -92,7 +92,7 @@ function SchoolCard({ school, index, onChange, onRemove, errors }: SchoolCardPro
             />
           </FormField>
 
-          <FormField label="From Year">
+          <FormField label="From Year" arabicLabel="من سنة">
             <StyledSelect
               value={school.fromYear}
               onValueChange={(v) => update("fromYear", v)}
@@ -101,7 +101,7 @@ function SchoolCard({ school, index, onChange, onRemove, errors }: SchoolCardPro
             />
           </FormField>
 
-          <FormField label="To Year">
+          <FormField label="To Year" arabicLabel="إلى سنة">
             <StyledSelect
               value={school.toYear}
               onValueChange={(v) => update("toYear", v)}
@@ -110,7 +110,7 @@ function SchoolCard({ school, index, onChange, onRemove, errors }: SchoolCardPro
             />
           </FormField>
 
-          <FormField label="Grade / Year Level Attended">
+          <FormField label="Grade / Year Level Attended" arabicLabel="الصف / المرحلة الدراسية المنقضية">
             <StyledSelect
               value={school.gradeAttended}
               onValueChange={(v) => update("gradeAttended", v)}
@@ -118,7 +118,7 @@ function SchoolCard({ school, index, onChange, onRemove, errors }: SchoolCardPro
             />
           </FormField>
 
-          <FormField label="Reason for Leaving">
+          <FormField label="Reason for Leaving" arabicLabel="سبب الانتقال">
             <StyledInput
               placeholder="e.g. Relocation, graduation"
               value={school.reasonForLeaving}
@@ -166,6 +166,7 @@ export function Step4EducationalBackground({ data, onChange, errors }: Step4Prop
       <div>
         <SectionHeader
           title="School history"
+          arabicTitle="السجل الدراسي"
           description="Most recent first. Skip this block if they have not started school yet."
           icon={<School className="w-5 h-5" />}
         />
@@ -216,6 +217,7 @@ export function Step4EducationalBackground({ data, onChange, errors }: Step4Prop
       <div>
         <SectionHeader
           title="Learning & extra support"
+          arabicTitle="التعلم والدعم الإضافي"
           description="Helps us line up the right classroom support early. Read only by admissions and learning support."
           icon={<Brain className="w-5 h-5" />}
         />
@@ -239,7 +241,7 @@ export function Step4EducationalBackground({ data, onChange, errors }: Step4Prop
             />
 
             {data.hasLearningDifficulties === true && (
-              <FormField label="Briefly what we should know">
+              <FormField label="Briefly what we should know" arabicLabel="ملاحظات تود إعلامنا بها">
                 <StyledTextarea
                   placeholder="Diagnosis, reports, what helps in class…"
                   value={data.learningDifficultiesDetails}
@@ -268,7 +270,7 @@ export function Step4EducationalBackground({ data, onChange, errors }: Step4Prop
             />
 
             {data.hasReceivedSpecialSupport === true && (
-              <FormField label="What worked, for how long?">
+              <FormField label="What worked, for how long?" arabicLabel="ما هي النتائج وفترة الدعم؟">
                 <StyledTextarea
                   placeholder="e.g. Weekly speech — 6 months — Starshine Clinic"
                   value={data.specialSupportDetails}
@@ -279,7 +281,7 @@ export function Step4EducationalBackground({ data, onChange, errors }: Step4Prop
             )}
           </div>
 
-          <FormField label="Anything else" hint="Reports, repeating a year, big moves between systems — optional.">
+          <FormField label="Anything else" arabicLabel="أي ملاحظات أخرى" hint="Reports, repeating a year, big moves between systems — optional.">
             <StyledTextarea
               placeholder="Short note is fine."
               value={data.additionalInfo}

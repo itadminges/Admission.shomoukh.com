@@ -21,13 +21,13 @@ export function EnrollmentStep2() {
     if (!student.parentGuardian1Relationship) newErrors.parentGuardian1Relationship = 'Relationship is required'
 
     setErrors(newErrors)
-    
+
     if (Object.keys(newErrors).length > 0) {
       const firstErrorKey = Object.keys(newErrors)[0]
       const element = document.getElementById(firstErrorKey)
       element?.scrollIntoView({ behavior: 'smooth', block: 'center' })
     }
-    
+
     return Object.keys(newErrors).length === 0
   }
 
@@ -36,6 +36,7 @@ export function EnrollmentStep2() {
       setCurrentStep(3)
       window.scrollTo({ top: 0, behavior: 'smooth' })
     }
+
   }
 
   const handleBack = () => {
@@ -43,18 +44,18 @@ export function EnrollmentStep2() {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
-  const FormField = ({ 
-    id, 
-    label, 
-    required = false, 
-    error, 
-    children 
-  }: { 
+  const FormField = ({
+    id,
+    label,
+    required = false,
+    error,
+    children
+  }: {
     id: string
     label: string
     required?: boolean
     error?: string
-    children: React.ReactNode 
+    children: React.ReactNode
   }) => (
     <div className="space-y-2" id={id}>
       <Label htmlFor={id} className="text-sm font-medium text-charcoal">
@@ -265,16 +266,16 @@ export function EnrollmentStep2() {
 
       {/* Navigation */}
       <div className="flex flex-col-reverse sm:flex-row items-center justify-between gap-4 pt-4 border-t border-silver">
-        <Button 
-          onClick={handleBack} 
-          variant="outline" 
+        <Button
+          onClick={handleBack}
+          variant="outline"
           className="w-full sm:w-auto h-11 px-6 border-gold/30 text-charcoal hover:bg-gold/5 gap-2"
         >
           <ArrowLeft className="w-4 h-4" />
           Back
         </Button>
-        <Button 
-          onClick={handleNext} 
+        <Button
+          onClick={handleNext}
           className="w-full sm:w-auto btn-premium h-11 px-6 text-charcoal font-medium gap-2"
         >
           Save & Continue

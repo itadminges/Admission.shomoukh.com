@@ -87,6 +87,7 @@ export function Step5ConditionsWaiver({ data, onChange, errors }: Step5Props) {
     <div className="space-y-8">
       <SectionHeader
         title="Policies & signatures"
+        arabicTitle="السياسات والتوقيعات"
         description="Expand each panel to read the wording, then tick every box — same weight as ink on paper."
         icon={<FileText className="w-5 h-5" />}
       />
@@ -160,7 +161,7 @@ export function Step5ConditionsWaiver({ data, onChange, errors }: Step5Props) {
           <span>Electronic signature</span>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <FormField label="Signing parent — full legal name" required error={errors.parentSignatureName}>
+          <FormField label="Signing parent — full legal name" arabicLabel="توقيع ولي الأمر - الاسم الثلاثي" required error={errors.parentSignatureName}>
             <StyledInput
               placeholder="As on ID or passport"
               value={data.parentSignatureName}
@@ -168,7 +169,7 @@ export function Step5ConditionsWaiver({ data, onChange, errors }: Step5Props) {
               error={!!errors.parentSignatureName}
             />
           </FormField>
-          <FormField label="Date" required error={errors.signatureDate}>
+          <FormField label="Date" arabicLabel="التاريخ" required error={errors.signatureDate}>
             <StyledInput
               type="date"
               value={data.signatureDate}

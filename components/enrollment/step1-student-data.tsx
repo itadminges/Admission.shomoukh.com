@@ -56,11 +56,12 @@ export function Step1StudentData({ data, onChange, errors }: Step1Props) {
       <div>
         <SectionHeader
           title="Photo"
+          arabicTitle="الصورة الشخصية"
           description="Plain background, face visible — same idea as a passport photo."
           icon={<User className="w-5 h-5" />}
         />
         <div className="space-y-6">
-          <FormField label="Upload" required hint="JPG or PNG, up to 5 MB. Drag in or click to browse.">
+          <FormField label="Upload" arabicLabel="تحميل" required hint="JPG or PNG, up to 5 MB. Drag in or click to browse.">
             <PhotoUpload value={data.photoUrl} onChange={(url) => update("photoUrl", url)} />
           </FormField>
         </div>
@@ -72,7 +73,7 @@ export function Step1StudentData({ data, onChange, errors }: Step1Props) {
           <span>Child&apos;s details</span>
         </div>
         <FormGrid cols={2}>
-          <FormField label="Family Name" required error={errors.familyName}>
+          <FormField label="Family Name" arabicLabel="اسم القبيلة / العائلة" required error={errors.familyName}>
             <StyledInput
               placeholder="Family name"
               value={data.familyName}
@@ -81,7 +82,7 @@ export function Step1StudentData({ data, onChange, errors }: Step1Props) {
             />
           </FormField>
 
-          <FormField label="Given Names" required error={errors.givenNames}>
+          <FormField label="Given Names" arabicLabel="الاسم الأول" required error={errors.givenNames}>
             <StyledInput
               placeholder="First names as on birth certificate"
               value={data.givenNames}
@@ -90,7 +91,7 @@ export function Step1StudentData({ data, onChange, errors }: Step1Props) {
             />
           </FormField>
 
-          <FormField label="Middle Name">
+          <FormField label="Middle Name" arabicLabel="الاسم الأوسط">
             <StyledInput
               placeholder="Middle name if applicable"
               value={data.middleName}
@@ -98,7 +99,7 @@ export function Step1StudentData({ data, onChange, errors }: Step1Props) {
             />
           </FormField>
 
-          <FormField label="Known as" required error={errors.toBeKnownAs} hint="What teachers and classmates should call them.">
+          <FormField label="Known as" arabicLabel="يُعرف بـ" required error={errors.toBeKnownAs} hint="What teachers and classmates should call them.">
             <StyledInput
               placeholder="e.g. Ali, Mimi"
               value={data.toBeKnownAs}
@@ -107,7 +108,7 @@ export function Step1StudentData({ data, onChange, errors }: Step1Props) {
             />
           </FormField>
 
-          <FormField label="Date of Birth" required error={errors.dateOfBirth}>
+          <FormField label="Date of Birth" arabicLabel="تاريخ الميلاد" required error={errors.dateOfBirth}>
             <StyledInput
               type="date"
               value={data.dateOfBirth}
@@ -116,7 +117,7 @@ export function Step1StudentData({ data, onChange, errors }: Step1Props) {
             />
           </FormField>
 
-          <FormField label="Nationality" required error={errors.nationality}>
+          <FormField label="Nationality" arabicLabel="الجنسية" required error={errors.nationality}>
             <StyledSelect
               value={data.nationality}
               onValueChange={(v) => update("nationality", v)}
@@ -125,7 +126,7 @@ export function Step1StudentData({ data, onChange, errors }: Step1Props) {
             />
           </FormField>
 
-          <FormField label="Oman Resident Card Number">
+          <FormField label="Oman Resident Card Number" arabicLabel="رقم البطاقة الشخصية (للمقيمين في عمان)">
             <StyledInput
               placeholder="Enter resident card number"
               value={data.omanResidentCardNumber}
@@ -134,7 +135,7 @@ export function Step1StudentData({ data, onChange, errors }: Step1Props) {
           </FormField>
 
           <div className="col-span-full">
-            <FormField label="Gender" required error={errors.gender}>
+            <FormField label="Gender" arabicLabel="الجنس" required error={errors.gender}>
               <div className="flex flex-wrap gap-10 pt-1">
                 {(["Male", "Female"] as const).map((opt) => (
                   <label key={opt} className="flex cursor-pointer items-center gap-2.5">
@@ -172,7 +173,7 @@ export function Step1StudentData({ data, onChange, errors }: Step1Props) {
           <span>Languages</span>
         </div>
         <FormGrid cols={2}>
-          <FormField label="First Language Spoken" required error={errors.firstLanguageSpoken}>
+          <FormField label="First Language Spoken" arabicLabel="اللغة الأولى" required error={errors.firstLanguageSpoken}>
             <StyledSelect
               value={data.firstLanguageSpoken}
               onValueChange={(v) => update("firstLanguageSpoken", v)}
@@ -181,7 +182,7 @@ export function Step1StudentData({ data, onChange, errors }: Step1Props) {
             />
           </FormField>
 
-          <FormField label="Other Language Spoken">
+          <FormField label="Other Language Spoken" arabicLabel="لغات أخرى">
             <StyledSelect
               value={data.otherLanguageSpoken}
               onValueChange={(v) => update("otherLanguageSpoken", v)}
@@ -189,7 +190,7 @@ export function Step1StudentData({ data, onChange, errors }: Step1Props) {
             />
           </FormField>
 
-          <FormField label="Level of English Spoken" required error={errors.levelOfEnglishSpoken}>
+          <FormField label="Level of English Spoken" arabicLabel="مستوى اللغة الإنجليزية" required error={errors.levelOfEnglishSpoken}>
             <StyledSelect
               value={data.levelOfEnglishSpoken}
               onValueChange={(v) => update("levelOfEnglishSpoken", v)}
@@ -207,7 +208,7 @@ export function Step1StudentData({ data, onChange, errors }: Step1Props) {
           <span>Year &amp; class</span>
         </div>
         <FormGrid cols={2}>
-          <FormField label="School year starting" required error={errors.enrollmentYear}>
+          <FormField label="School year starting" arabicLabel="السنة الدراسية" required error={errors.enrollmentYear}>
             <StyledSelect
               value={data.enrollmentYear}
               onValueChange={(v) => update("enrollmentYear", v)}
@@ -218,6 +219,7 @@ export function Step1StudentData({ data, onChange, errors }: Step1Props) {
 
           <FormField
             label="Grade or class applying for"
+            arabicLabel="الصف / المرحلة الدراسية"
             required
             error={errors.anticipatedGradeOfEntry}
             hint="Age cut-offs follow our fee schedule — 1 September each year."

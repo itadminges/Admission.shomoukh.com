@@ -11,6 +11,7 @@ import {
   FileText,
   ClipboardCheck,
 } from "lucide-react"
+import { cn } from "@/lib/utils"
 
 export const STEPS: {
   id: number
@@ -33,97 +34,124 @@ interface ProgressStepperProps {
 }
 
 export function ProgressStepper({ currentStep, completedSteps, onStepClick }: ProgressStepperProps) {
-  const progress = ((currentStep - 1) / (STEPS.length - 1)) * 100
-
   return (
     <div className="w-full">
+      {/* Desktop Stepper */}
       <div className="hidden md:block">
-        <div className="flex w-full min-w-0 items-start overflow-x-auto pb-1 [-webkit-overflow-scrolling:touch]">
+        <div className="relative flex justify-between">
+          {/* Background Line */}
+          <div className="absolute top-[22px] left-0 w-full h-1 bg-cream rounded-full" aria-hidden />
+          
+          {/* Animated Progress Line */}
+          <div 
+            className="absolute top-[22px] left-0 h-1 bg-gold transition-all duration-700 ease-in-out rounded-full shadow-[0_0_10px_rgba(200,162,77,0.3)]"
+            style={{ width: `${((currentStep - 1) / (STEPS.length - 1)) * 100}%` }}
+            aria-hidden
+          />
+
           {STEPS.map((step, index) => {
             const Icon = step.Icon
-            const pastComplete =
-              completedSteps.includes(step.id) && step.id < currentStep
-            const activeHere = step.id === currentStep
-            const clickable =
-              completedSteps.includes(step.id) || step.id <= currentStep
+            const isCompleted = completedSteps.includes(step.id) || step.id < currentStep
+            const isActive = step.id === currentStep
+            const isUpcoming = step.id > currentStep
+            const isClickable = isCompleted || isActive
 
             return (
-              <Fragment key={step.id}>
-                {index > 0 && (
-                  <div
-                    className="mx-2 mt-[20px] min-h-[1px] min-w-[12px] flex-1 bg-[var(--border-soft)]"
-                    aria-hidden
-                  />
+              <button
+                key={step.id}
+                type="button"
+                onClick={() => isClickable && onStepClick?.(step.id)}
+                disabled={!isClickable}
+                className={cn(
+                  "relative flex flex-col items-center group transition-all duration-300",
+                  !isClickable && "opacity-40 cursor-not-allowed"
                 )}
-                <button
-                  type="button"
-                  onClick={() => clickable && onStepClick?.(step.id)}
-                  disabled={!clickable}
-                  className="flex w-[92px] shrink-0 touch-manipulation flex-col items-center disabled:pointer-events-none disabled:opacity-40"
-                  title={step.label}
+                title={step.label}
+              >
+                {/* Step Circle */}
+                <div
+                  className={cn(
+                    "relative z-10 flex h-11 w-11 items-center justify-center rounded-full border-4 transition-all duration-500",
+                    isCompleted 
+                      ? "bg-green-500 border-green-500 text-white shadow-lg shadow-green-200" 
+                      : isActive 
+                        ? "bg-white border-gold text-gold shadow-lg shadow-gold/20 scale-110" 
+                        : "bg-white border-cream text-text-muted"
+                  )}
                 >
-                  <div
-                    className={[
-                      "flex h-10 w-10 items-center justify-center rounded-md border-2 text-sm font-bold transition-colors",
-                      pastComplete || activeHere
-                        ? "border-[var(--gold)] bg-[var(--gold)] text-white" + (activeHere && !pastComplete ? " shadow-md shadow-amber-900/15" : "")
-                        : "border-[#d6d3cd] bg-white text-[#a8a29e]",
-                    ].join(" ")}
-                  >
-                    {pastComplete ? (
-                      <Check className="h-5 w-5" strokeWidth={2.5} />
-                    ) : activeHere ? (
-                      <Icon className="h-5 w-5" strokeWidth={2} />
-                    ) : (
-                      <span>{step.id}</span>
-                    )}
-                  </div>
+                  {isCompleted ? (
+                    <Check className="h-5 w-5 animate-in zoom-in duration-300" strokeWidth={3} />
+                  ) : (
+                    <Icon className={cn("h-5 w-5", isActive ? "animate-pulse" : "")} strokeWidth={2.5} />
+                  )}
+                  
+                  {/* Glow effect for active step */}
+                  {isActive && (
+                    <div className="absolute inset-0 rounded-full bg-gold/10 animate-ping -z-10" />
+                  )}
+                </div>
+
+                {/* Step Label */}
+                <div className="mt-3 flex flex-col items-center gap-0.5">
                   <span
-                    className="mt-2.5 max-w-[7.5rem] text-center text-[11px] font-semibold leading-snug sm:text-xs"
-                    style={{
-                      color:
-                        pastComplete || activeHere ? "var(--text-primary)" : "var(--text-muted)",
-                    }}
+                    className={cn(
+                      "text-[10px] font-bold uppercase tracking-wider transition-colors duration-300",
+                      isActive ? "text-gold" : isCompleted ? "text-green-600" : "text-text-muted/60"
+                    )}
+                  >
+                    Step {step.id}
+                  </span>
+                  <span
+                    className={cn(
+                      "max-w-[7rem] text-center text-[12px] font-bold leading-tight transition-colors duration-300",
+                      isActive ? "text-navy" : isCompleted ? "text-navy/80" : "text-text-muted"
+                    )}
                   >
                     {step.label}
                   </span>
-                </button>
-              </Fragment>
+                </div>
+              </button>
             )
           })}
         </div>
-
-        <div className="mt-5 h-1.5 overflow-hidden rounded-full bg-[var(--border-soft)]">
-          <div
-            className="h-full rounded-full bg-gradient-to-r from-[var(--gold-dark)] to-[var(--gold)] transition-all duration-500"
-            style={{ width: `${progress}%` }}
-          />
-        </div>
       </div>
 
-      <div className="-mx-1 flex snap-x snap-mandatory gap-2 overflow-x-auto overscroll-x-contain px-1 pb-2 [-webkit-overflow-scrolling:touch] md:hidden">
-        {STEPS.map((step) => {
-          const isActive = step.id === currentStep
-          const isCompleted = completedSteps.includes(step.id)
-          const clickable = completedSteps.includes(step.id) || step.id <= currentStep
-          return (
-            <button
-              key={step.id}
-              type="button"
-              onClick={() => clickable && onStepClick?.(step.id)}
-              disabled={!clickable}
-              className="snap-start flex min-h-11 shrink-0 touch-manipulation items-center gap-1.5 rounded-md border px-3 py-2 text-xs font-semibold disabled:pointer-events-none disabled:opacity-45"
-              style={{
-                borderColor: isActive || isCompleted ? "var(--gold)" : "var(--border-soft)",
-                background: isActive ? "var(--gold)" : isCompleted ? "rgba(200,162,77,.12)" : "#fff",
-                color: isActive ? "#fff" : isCompleted ? "var(--gold-dark)" : "var(--text-muted)",
-              }}
-            >
-              {isCompleted && !isActive ? <Check className="h-3 w-3 shrink-0" strokeWidth={2.5} /> : <span>{step.id}.</span>}
-              {step.shortLabel}
-            </button>
-          )
-        })}
+      {/* Mobile Stepper */}
+      <div className="md:hidden">
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center justify-between px-1">
+            <div className="flex flex-col">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-gold">Step {currentStep} of {STEPS.length}</span>
+              <h3 className="text-lg font-bold text-navy">{STEPS[currentStep - 1].label}</h3>
+            </div>
+            <div className="h-10 w-10 rounded-xl bg-gold/10 flex items-center justify-center">
+              {(() => {
+                const ActiveIcon = STEPS[currentStep - 1].Icon
+                return <ActiveIcon className="h-5 w-5 text-gold" />
+              })()}
+            </div>
+          </div>
+          
+          <div className="flex gap-1.5 overflow-x-auto pb-2 no-scrollbar">
+            {STEPS.map((step) => {
+              const isCompleted = completedSteps.includes(step.id) || step.id < currentStep
+              const isActive = step.id === currentStep
+              const isClickable = isCompleted || isActive
+
+              return (
+                <button
+                  key={step.id}
+                  onClick={() => isClickable && onStepClick?.(step.id)}
+                  className={cn(
+                    "flex-1 min-w-[3.5rem] h-1.5 rounded-full transition-all duration-500",
+                    isActive ? "bg-gold scale-y-125 shadow-[0_0_8px_rgba(200,162,77,0.4)]" : isCompleted ? "bg-green-500" : "bg-cream"
+                  )}
+                  aria-label={`Step ${step.id}`}
+                />
+              )
+            })}
+          </div>
+        </div>
       </div>
     </div>
   )

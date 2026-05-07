@@ -74,7 +74,7 @@ function ParentCard({ parent, index, onChange, onRemove, errors, prefix }: Paren
       {/* Card body */}
       <div className="space-y-5 p-4 sm:p-5">
         <FormGrid cols={2}>
-          <FormField label="Relationship to Student" required error={errors[`${prefix}.relationship`]}>
+          <FormField label="Relationship to Student" arabicLabel="صلة القرابة للطالب" required error={errors[`${prefix}.relationship`]}>
             <StyledSelect
               value={parent.relationship}
               onValueChange={(v) => update("relationship", v)}
@@ -83,7 +83,7 @@ function ParentCard({ parent, index, onChange, onRemove, errors, prefix }: Paren
             />
           </FormField>
 
-          <FormField label="Title">
+          <FormField label="Title" arabicLabel="اللقب">
             <StyledSelect
               value={parent.title}
               onValueChange={(v) => update("title", v)}
@@ -91,7 +91,7 @@ function ParentCard({ parent, index, onChange, onRemove, errors, prefix }: Paren
             />
           </FormField>
 
-          <FormField label="Family Name" required error={errors[`${prefix}.familyName`]}>
+          <FormField label="Family Name" arabicLabel="اسم القبيلة / العائلة" required error={errors[`${prefix}.familyName`]}>
             <StyledInput
               placeholder="Family / surname"
               value={parent.familyName}
@@ -100,7 +100,7 @@ function ParentCard({ parent, index, onChange, onRemove, errors, prefix }: Paren
             />
           </FormField>
 
-          <FormField label="Given Names" required error={errors[`${prefix}.givenNames`]}>
+          <FormField label="Given Names" arabicLabel="الاسم الأول" required error={errors[`${prefix}.givenNames`]}>
             <StyledInput
               placeholder="First / given names"
               value={parent.givenNames}
@@ -109,7 +109,7 @@ function ParentCard({ parent, index, onChange, onRemove, errors, prefix }: Paren
             />
           </FormField>
 
-          <FormField label="Nationality" required error={errors[`${prefix}.nationality`]}>
+          <FormField label="Nationality" arabicLabel="الجنسية" required error={errors[`${prefix}.nationality`]}>
             <StyledSelect
               value={parent.nationality}
               onValueChange={(v) => update("nationality", v)}
@@ -118,7 +118,7 @@ function ParentCard({ parent, index, onChange, onRemove, errors, prefix }: Paren
             />
           </FormField>
 
-          <FormField label="Occupation">
+          <FormField label="Occupation" arabicLabel="المهنة">
             <StyledInput
               placeholder="Current occupation"
               value={parent.occupation}
@@ -126,7 +126,7 @@ function ParentCard({ parent, index, onChange, onRemove, errors, prefix }: Paren
             />
           </FormField>
 
-          <FormField label="Employer / Company">
+          <FormField label="Employer / Company" arabicLabel="جهة العمل / الشركة">
             <StyledInput
               placeholder="Employer or company name"
               value={parent.employer}
@@ -140,7 +140,7 @@ function ParentCard({ parent, index, onChange, onRemove, errors, prefix }: Paren
         <h5 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">How to reach them</h5>
 
         <FormGrid cols={2}>
-          <FormField label="Mobile Phone" required error={errors[`${prefix}.mobilePhone`]}>
+          <FormField label="Mobile Phone" arabicLabel="رقم الهاتف" required error={errors[`${prefix}.mobilePhone`]}>
             <StyledInput
               type="tel"
               placeholder="+968 XXXX XXXX"
@@ -150,7 +150,7 @@ function ParentCard({ parent, index, onChange, onRemove, errors, prefix }: Paren
             />
           </FormField>
 
-          <FormField label="Home Phone">
+          <FormField label="Home Phone" arabicLabel="هاتف المنزل">
             <StyledInput
               type="tel"
               placeholder="+968 XXXX XXXX"
@@ -159,7 +159,7 @@ function ParentCard({ parent, index, onChange, onRemove, errors, prefix }: Paren
             />
           </FormField>
 
-          <FormField label="Work Phone">
+          <FormField label="Work Phone" arabicLabel="هاتف العمل">
             <StyledInput
               type="tel"
               placeholder="+968 XXXX XXXX"
@@ -168,7 +168,7 @@ function ParentCard({ parent, index, onChange, onRemove, errors, prefix }: Paren
             />
           </FormField>
 
-          <FormField label="Email Address" required error={errors[`${prefix}.email`]}>
+          <FormField label="Email Address" arabicLabel="البريد الإلكتروني" required error={errors[`${prefix}.email`]}>
             <StyledInput
               type="email"
               placeholder="email@example.com"
@@ -179,7 +179,7 @@ function ParentCard({ parent, index, onChange, onRemove, errors, prefix }: Paren
           </FormField>
         </FormGrid>
 
-        <FormField label="Residential Address">
+        <FormField label="Residential Address" arabicLabel="العنوان">
           <StyledTextarea
             placeholder="Full residential address"
             value={parent.residentialAddress}
@@ -188,7 +188,7 @@ function ParentCard({ parent, index, onChange, onRemove, errors, prefix }: Paren
           />
         </FormField>
 
-        <FormField label="Postal Address">
+        <FormField label="Postal Address" arabicLabel="العنوان البريدي">
           <StyledTextarea
             placeholder="Postal / mailing address (if different)"
             value={parent.postalAddress}
@@ -247,6 +247,7 @@ export function Step2FamilyData({ data, onChange, errors }: Step2Props) {
       <div>
         <SectionHeader
           title="Parents & guardians"
+          arabicTitle="بيانات أولياء الأمور"
           description="Legal guardians first — add a second card if someone else shares responsibility."
           icon={<Users className="w-5 h-5" />}
         />
