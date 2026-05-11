@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { Plus_Jakarta_Sans, Playfair_Display, Noto_Sans_Arabic } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { Toaster } from 'sonner'
-import { AuthProvider } from '@/hooks/use-auth'
+import { ConvexClientProvider } from '@/components/ConvexClientProvider'
 import './globals.css'
 
 const plusJakarta = Plus_Jakarta_Sans({
@@ -57,7 +57,7 @@ export default async function RootLayout({
   return (
     <html lang="en" className={`${plusJakarta.variable} ${playfair.variable} ${notoArabic.variable}`}>
       <body className="font-sans antialiased">
-        <AuthProvider>
+        <ConvexClientProvider>
           {children}
           <Toaster 
             position="top-right"
@@ -69,7 +69,7 @@ export default async function RootLayout({
               },
             }}
           />
-        </AuthProvider>
+        </ConvexClientProvider>
         <Analytics />
       </body>
     </html>

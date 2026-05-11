@@ -3,7 +3,7 @@
 import Image from "next/image"
 import Link from "next/link"
 import { Phone, LogIn, User, LogOut } from "lucide-react"
-import { useAuth } from "@/hooks/use-auth"
+import { useSession, signOut } from "@/lib/auth-client"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,7 +14,8 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 export function EnrolmentHeader() {
-  const { user, logout } = useAuth()
+  const { data: sessionData } = useSession()
+  const user = sessionData?.user
 
   return (
     <header className="sticky top-0 z-50 border-b border-[#e8e4dc] bg-white/95 shadow-sm backdrop-blur-md supports-[backdrop-filter]:bg-white/80">
@@ -68,7 +69,7 @@ export function EnrolmentHeader() {
                   {user.email}
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={logout} className="text-destructive focus:text-destructive cursor-pointer">
+                <DropdownMenuItem onClick={async () => { await signOut(); window.location.reload(); }} className="text-destructive focus:text-destructive cursor-pointer">
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>Log out</span>
                 </DropdownMenuItem>

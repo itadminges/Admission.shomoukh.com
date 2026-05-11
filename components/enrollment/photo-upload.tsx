@@ -1,29 +1,22 @@
 "use client"
 
 import { useRef, useState } from "react"
-import { Camera, Upload, X, User, CheckCircle2 } from "lucide-react"
+import { Camera, Upload, User, Trash2, Info } from "lucide-react"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
 
 interface PhotoUploadProps {
-  value:    string | null
+  value: string | null
   onChange: (url: string | null) => void
 }
 
 export function PhotoUpload({ value, onChange }: PhotoUploadProps) {
   const inputRef = useRef<HTMLInputElement>(null)
+  const cameraInputRef = useRef<HTMLInputElement>(null)
   const [isDragging, setIsDragging] = useState(false)
-  const [fileInfo, setFileInfo] = useState<{ name: string; size: string } | null>(null)
 
   const handleFile = (file: File) => {
     if (!file.type.startsWith("image/")) return
-    
-    // Format file size
-    const size = file.size > 1024 * 1024 
-      ? `${(file.size / (1024 * 1024)).toFixed(1)} MB` 
-      : `${(file.size / 1024).toFixed(0)} KB`
-    
-    setFileInfo({ name: file.name, size })
 
     const reader = new FileReader()
     reader.onload = (e) => {
@@ -42,97 +35,111 @@ export function PhotoUpload({ value, onChange }: PhotoUploadProps) {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) handleFile(file)
+    // reset input value so selecting the same file again triggers onChange
+    if (e.target) {
+      e.target.value = ''
+    }
   }
 
   const removePhoto = () => {
     onChange(null)
-    setFileInfo(null)
   }
 
   return (
-    <div className="w-full">
-      <div 
-        className={cn(
-          "relative group overflow-hidden rounded-2xl border-2 border-dashed transition-all duration-500 p-8 flex flex-col items-center justify-center gap-6",
-          isDragging ? "border-gold bg-gold/5 scale-[1.02]" : "border-border-mid bg-white hover:border-gold/30 hover:bg-cream/20",
-          value ? "border-solid border-gold/20" : ""
-        )}
-        onDragOver={(e) => { e.preventDefault(); setIsDragging(true) }}
-        onDragLeave={() => setIsDragging(false)}
-        onDrop={handleDrop}
-      >
-        {value ? (
-          <div className="flex flex-col items-center gap-6 animate-in fade-in zoom-in duration-500">
-            {/* Preview Circle */}
-            <div className="relative w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-white shadow-premium group-hover:scale-105 transition-transform duration-500">
+    <div className="w-full flex flex-col gap-5 mt-2">
+      <div className="flex flex-col sm:flex-row gap-6 items-start">
+        {/* The Frame */}
+        <div
+          className={cn(
+            "relative shrink-0 w-32 h-36 rounded-md border-2 border-dashed flex flex-col items-center justify-center transition-all duration-300 overflow-hidden group cursor-pointer",
+            isDragging ? "border-gold bg-gold/5 scale-[1.02]" : "border-[#e0ddcf] bg-[#F9F9F8] hover:border-gold/50",
+            value ? "border-solid border-border-mid" : ""
+          )}
+          onClick={() => !value && inputRef.current?.click()}
+          onDragOver={(e) => { e.preventDefault(); setIsDragging(true) }}
+          onDragLeave={() => setIsDragging(false)}
+          onDrop={handleDrop}
+        >
+          {value ? (
+            <>
               <Image src={value} alt="Student photo" fill className="object-cover" />
-              <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                <Upload className="text-white w-8 h-8" />
+              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); removePhoto(); }}
+                  className="p-2.5 bg-red-500 rounded-full text-white hover:bg-red-600 transition-colors shadow-sm"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
               </div>
+            </>
+          ) : (
+            <div className="flex flex-col items-center gap-3">
+              <div className="w-12 h-12 rounded-md border-2 border-dashed border-[#d4ab53] flex items-center justify-center text-[#d4ab53]">
+                <User className="w-5 h-5" />
+              </div>
+              <span className="text-xs font-medium text-text-secondary text-center leading-tight">
+                Face<br/>photo
+              </span>
             </div>
+          )}
+        </div>
 
-            {/* File Details */}
-            <div className="text-center">
-              <p className="text-sm font-bold text-navy">Photo Selected</p>
-              {fileInfo && (
-                <p className="text-xs text-text-muted mt-1">{fileInfo.name} • {fileInfo.size}</p>
-              )}
-            </div>
-
-            {/* Actions */}
-            <div className="flex items-center gap-3">
-              <button
-                type="button"
-                onClick={() => inputRef.current?.click()}
-                className="btn-gold h-10 px-6 text-xs flex items-center gap-2"
-              >
-                <Upload className="w-3.5 h-3.5" />
-                Replace
-              </button>
-              <button
-                type="button"
-                onClick={removePhoto}
-                className="btn-ghost h-10 px-6 text-xs flex items-center gap-2 text-destructive border-destructive/20 hover:bg-destructive/5 hover:border-destructive/40"
-              >
-                <X className="w-3.5 h-3.5" />
-                Remove
-              </button>
-            </div>
-          </div>
-        ) : (
-          <div className="flex flex-col items-center text-center gap-5 max-w-sm">
-            <div className="w-16 h-16 rounded-2xl bg-gold/10 flex items-center justify-center text-gold group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
-              <Camera className="w-8 h-8" />
-            </div>
-            
-            <div className="space-y-1">
-              <h3 className="text-base font-bold text-navy">Upload Student Photo</h3>
-              <p className="text-xs text-text-muted leading-relaxed">
-                Drag and drop your image here, or click to browse.<br />
-                Recent passport-style photo, JPG or PNG (Max 5MB).
-              </p>
-            </div>
-
+        {/* The Details */}
+        <div className="flex flex-col flex-1 pt-1">
+          <h3 className="text-[15px] font-bold text-navy mb-1">Add a recent photo</h3>
+          <p className="text-[13px] text-text-muted mb-1">
+            Face forward, plain background — same idea as a passport shot.
+          </p>
+          <p className="text-[13px] text-text-muted mb-4">
+            JPG or PNG · max 5 MB
+          </p>
+          
+          <div className="flex flex-wrap items-center gap-3 mb-3">
             <button
               type="button"
               onClick={() => inputRef.current?.click()}
-              className="btn-gold h-11 px-8 text-sm"
+              className="h-10 px-5 rounded-md bg-[#c6a254] text-white text-[13px] font-medium flex items-center gap-2 hover:bg-[#b39045] transition-colors shadow-sm"
             >
-              Browse Files
+              <Upload className="w-4 h-4" />
+              Browse files
+            </button>
+            <button
+              type="button"
+              onClick={() => cameraInputRef.current?.click()}
+              className="h-10 px-5 rounded-md border border-border-mid bg-white text-navy text-[13px] font-medium flex items-center gap-2 hover:bg-gray-50 transition-colors"
+            >
+              <Camera className="w-4 h-4" />
+              Use Camera
             </button>
           </div>
-        )}
+          
+          <p className="text-[13px] text-text-muted/70">
+            Or drop a file onto the frame
+          </p>
+        </div>
+      </div>
 
-        {/* Floating background icon */}
-        {!value && (
-          <User className="absolute -bottom-6 -right-6 w-32 h-32 text-navy/[0.03] -rotate-12" />
-        )}
+      {/* Info Box */}
+      <div className="flex items-center gap-3 px-4 py-3.5 rounded-md border border-[#f2e6cc] bg-[#fbf9f4]">
+        <Info className="w-4 h-4 text-[#c6a254] shrink-0" />
+        <span className="text-[13px] text-text-secondary">
+          JPG or PNG, up to 5 MB. Drag in or click to browse.
+        </span>
       </div>
 
       <input
         ref={inputRef}
         type="file"
-        accept="image/*"
+        accept="image/jpeg, image/png"
+        className="sr-only"
+        onChange={handleChange}
+      />
+      <input
+        ref={cameraInputRef}
+        type="file"
+        accept="image/jpeg, image/png"
+        capture="user"
         className="sr-only"
         onChange={handleChange}
       />

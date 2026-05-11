@@ -1,7 +1,13 @@
+import { AdminAuthGuard } from "@/components/AdminAuthGuard";
+
 export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return (
+    <AdminAuthGuard>
+      {children}
+    </AdminAuthGuard>
+  );
 }

@@ -6,11 +6,10 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Mail, Lock, ArrowRight, Loader2, User, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
-import { useAuth } from "@/hooks/use-auth";
+import { signUp } from "@/lib/auth-client";
 
 export default function SignupPage() {
   const router = useRouter();
-  const { login } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -23,16 +22,23 @@ export default function SignupPage() {
     e.preventDefault();
     setIsLoading(true);
 
-    // Simulate a network request
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-
-    // Dummy logic: any non-empty fields "create account"
     if (formData.name && formData.email && formData.password) {
-      login(formData.email, formData.name);
-      toast.success("Account created successfully!", {
-        description: "Welcome to Shomoukh Admissions.",
+      const { data, error } = await signUp.email({
+        email: formData.email,
+        password: formData.password,
+        name: formData.name,
       });
-      router.push("/enrollment"); 
+
+      if (error) {
+        toast.error("Registration failed", {
+          description: error.message || "Please check your details and try again.",
+        });
+      } else {
+        toast.success("Account created successfully!", {
+          description: "Welcome to Shomoukh Admissions.",
+        });
+        router.push("/enrollment"); 
+      }
     } else {
       toast.error("Registration failed", {
         description: "Please fill in all required fields correctly.",

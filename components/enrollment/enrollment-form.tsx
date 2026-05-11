@@ -17,7 +17,7 @@ import type { EnrollmentFormData, StudentData, FamilyData, EmergencyData, Educat
 import { defaultFormData } from "@/lib/enrollment-types"
 import { Sparkles, CheckCircle2 } from "lucide-react"
 import { toast } from "sonner"
-import { useAuth } from "@/hooks/use-auth"
+import { useSession } from "@/lib/auth-client"
 
 
 const STEP_ESTIMATED = ["~5 min", "~8 min", "~6 min", "~6 min", "~8 min", "~4 min"]
@@ -147,7 +147,8 @@ export function EnrollmentForm() {
     }
   }
 
-  const { user } = useAuth()
+  const { data: sessionData } = useSession()
+  const user = sessionData?.user
   const router = useRouter()
 
   const handleNext = async () => {

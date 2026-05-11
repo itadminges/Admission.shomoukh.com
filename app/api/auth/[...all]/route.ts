@@ -1,7 +1,6 @@
-export async function GET() {
-  return Response.json({ error: "Auth is disabled." }, { status: 410 });
-}
+import { convexBetterAuthNextJs } from "@convex-dev/better-auth/nextjs";
 
-export async function POST() {
-  return Response.json({ error: "Auth is disabled." }, { status: 410 });
-}
+export const { handler: { GET, POST } } = convexBetterAuthNextJs({
+  convexUrl: process.env.NEXT_PUBLIC_CONVEX_URL!,
+  convexSiteUrl: process.env.NEXT_PUBLIC_CONVEX_SITE_URL!,
+});

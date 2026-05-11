@@ -54,14 +54,20 @@ export function Step1StudentData({ data, onChange, errors }: Step1Props) {
     <div className="space-y-8">
       {/* Student Photo */}
       <div>
-        <SectionHeader
-          title="Photo"
-          arabicTitle="الصورة الشخصية"
-          description="Plain background, face visible — same idea as a passport photo."
-          icon={<User className="w-5 h-5" />}
-        />
+        <div className="flex flex-col gap-2 pb-6 border-b border-border-soft mb-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-gold/10 flex items-center justify-center">
+                <User className="w-4 h-4 text-gold" />
+              </div>
+              <h2 className="text-sm font-bold uppercase tracking-[0.2em] text-navy">Photo</h2>
+            </div>
+            <h2 className="font-arabic text-lg font-bold text-navy" dir="rtl">الصورة الشخصية</h2>
+          </div>
+          <p className="text-[13px] text-text-muted mt-2">Plain background, face visible — same idea as a passport photo.</p>
+        </div>
         <div className="space-y-6">
-          <FormField label="Upload" arabicLabel="تحميل" required hint="JPG or PNG, up to 5 MB. Drag in or click to browse.">
+          <FormField label="Upload" arabicLabel="تحميل" required>
             <PhotoUpload value={data.photoUrl} onChange={(url) => update("photoUrl", url)} />
           </FormField>
         </div>
