@@ -1,6 +1,6 @@
 import { betterAuth } from "better-auth/minimal";
-import { convexAdapter } from "@convex-dev/better-auth/adapter";
-import { api as convexApi } from "@/convex/_generated/api";
+import { convexAdapter } from "@convex-dev/better-auth";
+import { api as convexApi, components } from "@/convex/_generated/api";
 import { ConvexHttpClient } from "convex/browser";
 
 // We use the HTTP client for server-side database access
@@ -15,8 +15,7 @@ export const auth = betterAuth({
       runQuery: (fn, args) => convex.query(fn, args),
       runMutation: (fn, args) => convex.mutation(fn, args),
     },
-    // @ts-ignore - The component API might not be perfectly typed here but it works
-    convexApi.betterAuth
+    components.betterAuth
   ),
 
   emailAndPassword: {
