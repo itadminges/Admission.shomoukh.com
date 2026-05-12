@@ -137,17 +137,28 @@ export const seedDummyData = internalMutation({
     email: v.string(),
   },
   handler: async (ctx, args) => {
-    // @ts-ignore
-    const user = await ctx.runQuery(components.betterAuth.adapter.findOne, { 
-      model: "user", 
-      where: [{ field: "email", operator: "eq", value: args.email }] 
-    });
+    const adapter = authComponent.adapter(ctx) as any;
     
-    if (!user) {
-      throw new Error(`User with email ${args.email} not found. Please sign up first.`);
+    let user = null;
+    try {
+      // Direct query if users table is accessible
+      const allUsers = await (ctx.db as any).query("users").collect();
+      user = allUsers.find((u: any) => u.email === args.email);
+    } catch (e) {
+      console.log("Direct users query failed, trying adapter");
+      try {
+        const adapter = authComponent.adapter(ctx) as any;
+        user = await adapter.getUserByEmail(args.email);
+      } catch (e2) {
+        console.log("adapter.getUserByEmail failed too");
+      }
     }
     
-    const uid = user.id;
+    if (!user) {
+      throw new Error(`User with email ${args.email} not found. Please sign up first or check logs for adapter methods.`);
+    }
+    
+    const uid = user.id || user._id;
     const year = new Date().getFullYear();
     const ref = `SHM-${year}-${Math.floor(1000 + Math.random() * 9000)}`;
     

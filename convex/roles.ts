@@ -1,10 +1,10 @@
 import { internalMutation } from "./_generated/server";
 import { v } from "convex/values";
-import { authComponent } from "./auth";
 
 /**
- * Update a user's role.
- * npx convex run roles:setRole '{"email": "admin@shomoukh.com", "role": "admin"}'
+ * Assign a role to a user by their email.
+ * Run this from the Convex CLI to setup the first admin:
+ * npx convex run internal:roles:setRole '{"email": "admin@example.com", "role": "admin"}'
  */
 export const setRole = internalMutation({
   args: {
@@ -12,14 +12,18 @@ export const setRole = internalMutation({
     role: v.string(),
   },
   handler: async (ctx, args) => {
-    const adapter = authComponent.adapter(ctx) as any;
-    const user = await adapter.getUserByEmail(args.email);
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_email", (q) => q.eq("email", args.email))
+      .unique();
 
     if (!user) {
-      throw new Error("User not found");
+      throw new Error(`User with email ${args.email} not found`);
     }
 
-    await adapter.updateUser(user.id, { role: args.role });
+    await ctx.db.patch(user._id, {
+      role: args.role,
+    });
 
     console.log(`Updated role for ${args.email} to ${args.role}`);
   },

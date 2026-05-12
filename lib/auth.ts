@@ -25,7 +25,7 @@ export const auth = betterAuth({
   },
 
   user: {
-    modelName: "user",
+    modelName: "users",
     additionalFields: {
       role: {
         type: "string",
@@ -38,13 +38,13 @@ export const auth = betterAuth({
     },
   },
   session: {
-    modelName: "session",
+    modelName: "sessions",
   },
   account: {
-    modelName: "account",
+    modelName: "accounts",
   },
   verification: {
-    modelName: "verification",
+    modelName: "verificationTokens",
   },
 
   rateLimit: {
