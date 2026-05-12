@@ -1,6 +1,6 @@
 import { internalMutation } from "./_generated/server";
 import { v } from "convex/values";
-import { createAuth } from "./auth";
+import { createAuth, authComponent } from "./auth";
 import { components } from "./_generated/api";
 
 /**
@@ -11,6 +11,7 @@ export const createTestAccounts = internalMutation({
   args: {},
   handler: async (ctx) => {
     const auth = createAuth(ctx);
+    const adapter = authComponent.adapter(ctx) as any;
 
     const accounts = [
       {
@@ -30,22 +31,14 @@ export const createTestAccounts = internalMutation({
     for (const acc of accounts) {
       console.log(`\n--- Processing ${acc.email} ---`);
 
-      // 1. Check if user already exists via the component internal query
-      const existingUser = await ctx.runQuery(components.betterAuth.adapter.findOne, { 
-        // @ts-ignore
-        model: "user", 
-        where: [{ field: "email", operator: "eq", value: acc.email }] 
-      });
+      // 1. Check if user already exists
+      const existingUser = await adapter.getUserByEmail(acc.email);
 
       if (existingUser) {
         console.log(`User already exists. Updating role...`);
-        await ctx.runMutation(components.betterAuth.adapter.updateOne, {
-          input: {
-            // @ts-ignore
-            model: "user",
-            where: [{ field: "_id", operator: "eq", value: existingUser._id }],
-            update: { role: acc.role, emailVerified: true }
-          }
+        await adapter.updateUser(existingUser.id, { 
+          role: acc.role, 
+          emailVerified: true 
         });
         console.log(`Updated existing user ${acc.email}`);
         continue;
@@ -67,13 +60,9 @@ export const createTestAccounts = internalMutation({
           console.log(`User created with ID: ${userId}`);
 
           // 3. Post-creation updates (role and verification)
-          await ctx.runMutation(components.betterAuth.adapter.updateOne, {
-            input: {
-              // @ts-ignore
-              model: "user",
-              where: [{ field: "_id", operator: "eq", value: userId }],
-              update: { role: acc.role, emailVerified: true }
-            }
+          await adapter.updateUser(userId, { 
+            role: acc.role, 
+            emailVerified: true 
           });
           console.log(`Successfully initialized ${acc.email}`);
         }

@@ -1,6 +1,6 @@
 import { internalMutation } from "./_generated/server";
 import { v } from "convex/values";
-import { components } from "./_generated/api";
+import { authComponent } from "./auth";
 
 /**
  * Update a user's role.
@@ -12,24 +12,14 @@ export const setRole = internalMutation({
     role: v.string(),
   },
   handler: async (ctx, args) => {
-    const user = await ctx.runQuery(components.betterAuth.adapter.findOne, { 
-      // @ts-ignore
-      model: "user", 
-      where: [{ field: "email", operator: "eq", value: args.email }] 
-    });
+    const adapter = authComponent.adapter(ctx) as any;
+    const user = await adapter.getUserByEmail(args.email);
 
     if (!user) {
       throw new Error("User not found");
     }
 
-    await ctx.runMutation(components.betterAuth.adapter.updateOne, {
-      input: {
-        // @ts-ignore
-        model: "user",
-        where: [{ field: "_id", operator: "eq", value: user._id }],
-        update: { role: args.role }
-      }
-    });
+    await adapter.updateUser(user.id, { role: args.role });
 
     console.log(`Updated role for ${args.email} to ${args.role}`);
   },
