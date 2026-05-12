@@ -84,7 +84,7 @@ export function EnrolmentHeader() {
 
           <Show when="signed-out">
             <Link 
-              href={process.env.NEXT_PUBLIC_CLERK_SIGN_IN_URL || "/sign-in"} 
+              href="/sign-in" 
               className="flex items-center gap-2 text-sm font-bold text-navy hover:text-gold transition-colors"
             >
               <LogIn className="w-4 h-4 text-gold" />

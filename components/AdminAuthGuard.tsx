@@ -18,7 +18,7 @@ export function AdminAuthGuard({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!isLoading) {
       if (!user) {
-        router.push(`${process.env.NEXT_PUBLIC_CLERK_SIGN_IN_URL}?redirect_url=${encodeURIComponent("/admin")}`);
+        router.push("/sign-in?redirect_url=/admin");
       } else if (!access?.canAccessAdmin) {
         // Redirect non-staff users back to enrollment if they try to access admin
         router.push("/enrollment");

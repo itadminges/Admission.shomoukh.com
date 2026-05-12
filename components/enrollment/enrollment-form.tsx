@@ -223,7 +223,7 @@ export function EnrollmentForm({ onSwitchToMyApps }: { onSwitchToMyApps?: () => 
         });
         // Save current progress to draft before redirecting
         handleSaveDraft();
-        router.push(`${process.env.NEXT_PUBLIC_CLERK_SIGN_IN_URL}?redirect_url=${encodeURIComponent("/enrollment")}`);
+        router.push("/sign-in?redirect_url=/enrollment");
         return;
       }
 

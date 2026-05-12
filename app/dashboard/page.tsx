@@ -18,7 +18,7 @@ export default function DashboardPage() {
   const handleLogout = async () => {
     await signOut();
     toast.success("Logged out successfully");
-    router.push(process.env.NEXT_PUBLIC_CLERK_SIGN_IN_URL || "/sign-in");
+    router.push("/sign-in");
   };
 
   if (!isLoaded) {
