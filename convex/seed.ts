@@ -1,10 +1,11 @@
 import { internalMutation } from "./_generated/server";
 import { v } from "convex/values";
 import { createAuth } from "./auth";
+import { components } from "./_generated/api";
 
 /**
  * Seed the initial accounts for testing.
- * npx convex run seed:createTestAccounts
+ * npx convex run seed:createTestAccounts --prod
  */
 export const createTestAccounts = internalMutation({
   args: {},
@@ -27,23 +28,31 @@ export const createTestAccounts = internalMutation({
     ];
 
     for (const acc of accounts) {
-      // Check if user already exists
-      const existingUser = await ctx.db
-        .query("user")
-        .withIndex("by_email", (q) => q.eq("email", acc.email))
-        .unique();
+      console.log(`\n--- Processing ${acc.email} ---`);
+
+      // 1. Check if user already exists via the component internal query
+      const existingUser = await ctx.runQuery(components.betterAuth.adapter.findOne, { 
+        // @ts-ignore
+        model: "user", 
+        where: [{ field: "email", operator: "eq", value: acc.email }] 
+      });
 
       if (existingUser) {
-        console.log(`User ${acc.email} already exists, updating role...`);
-        await ctx.db.patch(existingUser._id, { role: acc.role });
+        console.log(`User already exists. Updating role...`);
+        await ctx.runMutation(components.betterAuth.adapter.updateOne, {
+          input: {
+            // @ts-ignore
+            model: "user",
+            where: [{ field: "_id", operator: "eq", value: existingUser._id }],
+            update: { role: acc.role, emailVerified: true }
+          }
+        });
+        console.log(`Updated existing user ${acc.email}`);
         continue;
       }
 
-      console.log(`Creating user ${acc.email}...`);
-      
-      // Use Better Auth API to create user (handles password hashing)
-      // Note: We use the internal API to bypass email verification requirement if possible
-      // but signUpEmail is usually the way.
+      // 2. Try to create via Better Auth API
+      console.log(`Creating user via Better Auth API...`);
       try {
         const result = await auth.api.signUpEmail({
           body: {
@@ -53,16 +62,24 @@ export const createTestAccounts = internalMutation({
           },
         });
 
-        if (result.user) {
-          // Update the role after creation
-          await ctx.db.patch(result.user.id as any, { 
-            role: acc.role,
-            emailVerified: true // Mark as verified so they can login immediately
+        if (result && result.user) {
+          const userId = result.user.id;
+          console.log(`User created with ID: ${userId}`);
+
+          // 3. Post-creation updates (role and verification)
+          await ctx.runMutation(components.betterAuth.adapter.updateOne, {
+            input: {
+              // @ts-ignore
+              model: "user",
+              where: [{ field: "_id", operator: "eq", value: userId }],
+              update: { role: acc.role, emailVerified: true }
+            }
           });
-          console.log(`Successfully created ${acc.email}`);
+          console.log(`Successfully initialized ${acc.email}`);
         }
-      } catch (error) {
-        console.error(`Failed to create ${acc.email}:`, error);
+      } catch (error: any) {
+        console.error(`Better Auth API failed for ${acc.email}:`);
+        console.error(`Message: ${error.message || error}`);
       }
     }
   },

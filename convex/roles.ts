@@ -1,10 +1,10 @@
 import { internalMutation } from "./_generated/server";
 import { v } from "convex/values";
+import { components } from "./_generated/api";
 
 /**
- * Assign a role to a user by their email.
- * Run this from the Convex CLI to setup the first admin:
- * npx convex run internal:roles:setRole '{"email": "admin@example.com", "role": "admin"}'
+ * Update a user's role.
+ * npx convex run roles:setRole '{"email": "admin@shomoukh.com", "role": "admin"}'
  */
 export const setRole = internalMutation({
   args: {
@@ -12,17 +12,23 @@ export const setRole = internalMutation({
     role: v.string(),
   },
   handler: async (ctx, args) => {
-    const user = await ctx.db
-      .query("user")
-      .withIndex("by_email", (q) => q.eq("email", args.email))
-      .unique();
+    const user = await ctx.runQuery(components.betterAuth.adapter.findOne, { 
+      // @ts-ignore
+      model: "user", 
+      where: [{ field: "email", operator: "eq", value: args.email }] 
+    });
 
     if (!user) {
-      throw new Error(`User with email ${args.email} not found`);
+      throw new Error("User not found");
     }
 
-    await ctx.db.patch(user._id, {
-      role: args.role,
+    await ctx.runMutation(components.betterAuth.adapter.updateOne, {
+      input: {
+        // @ts-ignore
+        model: "user",
+        where: [{ field: "_id", operator: "eq", value: user._id }],
+        update: { role: args.role }
+      }
     });
 
     console.log(`Updated role for ${args.email} to ${args.role}`);

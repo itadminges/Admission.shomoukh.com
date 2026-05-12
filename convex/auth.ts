@@ -13,9 +13,7 @@ export const createAuth = (ctx: GenericCtx<DataModel>) => {
     secret: process.env.BETTER_AUTH_SECRET,
     database: authComponent.adapter(ctx),
     
-    // Map Better Auth models to our Convex tables
     user: {
-      modelName: "user",
       additionalFields: {
         role: {
           type: "string",
@@ -26,15 +24,6 @@ export const createAuth = (ctx: GenericCtx<DataModel>) => {
           defaultValue: Date.now(),
         },
       },
-    },
-    session: {
-      modelName: "session",
-    },
-    account: {
-      modelName: "account",
-    },
-    verification: {
-      modelName: "verification",
     },
 
     emailAndPassword: {
