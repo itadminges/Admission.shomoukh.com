@@ -13,7 +13,7 @@ export const setRole = internalMutation({
   },
   handler: async (ctx, args) => {
     const user = await ctx.db
-      .query("users")
+      .query("user")
       .withIndex("by_email", (q) => q.eq("email", args.email))
       .unique();
 

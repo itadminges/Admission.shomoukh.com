@@ -2,8 +2,8 @@ import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
 export default defineSchema({
-  // --- Better Auth Tables ---
-  users: defineTable({
+  // --- Better Auth Tables (Singular names required by the component validator) ---
+  user: defineTable({
     name: v.string(),
     email: v.string(),
     emailVerified: v.boolean(),
@@ -14,7 +14,7 @@ export default defineSchema({
     lastLogin: v.optional(v.number()),
   }).index("by_email", ["email"]),
 
-  sessions: defineTable({
+  session: defineTable({
     userId: v.string(),
     token: v.string(),
     expiresAt: v.number(),
@@ -24,7 +24,7 @@ export default defineSchema({
     updatedAt: v.number(),
   }).index("by_token", ["token"]),
 
-  accounts: defineTable({
+  account: defineTable({
     userId: v.string(),
     accountId: v.string(),
     providerId: v.string(),
@@ -37,9 +37,7 @@ export default defineSchema({
     updatedAt: v.number(),
   }).index("by_userId", ["userId"]),
 
-  // Better Auth uses one 'verification' table for all tokens
-  // We'll use the name verificationTokens as requested
-  verificationTokens: defineTable({
+  verification: defineTable({
     identifier: v.string(),
     value: v.string(),
     expiresAt: v.number(),

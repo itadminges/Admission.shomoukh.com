@@ -1,11 +1,16 @@
 import type { MutationCtx, QueryCtx } from "./_generated/server";
 import { authComponent } from "./auth";
 
+/** Better Auth user document id (Convex `user` table in the auth component). */
+export function authUserId(user: { _id: string }) {
+  return user._id as string;
+}
+
 /**
  * Access control for admin/staff dashboard.
  */
 export async function requireAdminDashboard(ctx: QueryCtx | MutationCtx) {
-  const user = await authComponent.safeGetAuthUser(ctx);
+  const user = await authComponent.safeGetAuthUser(ctx) as { role?: string; email: string };
   if (!user) {
     throw new Error("Not authenticated");
   }

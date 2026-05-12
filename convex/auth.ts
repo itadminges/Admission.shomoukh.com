@@ -15,7 +15,7 @@ export const createAuth = (ctx: GenericCtx<DataModel>) => {
     
     // Map Better Auth models to our Convex tables
     user: {
-      modelName: "users",
+      modelName: "user",
       additionalFields: {
         role: {
           type: "string",
@@ -28,13 +28,13 @@ export const createAuth = (ctx: GenericCtx<DataModel>) => {
       },
     },
     session: {
-      modelName: "sessions",
+      modelName: "session",
     },
     account: {
-      modelName: "accounts",
+      modelName: "account",
     },
     verification: {
-      modelName: "verificationTokens",
+      modelName: "verification",
     },
 
     emailAndPassword: {
@@ -59,13 +59,11 @@ export const createAuth = (ctx: GenericCtx<DataModel>) => {
     },
 
     advanced: {
-      cookieOptions: {
-        secure: process.env.NODE_ENV === "production" && !process.env.BETTER_AUTH_URL?.includes("localhost"),
-        sameSite: "Lax",
-      },
+      useSecureCookies: process.env.NODE_ENV === "production" && !process.env.BETTER_AUTH_URL?.includes("localhost"),
     },
 
     plugins: [
+      // @ts-ignore
       convex({ authConfig }),
     ],
   });

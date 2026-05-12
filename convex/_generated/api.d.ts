@@ -14,8 +14,8 @@ import type * as auth from "../auth.js";
 import type * as drafts from "../drafts.js";
 import type * as files from "../files.js";
 import type * as http from "../http.js";
-import type * as profiles from "../profiles.js";
 import type * as roles from "../roles.js";
+import type * as seed from "../seed.js";
 
 import type {
   ApiFromModules,
@@ -30,8 +30,8 @@ declare const fullApi: ApiFromModules<{
   drafts: typeof drafts;
   files: typeof files;
   http: typeof http;
-  profiles: typeof profiles;
   roles: typeof roles;
+  seed: typeof seed;
 }>;
 
 /**

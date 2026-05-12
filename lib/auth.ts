@@ -25,7 +25,7 @@ export const auth = betterAuth({
   },
 
   user: {
-    modelName: "users",
+    modelName: "user",
     additionalFields: {
       role: {
         type: "string",
@@ -38,13 +38,13 @@ export const auth = betterAuth({
     },
   },
   session: {
-    modelName: "sessions",
+    modelName: "session",
   },
   account: {
-    modelName: "accounts",
+    modelName: "account",
   },
   verification: {
-    modelName: "verificationTokens",
+    modelName: "verification",
   },
 
   rateLimit: {
@@ -54,9 +54,6 @@ export const auth = betterAuth({
   },
 
   advanced: {
-    cookieOptions: {
-      secure: process.env.NODE_ENV === "production" && !process.env.BETTER_AUTH_URL?.includes("localhost"),
-      sameSite: "Lax",
-    },
+    useSecureCookies: process.env.NODE_ENV === "production" && !process.env.BETTER_AUTH_URL?.includes("localhost"),
   },
 });
