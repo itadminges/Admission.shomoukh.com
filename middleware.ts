@@ -1,51 +1,22 @@
-import { NextResponse, type NextRequest } from "next/server";
-import { betterFetch } from "@better-fetch/fetch";
-import type { auth } from "@/lib/auth";
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
-type Session = typeof auth.$Infer.Session;
+const isProtectedRoute = createRouteMatcher([
+  "/dashboard(.*)",
+  "/admin(.*)",
+  "/enrollment(.*)",
+]);
 
-export default async function middleware(request: NextRequest) {
-  const { data: session } = await betterFetch<Session>(
-    "/api/auth/get-session",
-    {
-      baseURL: request.nextUrl.origin,
-      headers: {
-        cookie: request.headers.get("cookie") || "",
-      },
-    }
-  );
-
-  const isAuthPage = request.nextUrl.pathname.startsWith("/login") || 
-                     request.nextUrl.pathname.startsWith("/signup") ||
-                     request.nextUrl.pathname.startsWith("/forgot-password") ||
-                     request.nextUrl.pathname.startsWith("/reset-password");
-
-  const isProtectedRoute = request.nextUrl.pathname.startsWith("/dashboard") || 
-                           request.nextUrl.pathname.startsWith("/admin") || 
-                           request.nextUrl.pathname.startsWith("/enrollment");
-
-  if (!session) {
-    if (isProtectedRoute) {
-      return NextResponse.redirect(new URL("/login", request.url));
-    }
-    return NextResponse.next();
+export default clerkMiddleware(async (auth, req) => {
+  if (isProtectedRoute(req)) {
+    await auth.protect();
   }
-
-  if (isAuthPage) {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
-  }
-
-  return NextResponse.next();
-}
+});
 
 export const config = {
   matcher: [
-    "/dashboard/:path*", 
-    "/admin/:path*", 
-    "/enrollment/:path*", 
-    "/login", 
-    "/signup",
-    "/forgot-password",
-    "/reset-password"
+    // Skip Next.js internals and all static files, unless found in search params
+    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
+    // Always run for API routes
+    '/(api|trpc)(.*)',
   ],
 };

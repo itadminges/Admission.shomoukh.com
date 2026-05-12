@@ -3,6 +3,7 @@ import { Plus_Jakarta_Sans, Playfair_Display, Noto_Sans_Arabic } from 'next/font
 import { Analytics } from '@vercel/analytics/next'
 import { Toaster } from 'sonner'
 import { ConvexClientProvider } from '@/components/ConvexClientProvider'
+import { ClerkProvider } from '@clerk/nextjs'
 import './globals.css'
 
 const plusJakarta = Plus_Jakarta_Sans({
@@ -55,24 +56,26 @@ export default async function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`${plusJakarta.variable} ${playfair.variable} ${notoArabic.variable}`}>
-      <body className="font-sans antialiased">
-        <ConvexClientProvider>
-          {children}
-          <Toaster 
-            position="top-right"
-            toastOptions={{
-              style: {
-                background: 'white',
-                color: '#111827',
-                border: '1px solid #e5e7eb',
-              },
-            }}
-          />
-        </ConvexClientProvider>
-        <Analytics />
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en" className={`${plusJakarta.variable} ${playfair.variable} ${notoArabic.variable}`}>
+        <body className="font-sans antialiased">
+          <ConvexClientProvider>
+            {children}
+            <Toaster 
+              position="top-right"
+              toastOptions={{
+                style: {
+                  background: 'white',
+                  color: '#111827',
+                  border: '1px solid #e5e7eb',
+                },
+              }}
+            />
+          </ConvexClientProvider>
+          <Analytics />
+        </body>
+      </html>
+    </ClerkProvider>
   )
 }
 
