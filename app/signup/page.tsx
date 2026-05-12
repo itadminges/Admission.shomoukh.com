@@ -1,208 +1,172 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Mail, Lock, ArrowRight, Loader2, User, Eye, EyeOff } from "lucide-react";
-import { toast } from "sonner";
+import Link from "next/link";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
 import { signUp } from "@/lib/auth-client";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Loader2, Check, X } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
+
+const signupSchema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  email: z.string().email("Invalid email address"),
+  password: z.string()
+    .min(8, "Password must be at least 8 characters")
+    .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+    .regex(/[0-9]/, "Password must contain at least one number")
+    .regex(/[^A-Za-z0-9]/, "Password must contain at least one special character"),
+});
+
+type SignupValues = z.infer<typeof signupSchema>;
 
 export default function SignupPage() {
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
+
+  const form = useForm<SignupValues>({
+    resolver: zodResolver(signupSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+    },
   });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
+  const password = form.watch("password");
 
-    if (formData.name && formData.email && formData.password) {
-      const { data, error } = await signUp.email({
-        email: formData.email,
-        password: formData.password,
-        name: formData.name,
-      });
-
-      if (error) {
-        toast.error("Registration failed", {
-          description: error.message || "Please check your details and try again.",
-        });
-      } else {
-        toast.success("Account created successfully!", {
-          description: "Welcome to Shomoukh Admissions.",
-        });
-        router.push("/enrollment"); 
-      }
-    } else {
-      toast.error("Registration failed", {
-        description: "Please fill in all required fields correctly.",
-      });
-    }
-    setIsLoading(false);
+  const getPasswordStrength = (pass: string) => {
+    let score = 0;
+    if (!pass) return 0;
+    if (pass.length >= 8) score += 25;
+    if (/[A-Z]/.test(pass)) score += 25;
+    if (/[0-9]/.test(pass)) score += 25;
+    if (/[^A-Za-z0-9]/.test(pass)) score += 25;
+    return score;
   };
 
+  const strength = getPasswordStrength(password);
+
+  async function onSubmit(values: SignupValues) {
+    setLoading(true);
+    const { error } = await signUp.email({
+      email: values.email,
+      password: values.password,
+      name: values.name,
+      callbackURL: "/dashboard",
+    });
+
+    if (error) {
+      toast.error(error.message || "Failed to sign up");
+      setLoading(false);
+    } else {
+      toast.success("Check your email for verification link!");
+      router.push("/login");
+    }
+  }
+
   return (
-    <div className="min-h-screen bg-[var(--cream)] flex flex-col items-center justify-center p-4 selection:bg-[var(--gold)]/20">
-      {/* Decorative Background Elements */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] rounded-full bg-[var(--gold)]/5 blur-3xl" />
-        <div className="absolute -bottom-[10%] -right-[10%] w-[40%] h-[40%] rounded-full bg-[var(--navy)]/5 blur-3xl" />
-      </div>
-
-      <div className="w-full max-w-md relative z-10 animate-fade-slide-up">
-        {/* Logo Section */}
-        <div className="mb-8 text-center">
-          <Link href="/" className="inline-block transition-transform hover:scale-105 duration-300">
-            <Image
-              src="/Shomoukh-01.png"
-              alt="Shomoukh International Investment"
-              width={180}
-              height={60}
-              className="mx-auto"
-              priority
-            />
-          </Link>
-          <div className="mt-8">
-            <h1 className="text-3xl font-serif font-semibold text-[var(--navy)] tracking-tight">
-              Create Account
-            </h1>
-            <p className="mt-3 text-[var(--text-muted)] text-sm font-medium">
-              Join our portal to manage your school applications
-            </p>
+    <div className="flex items-center justify-center min-h-screen bg-muted/40 p-4">
+      <Card className="w-full max-w-md shadow-lg">
+        <CardHeader className="space-y-1">
+          <CardTitle className="text-2xl font-bold text-center">Create an account</CardTitle>
+          <CardDescription className="text-center">
+            Enter your information below to create your account
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Full Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="John Doe" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input placeholder="m@example.com" type="email" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <Input placeholder="••••••••" type="password" {...field} />
+                    </FormControl>
+                    <div className="mt-2 space-y-2">
+                      <Progress value={strength} className="h-1" />
+                      <div className="grid grid-cols-2 gap-2 text-xs">
+                        <div className="flex items-center gap-1">
+                          {password.length >= 8 ? <Check className="w-3 h-3 text-green-500" /> : <X className="w-3 h-3 text-muted-foreground" />}
+                          <span>8+ characters</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          {/[A-Z]/.test(password) ? <Check className="w-3 h-3 text-green-500" /> : <X className="w-3 h-3 text-muted-foreground" />}
+                          <span>Uppercase letter</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          {/[0-9]/.test(password) ? <Check className="w-3 h-3 text-green-500" /> : <X className="w-3 h-3 text-muted-foreground" />}
+                          <span>One number</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          {/[^A-Za-z0-9]/.test(password) ? <Check className="w-3 h-3 text-green-500" /> : <X className="w-3 h-3 text-muted-foreground" />}
+                          <span>Special character</span>
+                        </div>
+                      </div>
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Sign Up
+              </Button>
+            </form>
+          </Form>
+        </CardContent>
+        <CardFooter className="flex flex-col space-y-2">
+          <div className="text-sm text-center text-muted-foreground">
+            Already have an account?{" "}
+            <Link href="/login" className="text-primary hover:underline font-medium">
+              Log in
+            </Link>
           </div>
-        </div>
-
-        {/* Signup Card */}
-        <div className="premium-card p-8 md:p-10">
-          <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Full Name Field */}
-            <div className="space-y-2">
-              <label 
-                htmlFor="name" 
-                className="text-xs font-bold uppercase tracking-widest text-[var(--navy)]/70 ml-1"
-              >
-                Full Name
-              </label>
-              <div className="relative group">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[var(--text-muted)] group-focus-within:text-[var(--gold)] transition-colors">
-                  <User size={18} />
-                </div>
-                <input
-                  id="name"
-                  type="text"
-                  required
-                  placeholder="John Doe"
-                  className="input-premium w-full pl-10 py-3 text-sm placeholder:text-[var(--text-muted)]/50"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                />
-              </div>
-            </div>
-
-            {/* Email Field */}
-            <div className="space-y-2">
-              <label 
-                htmlFor="email" 
-                className="text-xs font-bold uppercase tracking-widest text-[var(--navy)]/70 ml-1"
-              >
-                Email Address
-              </label>
-              <div className="relative group">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[var(--text-muted)] group-focus-within:text-[var(--gold)] transition-colors">
-                  <Mail size={18} />
-                </div>
-                <input
-                  id="email"
-                  type="email"
-                  required
-                  placeholder="name@example.com"
-                  className="input-premium w-full pl-10 py-3 text-sm placeholder:text-[var(--text-muted)]/50"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                />
-              </div>
-            </div>
-
-            {/* Password Field */}
-            <div className="space-y-2">
-              <label 
-                htmlFor="password" 
-                className="text-xs font-bold uppercase tracking-widest text-[var(--navy)]/70 ml-1"
-              >
-                Password
-              </label>
-              <div className="relative group">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[var(--text-muted)] group-focus-within:text-[var(--gold)] transition-colors">
-                  <Lock size={18} />
-                </div>
-                <input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  required
-                  placeholder="••••••••"
-                  className="input-premium w-full pl-10 pr-10 py-3 text-sm placeholder:text-[var(--text-muted)]/50"
-                  value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-[var(--text-muted)] hover:text-[var(--navy)] transition-colors"
-                >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-              </div>
-              <p className="text-[10px] text-[var(--text-muted)] px-1">
-                Must be at least 8 characters with a mix of letters and numbers.
-              </p>
-            </div>
-
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="btn-gold w-full py-4 mt-2 flex items-center justify-center gap-2 group relative overflow-hidden"
-            >
-              <div className="absolute inset-0 bg-white/10 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 skew-x-12" />
-              {isLoading ? (
-                <Loader2 className="h-5 w-5 animate-spin" />
-              ) : (
-                <>
-                  <span className="relative z-10">Create Your Account</span>
-                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1 relative z-10" />
-                </>
-              )}
-            </button>
-          </form>
-        </div>
-
-        {/* Footer */}
-        <p className="mt-8 text-center text-sm text-[var(--text-muted)]">
-          Already have an account?{" "}
-          <Link 
-            href="/login" 
-            className="font-semibold text-[var(--navy)] hover:text-[var(--gold)] underline decoration-[var(--gold)]/30 underline-offset-4 transition-colors"
-          >
-            Sign in here
-          </Link>
-        </p>
-        
-        <div className="mt-8 pt-8 border-t border-[var(--navy)]/5 text-center">
-          <Link 
-            href="/" 
-            className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[var(--text-muted)] hover:text-[var(--navy)] transition-colors"
-          >
-            <span>← Return to Admissions Form</span>
-          </Link>
-        </div>
-      </div>
+        </CardFooter>
+      </Card>
     </div>
   );
 }
-

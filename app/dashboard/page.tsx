@@ -1,65 +1,139 @@
-"use client"
+"use client";
 
-import { EnrolmentHeader } from "@/components/enrollment/enrolment-header"
-import { EnrolmentFooter } from "@/components/enrollment/enrolment-footer"
-import { EnrolmentSidebar } from "@/components/enrollment/enrolment-sidebar"
-import { UserApplications } from "@/components/enrollment/user-applications"
-import { Button } from "@/components/ui/button"
-import { PlusCircle, LayoutDashboard } from "lucide-react"
-import Link from "next/link"
+import { useSession, signOut } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Loader2, LogOut, User, Mail, Shield, Calendar } from "lucide-react";
+import { toast } from "sonner";
 
 export default function DashboardPage() {
-  return (
-    <div className="min-h-screen selection:bg-gold/20 flex flex-col bg-slate-50/50">
-      <EnrolmentHeader />
-      
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 flex-1 w-full">
-        <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-8 lg:gap-12 items-start">
-          {/* Left Sidebar */}
-          <aside className="space-y-6 lg:sticky lg:top-24">
-            <EnrolmentSidebar />
-            <Link href="/enrollment">
-              <Button 
-                className="w-full h-14 bg-navy hover:bg-navy/90 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all gap-3 font-bold"
-              >
-                <PlusCircle className="w-5 h-5 text-gold" />
-                New Enrolment
-              </Button>
-            </Link>
-          </aside>
+  const { data: session, isPending } = useSession();
+  const router = useRouter();
 
-          {/* Main Content */}
-          <div className="space-y-8">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-2">
+  const handleLogout = async () => {
+    await signOut({
+      fetchOptions: {
+        onSuccess: () => {
+          toast.success("Logged out successfully");
+          router.push("/login");
+          router.refresh();
+        },
+      },
+    });
+  };
+
+  if (isPending) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!session) {
+    return null; // Handled by middleware
+  }
+
+  const user = session.user;
+
+  return (
+    <div className="min-h-screen bg-muted/40 p-4 md:p-8">
+      <div className="max-w-4xl mx-auto space-y-6">
+        <div className="flex items-center justify-between">
+          <h1 className="text-3xl font-bold">Dashboard</h1>
+          <Button variant="outline" size="sm" onClick={handleLogout}>
+            <LogOut className="w-4 h-4 mr-2" />
+            Logout
+          </Button>
+        </div>
+
+        <div className="grid gap-6 md:grid-cols-2">
+          <Card className="shadow-sm">
+            <CardHeader className="flex flex-row items-center gap-4 space-y-0">
+              <Avatar className="h-16 w-16 border-2 border-primary/10">
+                <AvatarImage src={user.image || ""} alt={user.name} />
+                <AvatarFallback className="text-xl bg-primary/5">
+                  {user.name?.charAt(0) || "U"}
+                </AvatarFallback>
+              </Avatar>
               <div>
-                <h1 className="text-3xl font-serif font-bold text-navy flex items-center gap-3">
-                  <LayoutDashboard className="w-8 h-8 text-gold" />
-                  Parent Dashboard
-                </h1>
-                <p className="text-slate-500 mt-1 font-medium">Manage your children's applications and messages</p>
+                <CardTitle className="text-2xl">{user.name}</CardTitle>
+                <CardDescription>Welcome back to your account</CardDescription>
               </div>
-              
-              <div className="flex bg-white p-1 rounded-xl border border-border-soft shadow-sm self-start">
-                <Link 
-                  href="/enrollment"
-                  className="px-4 py-2 rounded-lg text-sm font-bold transition-all text-slate-500 hover:bg-slate-50"
-                >
-                  New Application
-                </Link>
-                <div className="px-4 py-2 rounded-lg text-sm font-bold transition-all bg-gold text-white shadow-sm">
-                  My Applications
+            </CardHeader>
+            <CardContent className="pt-6 space-y-4">
+              <div className="flex items-center gap-3 text-sm">
+                <div className="p-2 bg-muted rounded-md">
+                  <Mail className="w-4 h-4 text-muted-foreground" />
+                </div>
+                <div>
+                  <p className="font-medium">Email Address</p>
+                  <p className="text-muted-foreground">{user.email}</p>
+                </div>
+                {user.emailVerified ? (
+                  <Badge variant="default" className="ml-auto bg-green-500/10 text-green-600 hover:bg-green-500/20 border-none">
+                    Verified
+                  </Badge>
+                ) : (
+                  <Badge variant="destructive" className="ml-auto">
+                    Unverified
+                  </Badge>
+                )}
+              </div>
+
+              <div className="flex items-center gap-3 text-sm">
+                <div className="p-2 bg-muted rounded-md">
+                  <Shield className="w-4 h-4 text-muted-foreground" />
+                </div>
+                <div>
+                  <p className="font-medium">Account Role</p>
+                  <Badge variant="secondary" className="capitalize">
+                    {user.role || "Parent"}
+                  </Badge>
                 </div>
               </div>
-            </div>
-            
-            <div className="animate-fade-slide-up">
-              <UserApplications />
-            </div>
-          </div>
-        </div>
-      </main>
 
-      <EnrolmentFooter />
+              <div className="flex items-center gap-3 text-sm">
+                <div className="p-2 bg-muted rounded-md">
+                  <Calendar className="w-4 h-4 text-muted-foreground" />
+                </div>
+                <div>
+                  <p className="font-medium">Member Since</p>
+                  <p className="text-muted-foreground">
+                    {new Date(user.createdAt).toLocaleDateString()}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="shadow-sm bg-primary text-primary-foreground overflow-hidden relative">
+            <div className="absolute top-0 right-0 p-8 opacity-10">
+              <User className="w-32 h-32" />
+            </div>
+            <CardHeader>
+              <CardTitle>Profile Completion</CardTitle>
+              <CardDescription className="text-primary-foreground/80">
+                Keep your information up to date
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-sm">
+                Your profile is currently active. You can start your admission process or check your application status here.
+              </p>
+              <Button variant="secondary" className="w-full" asChild>
+                <Link href="/enrollment">Start Enrollment</Link>
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     </div>
-  )
+  );
 }
+
+// Re-import Link as it was missing from original thoughts
+import Link from "next/link";
