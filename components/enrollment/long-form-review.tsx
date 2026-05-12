@@ -12,7 +12,13 @@ interface LongFormReviewProps {
 
 export const LongFormReview = forwardRef<HTMLDivElement, LongFormReviewProps>(
   ({ formData, referenceNumber }, ref) => {
-    const { studentData, familyData, emergencyData, educationalBackground, conditionsWaiver } = formData
+    if (!formData) return null
+
+    const studentData = formData.studentData || {} as any
+    const familyData = formData.familyData || {} as any
+    const emergencyData = formData.emergencyData || {} as any
+    const educationalBackground = formData.educationalBackground || {} as any
+    const conditionsWaiver = formData.conditionsWaiver || {} as any
 
     const Section = ({ title, children, className }: { title: string; children: React.ReactNode; className?: string }) => (
       <div className={cn("py-8 border-b border-border-soft last:border-0", className)}>
@@ -70,7 +76,7 @@ export const LongFormReview = forwardRef<HTMLDivElement, LongFormReviewProps>(
             </div>
           </div>
 
-          {studentData.photoUrl && (
+          {studentData?.photoUrl && (
             <div className="relative w-40 h-48 rounded-xl overflow-hidden border-4 border-cream shadow-md">
               <Image 
                 src={studentData.photoUrl} 
@@ -84,28 +90,28 @@ export const LongFormReview = forwardRef<HTMLDivElement, LongFormReviewProps>(
 
         {/* Student Data Section */}
         <Section title="1. Student Information">
-          <Field label="Family Name" value={studentData.familyName} />
-          <Field label="Given Names" value={studentData.givenNames} />
-          <Field label="Middle Name" value={studentData.middleName} />
-          <Field label="To Be Known As" value={studentData.toBeKnownAs} />
-          <Field label="Date of Birth" value={studentData.dateOfBirth} />
-          <Field label="Nationality" value={studentData.nationality} />
-          <Field label="Resident Card No." value={studentData.omanResidentCardNumber} />
-          <Field label="Gender" value={studentData.gender} />
-          <Field label="First Language" value={studentData.firstLanguageSpoken} />
-          <Field label="Other Languages" value={studentData.otherLanguageSpoken} />
-          <Field label="English Proficiency" value={studentData.levelOfEnglishSpoken} />
-          <Field label="Enrollment Year" value={studentData.enrollmentYear} />
-          <Field label="Grade Applied For" value={studentData.anticipatedGradeOfEntry} />
+          <Field label="Family Name" value={studentData?.familyName} />
+          <Field label="Given Names" value={studentData?.givenNames} />
+          <Field label="Middle Name" value={studentData?.middleName} />
+          <Field label="To Be Known As" value={studentData?.toBeKnownAs} />
+          <Field label="Date of Birth" value={studentData?.dateOfBirth} />
+          <Field label="Nationality" value={studentData?.nationality} />
+          <Field label="Resident Card No." value={studentData?.omanResidentCardNumber} />
+          <Field label="Gender" value={studentData?.gender} />
+          <Field label="First Language" value={studentData?.firstLanguageSpoken} />
+          <Field label="Other Languages" value={studentData?.otherLanguageSpoken} />
+          <Field label="English Proficiency" value={studentData?.levelOfEnglishSpoken} />
+          <Field label="Enrollment Year" value={studentData?.enrollmentYear} />
+          <Field label="Grade Applied For" value={studentData?.anticipatedGradeOfEntry} />
         </Section>
 
         {/* Siblings Sub-section */}
-        {studentData.siblings.length > 0 && (
+        {studentData?.siblings && studentData.siblings.length > 0 && (
           <div className="py-8 border-b border-border-soft">
             <h4 className="text-xs font-bold uppercase tracking-[0.2em] text-gold mb-6">Siblings Applied/Enrolled</h4>
             <div className="space-y-4">
               {studentData.siblings.map((sibling, idx) => (
-                <div key={sibling.id} className="grid grid-cols-3 gap-6 p-4 bg-cream/30 rounded-xl">
+                <div key={sibling.id || idx} className="grid grid-cols-3 gap-6 p-4 bg-cream/30 rounded-xl">
                   <Field label="Name" value={`${sibling.givenNames} ${sibling.familyName}`} />
                   <Field label="Age" value={sibling.age} />
                 </div>
@@ -116,12 +122,12 @@ export const LongFormReview = forwardRef<HTMLDivElement, LongFormReviewProps>(
 
         {/* Family Data Section */}
         <Section title="2. Family Information">
-          <Field label="Marital Status" value={familyData.maritalStatus} />
-          <Field label="Home Language" value={familyData.languageSpokenAtHome} />
-          <Field label="Custody Arrangement" value={familyData.custodyArrangement} fullWidth />
+          <Field label="Marital Status" value={familyData?.maritalStatus} />
+          <Field label="Home Language" value={familyData?.languageSpokenAtHome} />
+          <Field label="Custody Arrangement" value={familyData?.custodyArrangement} fullWidth />
           
-          {familyData.parents.map((parent, idx) => (
-            <div key={parent.id} className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 pt-8 border-t border-border-soft mt-6 first:border-0 first:mt-0 first:pt-0">
+          {familyData?.parents?.map((parent, idx) => (
+            <div key={parent.id || idx} className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 pt-8 border-t border-border-soft mt-6 first:border-0 first:mt-0 first:pt-0">
               <div className="md:col-span-2 flex justify-between items-center">
                 <h4 className="text-xs font-bold uppercase tracking-[0.2em] text-gold">
                   {parent.relationship} Information
@@ -151,16 +157,16 @@ export const LongFormReview = forwardRef<HTMLDivElement, LongFormReviewProps>(
 
         {/* Emergency & Health Section */}
         <Section title="3. Emergency & Health">
-          <Field label="Doctor's Name" value={emergencyData.doctorName} />
-          <Field label="Doctor's Phone" value={emergencyData.doctorPhone} />
-          <Field label="Preferred Hospital" value={emergencyData.hospitalPreference} fullWidth />
-          <Field label="Medical Conditions" value={emergencyData.medicalConditions} fullWidth />
-          <Field label="Allergies" value={emergencyData.allergies} fullWidth />
-          <Field label="Medications" value={emergencyData.medications} fullWidth />
-          <Field label="Additional Health Info" value={emergencyData.additionalMedicalInfo} fullWidth />
+          <Field label="Doctor's Name" value={emergencyData?.doctorName} />
+          <Field label="Doctor's Phone" value={emergencyData?.doctorPhone} />
+          <Field label="Preferred Hospital" value={emergencyData?.hospitalPreference} fullWidth />
+          <Field label="Medical Conditions" value={emergencyData?.medicalConditions} fullWidth />
+          <Field label="Allergies" value={emergencyData?.allergies} fullWidth />
+          <Field label="Medications" value={emergencyData?.medications} fullWidth />
+          <Field label="Additional Health Info" value={emergencyData?.additionalMedicalInfo} fullWidth />
 
-          {emergencyData.emergencyContacts.map((contact, idx) => (
-            <div key={contact.id} className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 pt-8 border-t border-border-soft mt-6">
+          {emergencyData?.emergencyContacts?.map((contact, idx) => (
+            <div key={contact.id || idx} className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 pt-8 border-t border-border-soft mt-6">
               <div className="md:col-span-2 flex justify-between items-center">
                 <h4 className="text-xs font-bold uppercase tracking-[0.2em] text-gold">
                   Additional Emergency Contact {idx + 1}
@@ -179,9 +185,9 @@ export const LongFormReview = forwardRef<HTMLDivElement, LongFormReviewProps>(
 
         {/* School History Section */}
         <Section title="4. Educational Background">
-          {educationalBackground.previousSchools.length > 0 ? (
+          {educationalBackground?.previousSchools && educationalBackground.previousSchools.length > 0 ? (
             educationalBackground.previousSchools.map((school, idx) => (
-              <div key={school.id} className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 pb-6 border-b border-border-soft last:border-0 last:pb-0">
+              <div key={school.id || idx} className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 pb-6 border-b border-border-soft last:border-0 last:pb-0">
                 <Field label="Previous School" value={school.schoolName} />
                 <Field label="Country/City" value={`${school.country}, ${school.city}`} />
                 <Field label="Years Attended" value={`${school.fromYear} - ${school.toYear}`} />
@@ -196,15 +202,15 @@ export const LongFormReview = forwardRef<HTMLDivElement, LongFormReviewProps>(
           <div className="md:col-span-2 space-y-6 pt-6">
             <Field 
               label="Learning Difficulties" 
-              value={educationalBackground.hasLearningDifficulties ? `Yes - ${educationalBackground.learningDifficultiesDetails}` : "No"} 
+              value={educationalBackground?.hasLearningDifficulties ? `Yes - ${educationalBackground.learningDifficultiesDetails}` : "No"} 
               fullWidth 
             />
             <Field 
               label="Special Support" 
-              value={educationalBackground.hasReceivedSpecialSupport ? `Yes - ${educationalBackground.specialSupportDetails}` : "No"} 
+              value={educationalBackground?.hasReceivedSpecialSupport ? `Yes - ${educationalBackground.specialSupportDetails}` : "No"} 
               fullWidth 
             />
-            <Field label="Additional Info" value={educationalBackground.additionalInfo} fullWidth />
+            <Field label="Additional Info" value={educationalBackground?.additionalInfo} fullWidth />
           </div>
         </Section>
 
@@ -213,25 +219,25 @@ export const LongFormReview = forwardRef<HTMLDivElement, LongFormReviewProps>(
           <div className="md:col-span-2 space-y-4">
             <div className="flex items-center gap-3">
               <div className="w-4 h-4 rounded border border-gold flex items-center justify-center bg-gold/10">
-                {conditionsWaiver.agreeToTerms && "✓"}
+                {conditionsWaiver?.agreeToTerms && "✓"}
               </div>
               <span className="text-sm font-medium">Agreed to Terms & Conditions</span>
             </div>
             <div className="flex items-center gap-3">
               <div className="w-4 h-4 rounded border border-gold flex items-center justify-center bg-gold/10">
-                {conditionsWaiver.agreeToPhotoPolicy && "✓"}
+                {conditionsWaiver?.agreeToPhotoPolicy && "✓"}
               </div>
               <span className="text-sm font-medium">Agreed to Media/Photo Policy</span>
             </div>
             <div className="flex items-center gap-3">
               <div className="w-4 h-4 rounded border border-gold flex items-center justify-center bg-gold/10">
-                {conditionsWaiver.agreeToMedicalPolicy && "✓"}
+                {conditionsWaiver?.agreeToMedicalPolicy && "✓"}
               </div>
               <span className="text-sm font-medium">Agreed to Emergency Medical Care</span>
             </div>
             <div className="flex items-center gap-3">
               <div className="w-4 h-4 rounded border border-gold flex items-center justify-center bg-gold/10">
-                {conditionsWaiver.agreeToCodeOfConduct && "✓"}
+                {conditionsWaiver?.agreeToCodeOfConduct && "✓"}
               </div>
               <span className="text-sm font-medium">Agreed to Code of Conduct</span>
             </div>
@@ -241,7 +247,7 @@ export const LongFormReview = forwardRef<HTMLDivElement, LongFormReviewProps>(
             <div className="space-y-4">
               <span className="text-[10px] font-bold uppercase tracking-widest text-text-muted">Parent/Guardian Signature</span>
               <div className="h-16 flex items-end border-b border-navy/40 pb-2">
-                <span className="font-serif text-2xl text-navy italic">{conditionsWaiver.parentSignatureName}</span>
+                <span className="font-serif text-2xl text-navy italic">{conditionsWaiver?.parentSignatureName}</span>
               </div>
               <div className="flex justify-between items-center text-[10px] font-bold text-navy/40">
                 <span>FULL NAME</span>
@@ -251,7 +257,7 @@ export const LongFormReview = forwardRef<HTMLDivElement, LongFormReviewProps>(
             <div className="space-y-4">
               <span className="text-[10px] font-bold uppercase tracking-widest text-text-muted">Date of Signature</span>
               <div className="h-16 flex items-end border-b border-navy/40 pb-2">
-                <span className="text-lg font-bold text-navy">{conditionsWaiver.signatureDate}</span>
+                <span className="text-lg font-bold text-navy">{conditionsWaiver?.signatureDate}</span>
               </div>
               <div className="text-[10px] font-bold text-navy/40">
                 <span>DATE (DD/MM/YYYY)</span>

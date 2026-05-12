@@ -1,5 +1,5 @@
-import { EnrollmentForm } from "@/components/enrollment-form-wrapper"
+import { redirect } from "next/navigation"
 
 export default function HomePage() {
-  return <EnrollmentForm />
+  redirect("/login")
 }

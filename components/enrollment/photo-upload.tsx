@@ -4,6 +4,9 @@ import { useRef, useState } from "react"
 import { Camera, Upload, User, Trash2, Info } from "lucide-react"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
+import { useMutation, useQuery } from "convex/react"
+import { api } from "@/convex/_generated/api"
+import { Loader2 } from "lucide-react"
 
 interface PhotoUploadProps {
   value: string | null
@@ -14,15 +17,41 @@ export function PhotoUpload({ value, onChange }: PhotoUploadProps) {
   const inputRef = useRef<HTMLInputElement>(null)
   const cameraInputRef = useRef<HTMLInputElement>(null)
   const [isDragging, setIsDragging] = useState(false)
+  const [isUploading, setIsUploading] = useState(false)
 
-  const handleFile = (file: File) => {
+  const generateUploadUrl = useMutation(api.files.generateUploadUrl)
+  
+  // If the value starts with "storage:", it's a storage ID, we need to get the URL
+  const isStorageId = value?.startsWith("storage:")
+  const storageId = isStorageId ? value.replace("storage:", "") : null
+  const dbUrl = useQuery(api.files.getUrl, storageId ? { storageId } : "skip")
+  
+  const displayUrl = isStorageId ? dbUrl : value
+
+  const handleFile = async (file: File) => {
     if (!file.type.startsWith("image/")) return
 
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      if (e.target?.result) onChange(e.target.result as string)
+    setIsUploading(true)
+    try {
+      // 1. Get upload URL
+      const postUrl = await generateUploadUrl()
+
+      // 2. Upload the file
+      const result = await fetch(postUrl, {
+        method: "POST",
+        headers: { "Content-Type": file.type },
+        body: file,
+      })
+      
+      const { storageId } = await result.json()
+      
+      // 3. Save the storage ID with a prefix so we know it's a storage ID
+      onChange(`storage:${storageId}`)
+    } catch (error) {
+      console.error("Upload failed:", error)
+    } finally {
+      setIsUploading(false)
     }
-    reader.readAsDataURL(file)
   }
 
   const handleDrop = (e: React.DragEvent) => {
@@ -60,9 +89,9 @@ export function PhotoUpload({ value, onChange }: PhotoUploadProps) {
           onDragLeave={() => setIsDragging(false)}
           onDrop={handleDrop}
         >
-          {value ? (
+          {displayUrl ? (
             <>
-              <Image src={value} alt="Student photo" fill className="object-cover" />
+              <Image src={displayUrl} alt="Student photo" fill className="object-cover" />
               <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                 <button
                   type="button"
@@ -73,6 +102,11 @@ export function PhotoUpload({ value, onChange }: PhotoUploadProps) {
                 </button>
               </div>
             </>
+          ) : isUploading ? (
+            <div className="flex flex-col items-center gap-3">
+              <Loader2 className="w-8 h-8 text-gold animate-spin" />
+              <span className="text-[10px] font-bold text-gold uppercase">Uploading...</span>
+            </div>
           ) : (
             <div className="flex flex-col items-center gap-3">
               <div className="w-12 h-12 rounded-md border-2 border-dashed border-[#d4ab53] flex items-center justify-center text-[#d4ab53]">
@@ -98,16 +132,18 @@ export function PhotoUpload({ value, onChange }: PhotoUploadProps) {
           <div className="flex flex-wrap items-center gap-3 mb-3">
             <button
               type="button"
+              disabled={isUploading}
               onClick={() => inputRef.current?.click()}
-              className="h-10 px-5 rounded-md bg-[#c6a254] text-white text-[13px] font-medium flex items-center gap-2 hover:bg-[#b39045] transition-colors shadow-sm"
+              className="h-10 px-5 rounded-md bg-[#c6a254] text-white text-[13px] font-medium flex items-center gap-2 hover:bg-[#b39045] transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <Upload className="w-4 h-4" />
+              {isUploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
               Browse files
             </button>
             <button
               type="button"
+              disabled={isUploading}
               onClick={() => cameraInputRef.current?.click()}
-              className="h-10 px-5 rounded-md border border-border-mid bg-white text-navy text-[13px] font-medium flex items-center gap-2 hover:bg-gray-50 transition-colors"
+              className="h-10 px-5 rounded-md border border-border-mid bg-white text-navy text-[13px] font-medium flex items-center gap-2 hover:bg-gray-50 transition-colors disabled:opacity-50"
             >
               <Camera className="w-4 h-4" />
               Use Camera

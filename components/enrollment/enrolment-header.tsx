@@ -2,8 +2,10 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import { Phone, LogIn, User, LogOut } from "lucide-react"
+import { Phone, LogIn, User, LogOut, LayoutDashboard, FileText } from "lucide-react"
 import { useSession, signOut } from "@/lib/auth-client"
+import { useQuery } from "convex/react"
+import { api } from "@/convex/_generated/api"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,7 +17,9 @@ import {
 
 export function EnrolmentHeader() {
   const { data: sessionData } = useSession()
+  const access = useQuery(api.profiles.getAccess)
   const user = sessionData?.user
+  const canAccessAdmin = access?.canAccessAdmin
 
   return (
     <header className="sticky top-0 z-50 border-b border-[#e8e4dc] bg-white/95 shadow-sm backdrop-blur-md supports-[backdrop-filter]:bg-white/80">
@@ -26,7 +30,7 @@ export function EnrolmentHeader() {
           paddingRight: "max(0.75rem, env(safe-area-inset-right, 0px))",
         }}
       >
-        <Link href="/" className="flex min-w-0 items-center">
+        <Link href="/enrollment" className="flex min-w-0 items-center">
           <Image
             src="/Shomoukh-01.png"
             alt="Shomoukh Early Childhood Education"
@@ -39,6 +43,16 @@ export function EnrolmentHeader() {
 
 
         <div className="flex shrink-0 items-center gap-3 sm:gap-6">
+          {canAccessAdmin && (
+            <Link 
+              href="/admin" 
+              className="hidden md:flex items-center gap-2 px-4 py-2 rounded-xl bg-navy text-white text-xs font-bold hover:bg-navy/90 transition-all shadow-sm"
+            >
+              <LayoutDashboard className="w-3.5 h-3.5 text-gold" />
+              Admin Panel
+            </Link>
+          )}
+
           <a
             href="tel:+96824567890"
             className="hidden min-w-0 items-center gap-2 text-sm text-[var(--text-secondary)] transition-colors hover:text-[var(--gold-dark)] sm:flex"
@@ -47,6 +61,16 @@ export function EnrolmentHeader() {
             <Phone className="h-4 w-4 shrink-0 text-[var(--gold)]" />
             <span className="truncate">+968 2456 7890</span>
           </a>
+
+          {user && (
+            <Link 
+              href="/dashboard" 
+              className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl bg-gold/10 text-gold-dark text-xs font-bold hover:bg-gold/20 transition-all border border-gold/20"
+            >
+              <FileText className="w-3.5 h-3.5" />
+              My Applications
+            </Link>
+          )}
 
           <div className="h-6 w-px bg-border-soft hidden sm:block" />
 
@@ -67,6 +91,13 @@ export function EnrolmentHeader() {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem className="text-xs text-text-muted py-2">
                   {user.email}
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild className="cursor-pointer">
+                  <Link href="/dashboard" className="flex items-center w-full">
+                    <LayoutDashboard className="mr-2 h-4 w-4" />
+                    <span>My Dashboard</span>
+                  </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={async () => { await signOut(); window.location.reload(); }} className="text-destructive focus:text-destructive cursor-pointer">

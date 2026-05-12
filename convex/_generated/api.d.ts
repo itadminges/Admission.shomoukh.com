@@ -11,6 +11,8 @@
 import type * as access from "../access.js";
 import type * as applications from "../applications.js";
 import type * as auth from "../auth.js";
+import type * as drafts from "../drafts.js";
+import type * as files from "../files.js";
 import type * as http from "../http.js";
 import type * as profiles from "../profiles.js";
 
@@ -24,6 +26,8 @@ declare const fullApi: ApiFromModules<{
   access: typeof access;
   applications: typeof applications;
   auth: typeof auth;
+  drafts: typeof drafts;
+  files: typeof files;
   http: typeof http;
   profiles: typeof profiles;
 }>;

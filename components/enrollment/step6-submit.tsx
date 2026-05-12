@@ -12,7 +12,7 @@ interface Step6SubmitProps {
 }
 
 export function Step6Submit({ formData, submitted, referenceNumber }: Step6SubmitProps) {
-  const { studentData } = formData
+  const studentData = formData?.studentData || {} as any
   const studentName = [studentData.givenNames, studentData.familyName].filter(Boolean).join(" ") || "the student"
   const longFormRef = useRef<HTMLDivElement>(null)
 
@@ -90,7 +90,15 @@ export function Step6Submit({ formData, submitted, referenceNumber }: Step6Submi
           <LongFormReview ref={longFormRef} formData={formData} referenceNumber={referenceNumber} />
         </div>
 
-        <div className="pt-8 border-t border-border-soft w-full max-w-md">
+        <div className="pt-8 border-t border-border-soft w-full max-w-md flex flex-col items-center gap-4">
+          <button
+            onClick={() => window.location.href = "/enrollment"}
+            className="text-sm font-bold text-navy hover:text-gold flex items-center justify-center gap-2 transition-colors px-6 py-3 rounded-xl bg-slate-50 border border-slate-200"
+          >
+            <Clock className="w-4 h-4 text-gold" />
+            Go to My Applications Dashboard
+          </button>
+          
           <a
             href="https://shomoukh.com"
             target="_blank"

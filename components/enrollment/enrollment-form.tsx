@@ -18,6 +18,8 @@ import { defaultFormData } from "@/lib/enrollment-types"
 import { Sparkles, CheckCircle2 } from "lucide-react"
 import { toast } from "sonner"
 import { useSession } from "@/lib/auth-client"
+import { useMutation, useQuery } from "convex/react"
+import { api } from "@/convex/_generated/api"
 
 
 const STEP_ESTIMATED = ["~5 min", "~8 min", "~6 min", "~6 min", "~8 min", "~4 min"]
@@ -94,7 +96,7 @@ function validateConditionsWaiver(data: ConditionsWaiver): Partial<Record<keyof 
   return e
 }
 
-export function EnrollmentForm() {
+export function EnrollmentForm({ onSwitchToMyApps }: { onSwitchToMyApps?: () => void }) {
   const [currentStep, setCurrentStep] = useState(1)
   const [completedSteps, setCompletedSteps] = useState<number[]>([])
   const [formData, setFormData] = useState<EnrollmentFormData>(defaultFormData)
@@ -105,6 +107,15 @@ export function EnrollmentForm() {
   const [stepKey, setStepKey] = useState(0)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [lastSaved, setLastSaved] = useState<Date | null>(null)
+  const [hasLoadedDraft, setHasLoadedDraft] = useState(false)
+
+  const { data: sessionData } = useSession()
+  const user = sessionData?.user
+  const router = useRouter()
+  
+  const saveDraftMutation = useMutation(api.drafts.save)
+  const removeDraftMutation = useMutation(api.drafts.remove)
+  const dbDraft = useQuery(api.drafts.get)
 
   const updateFormSection = useCallback(<K extends keyof EnrollmentFormData>(
     key: K,
@@ -113,7 +124,7 @@ export function EnrollmentForm() {
     setFormData((prev) => ({ ...prev, [key]: value }))
   }, [])
 
-  const handleSaveDraft = useCallback(() => {
+  const handleSaveDraft = useCallback(async () => {
     try {
       const payload = {
         formData,
@@ -121,12 +132,68 @@ export function EnrollmentForm() {
         completedSteps,
         savedAt: Date.now(),
       }
+      
+      // Always save to localStorage as a quick local fallback
       localStorage.setItem("shomoukh-enrolment-draft", JSON.stringify(payload))
+      
+      // If logged in, save to DB for security and persistence
+      if (user) {
+        await saveDraftMutation({
+          formData,
+          currentStep,
+          completedSteps,
+        })
+      }
+      
       setLastSaved(new Date())
-    } catch {
-      /* ignore */
+    } catch (err) {
+      console.error("Failed to save draft:", err)
     }
-  }, [formData, currentStep, completedSteps])
+  }, [formData, currentStep, completedSteps, user, saveDraftMutation])
+
+  // Load draft from DB or LocalStorage on mount
+  useEffect(() => {
+    if (hasLoadedDraft) return
+
+    const loadDraft = () => {
+      // 1. Try DB first if user is logged in
+      if (user && dbDraft) {
+        setFormData(dbDraft.formData)
+        setCurrentStep(dbDraft.currentStep)
+        setCompletedSteps(dbDraft.completedSteps)
+        setLastSaved(new Date(dbDraft.lastSaved))
+        setHasLoadedDraft(true)
+        toast.info("Draft loaded from your account")
+        return
+      }
+
+      // 2. Fallback to LocalStorage
+      try {
+        const saved = localStorage.getItem("shomoukh-enrolment-draft")
+        if (saved) {
+          const parsed = JSON.parse(saved)
+          // Only load if we haven't loaded from DB
+          if (!user || !dbDraft) {
+            setFormData(parsed.formData)
+            setCurrentStep(parsed.currentStep)
+            setCompletedSteps(parsed.completedSteps)
+            setLastSaved(new Date(parsed.savedAt))
+            setHasLoadedDraft(true)
+            toast.info("Draft loaded from local browser storage")
+          }
+        }
+      } catch {
+        /* ignore */
+      }
+      
+      // If no draft found, just mark as loaded
+      if (user !== undefined && (dbDraft !== undefined || !user)) {
+        setHasLoadedDraft(true)
+      }
+    }
+
+    loadDraft()
+  }, [user, dbDraft, hasLoadedDraft])
 
   // Auto-save effect
   useEffect(() => {
@@ -147,9 +214,7 @@ export function EnrollmentForm() {
     }
   }
 
-  const { data: sessionData } = useSession()
-  const user = sessionData?.user
-  const router = useRouter()
+  const submitApplication = useMutation(api.applications.submit)
 
   const handleNext = async () => {
     if (currentStep === 6) {
@@ -166,18 +231,28 @@ export function EnrollmentForm() {
       setSubmitError(null)
       setIsSubmitting(true)
       try {
-        const generatedReference = `SHM-${new Date().getFullYear()}-${Math.floor(100000 + Math.random() * 900000)}`
-        setReferenceNumber(generatedReference)
+        const result = await submitApplication({ formData })
+        setReferenceNumber(result.referenceNumber)
         setSubmitted(true)
+        toast.success("Application Submitted!", {
+          description: `Your reference is ${result.referenceNumber}. We will review it soon.`,
+        })
         try {
           localStorage.removeItem("shomoukh-enrolment-draft")
+          if (user) {
+            await removeDraftMutation()
+          }
         } catch {
           /* ignore */
         }
-      } catch {
+      } catch (err) {
+        console.error("Submission error:", err)
         setSubmitError(
           "We could not submit your application. Check your connection and try again.",
         )
+        toast.error("Submission Failed", {
+          description: "Please check your internet connection and try again.",
+        })
         window.scrollTo({ top: 0, behavior: "smooth" })
       } finally {
         setIsSubmitting(false)

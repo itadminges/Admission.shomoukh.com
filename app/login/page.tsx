@@ -1,17 +1,27 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Mail, Lock, ArrowRight, Loader2, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
-import { signIn } from "@/lib/auth-client";
+import { signIn, useSession } from "@/lib/auth-client";
 
 export default function LoginPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const { data: session, isPending } = useSession();
+  
+  // Redirect if already logged in
+  useEffect(() => {
+    if (session && !isPending) {
+      const redirectTo = new URLSearchParams(window.location.search).get("redirect");
+      router.push(redirectTo || "/enrollment");
+    }
+  }, [session, isPending, router]);
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -206,7 +216,7 @@ export default function LoginPage() {
         
         <div className="mt-8 pt-8 border-t border-[var(--navy)]/5 text-center">
           <Link 
-            href="/" 
+            href="/enrollment" 
             className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[var(--text-muted)] hover:text-[var(--navy)] transition-colors"
           >
             <span>← Return to Admissions Form</span>
