@@ -2,23 +2,15 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import { Phone, LogIn, User, LogOut, LayoutDashboard, FileText } from "lucide-react"
-import { useSession, signOut } from "@/lib/auth-client"
+import { Phone, LogIn, LayoutDashboard, FileText } from "lucide-react"
+import { useUser, UserButton, useClerk, Show } from "@clerk/nextjs"
 import { useQuery } from "convex/react"
 import { api } from "@/convex/_generated/api"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 
 export function EnrolmentHeader() {
-  const { data: sessionData } = useSession()
-  const access = useQuery(api.profiles.getAccess)
-  const user = sessionData?.user
+  const { user, isLoaded } = useUser()
+  const { signOut } = useClerk()
+  const access = useQuery(api.users.getAccess)
   const canAccessAdmin = access?.canAccessAdmin
 
   return (
@@ -74,47 +66,31 @@ export function EnrolmentHeader() {
 
           <div className="h-6 w-px bg-border-soft hidden sm:block" />
 
-          {user ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-cream border border-gold/20 hover:bg-gold/5 transition-colors cursor-pointer group">
-                  <div className="w-7 h-7 rounded-full bg-gold/10 flex items-center justify-center text-gold group-hover:bg-gold/20">
-                    <User size={16} />
-                  </div>
-                  <span className="text-sm font-semibold text-navy hidden md:inline-block">
-                    {user.name}
-                  </span>
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56 mt-2">
-                <DropdownMenuLabel className="font-serif">My Account</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem className="text-xs text-text-muted py-2">
-                  {user.email}
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild className="cursor-pointer">
-                  <Link href="/dashboard" className="flex items-center w-full">
-                    <LayoutDashboard className="mr-2 h-4 w-4" />
-                    <span>My Dashboard</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={async () => { await signOut(); window.location.reload(); }} className="text-destructive focus:text-destructive cursor-pointer">
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>Log out</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          ) : (
+          <Show when="signed-in">
+            <div className="flex items-center gap-3">
+              <span className="text-sm font-semibold text-navy hidden md:inline-block">
+                {user?.fullName || user?.firstName || user?.username}
+              </span>
+              <UserButton 
+                afterSignOutUrl="/"
+                appearance={{
+                  elements: {
+                    userButtonAvatarBox: "w-8 h-8",
+                  }
+                }}
+              />
+            </div>
+          </Show>
+
+          <Show when="signed-out">
             <Link 
-              href="/login" 
+              href={process.env.NEXT_PUBLIC_CLERK_SIGN_IN_URL || "/sign-in"} 
               className="flex items-center gap-2 text-sm font-bold text-navy hover:text-gold transition-colors"
             >
               <LogIn className="w-4 h-4 text-gold" />
               <span>Sign In</span>
             </Link>
-          )}
+          </Show>
 
           <a
             href="mailto:admissions@shomoukh.com"

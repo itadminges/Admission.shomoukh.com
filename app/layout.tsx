@@ -4,6 +4,7 @@ import { Analytics } from '@vercel/analytics/next'
 import { Toaster } from 'sonner'
 import { ConvexClientProvider } from '@/components/ConvexClientProvider'
 import { ClerkProvider } from '@clerk/nextjs'
+import { UserSync } from '@/components/UserSync'
 import './globals.css'
 
 const plusJakarta = Plus_Jakarta_Sans({
@@ -56,10 +57,11 @@ export default async function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <ClerkProvider>
-      <html lang="en" className={`${plusJakarta.variable} ${playfair.variable} ${notoArabic.variable}`}>
-        <body className="font-sans antialiased">
+    <html lang="en" className={`${plusJakarta.variable} ${playfair.variable} ${notoArabic.variable}`}>
+      <body className="font-sans antialiased">
+        <ClerkProvider>
           <ConvexClientProvider>
+            <UserSync />
             {children}
             <Toaster 
               position="top-right"
@@ -73,9 +75,8 @@ export default async function RootLayout({
             />
           </ConvexClientProvider>
           <Analytics />
-        </body>
-      </html>
-    </ClerkProvider>
+        </ClerkProvider>
+      </body>
+    </html>
   )
 }
-

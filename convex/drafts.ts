@@ -1,7 +1,6 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
-import { authUserId } from "./access";
-import { authComponent } from "./auth";
+import { getAuthUserId } from "./access";
 
 export const save = mutation({
   args: {
@@ -10,13 +9,12 @@ export const save = mutation({
     completedSteps: v.array(v.number()),
   },
   handler: async (ctx, args) => {
-    const user = await authComponent.safeGetAuthUser(ctx);
-    if (!user) throw new Error("Not authenticated");
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
     
-    const uid = authUserId(user);
     const existing = await ctx.db
       .query("drafts")
-      .withIndex("by_userId", (q) => q.eq("userId", uid))
+      .withIndex("by_userId", (q) => q.eq("userId", userId))
       .unique();
     
     if (existing) {
@@ -29,7 +27,7 @@ export const save = mutation({
       return existing._id;
     } else {
       return await ctx.db.insert("drafts", {
-        userId: uid,
+        userId,
         formData: args.formData,
         currentStep: args.currentStep,
         completedSteps: args.completedSteps,
@@ -42,13 +40,12 @@ export const save = mutation({
 export const get = query({
   args: {},
   handler: async (ctx) => {
-    const user = await authComponent.safeGetAuthUser(ctx);
-    if (!user) return null;
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return null;
     
-    const uid = authUserId(user);
     return await ctx.db
       .query("drafts")
-      .withIndex("by_userId", (q) => q.eq("userId", uid))
+      .withIndex("by_userId", (q) => q.eq("userId", userId))
       .unique();
   },
 });
@@ -56,13 +53,12 @@ export const get = query({
 export const remove = mutation({
   args: {},
   handler: async (ctx) => {
-    const user = await authComponent.safeGetAuthUser(ctx);
-    if (!user) return;
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return;
     
-    const uid = authUserId(user);
     const existing = await ctx.db
       .query("drafts")
-      .withIndex("by_userId", (q) => q.eq("userId", uid))
+      .withIndex("by_userId", (q) => q.eq("userId", userId))
       .unique();
     
     if (existing) {

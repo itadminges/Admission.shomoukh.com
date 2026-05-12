@@ -1,29 +1,34 @@
 import type { MutationCtx, QueryCtx } from "./_generated/server";
-import { authComponent } from "./auth";
 
-/** Better Auth user document id (Convex `user` table in the auth component). */
-export function authUserId(user: { _id: string }) {
-  return user._id as string;
+/**
+ * Get the current user's ID from the auth identity.
+ */
+export async function getAuthUserId(ctx: QueryCtx | MutationCtx) {
+  const identity = await ctx.auth.getUserIdentity();
+  if (!identity) return null;
+  return identity.subject; // Clerk user ID
 }
 
 /**
  * Access control for admin/staff dashboard.
  */
 export async function requireAdminDashboard(ctx: QueryCtx | MutationCtx) {
-  const user = await authComponent.safeGetAuthUser(ctx) as { role?: string; email: string };
-  if (!user) {
+  const identity = await ctx.auth.getUserIdentity();
+  if (!identity) {
     throw new Error("Not authenticated");
   }
   
-  // In our new schema, the role is directly on the user document
-  if (user.role === "admin" || user.role === "staff") {
-    return user;
+  // In Clerk, we might use private metadata or public metadata for roles.
+  // We'll check the identity's role if available, or fallback to email check.
+  const role = identity.role as string | undefined;
+  if (role === "admin" || role === "staff") {
+    return identity;
   }
   
   // Fallback for bootstrap emails during initial setup
   const startingAdmins = ["admin@shomoukh.com", "staff@shomoukh.com", "test@example.com"];
-  if (startingAdmins.includes(user.email.toLowerCase())) {
-     return user;
+  if (identity.email && startingAdmins.includes(identity.email.toLowerCase())) {
+     return identity;
   }
 
   throw new Error("Unauthorized");

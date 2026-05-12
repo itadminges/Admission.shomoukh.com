@@ -1,7 +1,7 @@
 "use client";
 
 import { ReactNode } from "react";
-import { useSession } from "@/lib/auth-client";
+import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { useEffect } from "react";
@@ -9,22 +9,22 @@ import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 
 export function AdminAuthGuard({ children }: { children: ReactNode }) {
-  const { data: session, isPending: isAuthPending } = useSession();
-  const access = useQuery(api.profiles.getAccess);
+  const { user, isLoaded } = useUser();
+  const access = useQuery(api.users.getAccess);
   const router = useRouter();
 
-  const isLoading = isAuthPending || access === undefined;
+  const isLoading = !isLoaded || access === undefined;
 
   useEffect(() => {
     if (!isLoading) {
-      if (!session) {
-        router.push("/login?redirect=/admin");
+      if (!user) {
+        router.push(`${process.env.NEXT_PUBLIC_CLERK_SIGN_IN_URL}?redirect_url=${encodeURIComponent("/admin")}`);
       } else if (!access?.canAccessAdmin) {
         // Redirect non-staff users back to enrollment if they try to access admin
         router.push("/enrollment");
       }
     }
-  }, [session, access, isLoading, router]);
+  }, [user, access, isLoading, router]);
 
   if (isLoading) {
     return (
@@ -34,7 +34,7 @@ export function AdminAuthGuard({ children }: { children: ReactNode }) {
     );
   }
 
-  if (!session || !access?.canAccessAdmin) {
+  if (!user || !access?.canAccessAdmin) {
     return null;
   }
 

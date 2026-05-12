@@ -17,7 +17,7 @@ import type { EnrollmentFormData, StudentData, FamilyData, EmergencyData, Educat
 import { defaultFormData } from "@/lib/enrollment-types"
 import { Sparkles, CheckCircle2 } from "lucide-react"
 import { toast } from "sonner"
-import { useSession } from "@/lib/auth-client"
+import { useUser } from "@clerk/nextjs"
 import { useMutation, useQuery } from "convex/react"
 import { api } from "@/convex/_generated/api"
 
@@ -109,8 +109,7 @@ export function EnrollmentForm({ onSwitchToMyApps }: { onSwitchToMyApps?: () => 
   const [lastSaved, setLastSaved] = useState<Date | null>(null)
   const [hasLoadedDraft, setHasLoadedDraft] = useState(false)
 
-  const { data: sessionData } = useSession()
-  const user = sessionData?.user
+  const { user, isLoaded } = useUser()
   const router = useRouter()
   
   const saveDraftMutation = useMutation(api.drafts.save)
@@ -187,7 +186,7 @@ export function EnrollmentForm({ onSwitchToMyApps }: { onSwitchToMyApps?: () => 
       }
       
       // If no draft found, just mark as loaded
-      if (user !== undefined && (dbDraft !== undefined || !user)) {
+      if (isLoaded && (dbDraft !== undefined || !user)) {
         setHasLoadedDraft(true)
       }
     }
@@ -224,7 +223,7 @@ export function EnrollmentForm({ onSwitchToMyApps }: { onSwitchToMyApps?: () => 
         });
         // Save current progress to draft before redirecting
         handleSaveDraft();
-        router.push("/login?redirect=/enrollment");
+        router.push(`${process.env.NEXT_PUBLIC_CLERK_SIGN_IN_URL}?redirect_url=${encodeURIComponent("/enrollment")}`);
         return;
       }
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useSession, signOut } from "@/lib/auth-client";
+import { useUser, useClerk } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,24 +8,20 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, LogOut, User, Mail, Shield, Calendar } from "lucide-react";
 import { toast } from "sonner";
+import Link from "next/link";
 
 export default function DashboardPage() {
-  const { data: session, isPending } = useSession();
+  const { user, isLoaded } = useUser();
+  const { signOut } = useClerk();
   const router = useRouter();
 
   const handleLogout = async () => {
-    await signOut({
-      fetchOptions: {
-        onSuccess: () => {
-          toast.success("Logged out successfully");
-          router.push("/login");
-          router.refresh();
-        },
-      },
-    });
+    await signOut();
+    toast.success("Logged out successfully");
+    router.push(process.env.NEXT_PUBLIC_CLERK_SIGN_IN_URL || "/sign-in");
   };
 
-  if (isPending) {
+  if (!isLoaded) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
@@ -33,11 +29,9 @@ export default function DashboardPage() {
     );
   }
 
-  if (!session) {
+  if (!user) {
     return null; // Handled by middleware
   }
-
-  const user = session.user;
 
   return (
     <div className="min-h-screen bg-muted/40 p-4 md:p-8">
@@ -54,13 +48,13 @@ export default function DashboardPage() {
           <Card className="shadow-sm">
             <CardHeader className="flex flex-row items-center gap-4 space-y-0">
               <Avatar className="h-16 w-16 border-2 border-primary/10">
-                <AvatarImage src={user.image || ""} alt={user.name} />
+                <AvatarImage src={user.imageUrl || ""} alt={user.fullName || "User"} />
                 <AvatarFallback className="text-xl bg-primary/5">
-                  {user.name?.charAt(0) || "U"}
+                  {user.firstName?.charAt(0) || "U"}
                 </AvatarFallback>
               </Avatar>
               <div>
-                <CardTitle className="text-2xl">{user.name}</CardTitle>
+                <CardTitle className="text-2xl">{user.fullName}</CardTitle>
                 <CardDescription>Welcome back to your account</CardDescription>
               </div>
             </CardHeader>
@@ -71,17 +65,11 @@ export default function DashboardPage() {
                 </div>
                 <div>
                   <p className="font-medium">Email Address</p>
-                  <p className="text-muted-foreground">{user.email}</p>
+                  <p className="text-muted-foreground">{user.primaryEmailAddress?.emailAddress}</p>
                 </div>
-                {user.emailVerified ? (
-                  <Badge variant="default" className="ml-auto bg-green-500/10 text-green-600 hover:bg-green-500/20 border-none">
-                    Verified
-                  </Badge>
-                ) : (
-                  <Badge variant="destructive" className="ml-auto">
-                    Unverified
-                  </Badge>
-                )}
+                <Badge variant="default" className="ml-auto bg-green-500/10 text-green-600 hover:bg-green-500/20 border-none">
+                  Verified
+                </Badge>
               </div>
 
               <div className="flex items-center gap-3 text-sm">
@@ -91,7 +79,7 @@ export default function DashboardPage() {
                 <div>
                   <p className="font-medium">Account Role</p>
                   <Badge variant="secondary" className="capitalize">
-                    {user.role || "Parent"}
+                    {user.publicMetadata?.role as string || "Parent"}
                   </Badge>
                 </div>
               </div>
@@ -103,7 +91,7 @@ export default function DashboardPage() {
                 <div>
                   <p className="font-medium">Member Since</p>
                   <p className="text-muted-foreground">
-                    {new Date(user.createdAt).toLocaleDateString()}
+                    {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : "Recently"}
                   </p>
                 </div>
               </div>
@@ -134,6 +122,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-
-// Re-import Link as it was missing from original thoughts
-import Link from "next/link";

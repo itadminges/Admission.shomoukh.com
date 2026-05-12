@@ -3,6 +3,13 @@ import { v } from "convex/values";
 
 export default defineSchema({
   // --- Application Tables ---
+  users: defineTable({
+    clerkId: v.string(),
+    email: v.string(),
+    name: v.optional(v.string()),
+    role: v.string(), // "admin", "staff", "parent"
+  }).index("by_clerkId", ["clerkId"]).index("by_email", ["email"]),
+
   applications: defineTable({
     userId: v.string(), // Clerk user ID (sub)
     referenceNumber: v.string(),

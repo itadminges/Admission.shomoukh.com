@@ -8,12 +8,12 @@ import { EnrolmentFooter } from "@/components/enrollment/enrolment-footer"
 import { EnrolmentSidebar } from "@/components/enrollment/enrolment-sidebar"
 import { Button } from "@/components/ui/button"
 import { FileText, PlusCircle } from "lucide-react"
-import { useSession } from "@/lib/auth-client"
+import { useUser } from "@clerk/nextjs"
 import Link from "next/link"
 
 export default function EnrollmentPage() {
   const [view, setView] = useState<"new" | "mine">("new")
-  const { data: session } = useSession()
+  const { user } = useUser()
 
   return (
     <div className="min-h-screen selection:bg-gold/20 flex flex-col">
