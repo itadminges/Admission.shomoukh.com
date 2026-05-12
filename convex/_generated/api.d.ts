@@ -15,7 +15,6 @@ import type * as drafts from "../drafts.js";
 import type * as files from "../files.js";
 import type * as http from "../http.js";
 import type * as roles from "../roles.js";
-import type * as seed from "../seed.js";
 
 import type {
   ApiFromModules,
@@ -31,7 +30,6 @@ declare const fullApi: ApiFromModules<{
   files: typeof files;
   http: typeof http;
   roles: typeof roles;
-  seed: typeof seed;
 }>;
 
 /**

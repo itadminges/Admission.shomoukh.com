@@ -1,6 +1,6 @@
 import { betterAuth } from "better-auth/minimal";
 import { convexAdapter } from "@convex-dev/better-auth/adapter";
-import { api as convexApi } from "../convex/_generated/api";
+import { api as convexApi } from "@/convex/_generated/api";
 import { ConvexHttpClient } from "convex/browser";
 
 // We use the HTTP client for server-side database access
